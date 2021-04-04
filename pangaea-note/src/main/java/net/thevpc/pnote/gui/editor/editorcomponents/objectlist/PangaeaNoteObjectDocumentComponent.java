@@ -152,6 +152,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements PNoteE
     }
 
     public void onStructureChangedImpl() {
+        onValueChangedImpl();
         onComponentsListChanged();
     }
 

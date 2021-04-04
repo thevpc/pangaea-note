@@ -148,6 +148,9 @@ public class AppDialog extends JDialog2 {
         public Builder withOkOnlyButton(DialogAction ok) {
             buttonIds = Arrays.asList("ok");
             consMap.put("ok", ok);
+            if (defaultId == null) {
+                setDefaultId("ok");
+            }
             return this;
         }
 
@@ -159,6 +162,9 @@ public class AppDialog extends JDialog2 {
             buttonIds = Arrays.asList("ok", "cancel");
             consMap.put("ok", ok);
             consMap.put("cancel", cancel);
+            if (defaultId == null) {
+                setDefaultId("ok");
+            }
             return this;
         }
 
@@ -170,6 +176,9 @@ public class AppDialog extends JDialog2 {
             buttonIds = Arrays.asList("yes", "no");
             consMap.put("yes", yes);
             consMap.put("no", no);
+            if (defaultId == null) {
+                setDefaultId("yes");
+            }
             return this;
         }
 
@@ -178,6 +187,9 @@ public class AppDialog extends JDialog2 {
             consMap.put("yes", yes);
             consMap.put("no", no);
             consMap.put("cancel", cancel);
+            if (defaultId == null) {
+                setDefaultId("yes");
+            }
             return this;
         }
 
@@ -276,9 +288,10 @@ public class AppDialog extends JDialog2 {
     }
 
     protected void build(JComponent mainComponent, String[] buttonIds, String defaultId, DialogAction cons) {
+        this.mainComponent = mainComponent;
         getRootPane().setLayout(new BorderLayout());
         footer = new GenFooter(app, cons, buttonIds);
-        JPanel withBorder=new JPanel(new BorderLayout());
+        JPanel withBorder = new JPanel(new BorderLayout());
         withBorder.add(mainComponent);
         withBorder.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 5));
         getRootPane().add(withBorder, BorderLayout.CENTER);
