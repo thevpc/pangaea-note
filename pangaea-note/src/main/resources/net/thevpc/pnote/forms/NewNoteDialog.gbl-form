@@ -1,0 +1,9 @@
+[<-nameLabel      ::]
+[<=-nameText      ::]
+[<-typeLabel      ][<=-typeList       :=-]
+[<-iconLabel      ][<=-iconList       :=-]
+[<=-valueLabel::]
+[<=-typeFileValue::]
+[<+===$$$description::]
+;
+insets(2,5)
