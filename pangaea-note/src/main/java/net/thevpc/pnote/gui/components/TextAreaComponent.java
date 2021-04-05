@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
+package net.thevpc.pnote.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -21,6 +21,8 @@ import javax.swing.event.DocumentEvent;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.util.AnyDocumentListener;
+import net.thevpc.pnote.gui.util.GuiHelper;
 
 /**
  *

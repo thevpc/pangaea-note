@@ -13,13 +13,13 @@ import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class StringEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent {
+public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private JTextField text = new JTextField();
     private PangaeaNoteExt currentNote;
@@ -38,6 +38,12 @@ public class StringEditorTypeComponent extends JPanel implements PNoteEditorType
         });
 //        setBorder(BorderFactory.createLineBorder(Color.red));
     }
+
+    @Override
+    public boolean isCompactMode() {
+        return true;
+    }
+    
 
     @Override
     public JComponent component() {

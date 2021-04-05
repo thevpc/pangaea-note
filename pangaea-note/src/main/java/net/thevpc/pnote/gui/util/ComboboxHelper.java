@@ -23,7 +23,13 @@ import net.thevpc.echo.Application;
 public class ComboboxHelper {
 
     public static JComboBox createCombobox(Application app, NamedValue... values) {
-        JComboBox c = new JComboBox(new ExtendedComboBoxModel(values));
+        JComboBox c = new JComboBox();
+        prepareCombobox(c, app, values);
+        return c;
+    }
+
+    public static JComboBox prepareCombobox(JComboBox c, Application app, NamedValue... values) {
+        c.setModel(new ExtendedComboBoxModel(values));
         c.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

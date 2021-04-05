@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
+package net.thevpc.pnote.gui.components;
 
 import java.util.List;
 import net.thevpc.echo.Application;

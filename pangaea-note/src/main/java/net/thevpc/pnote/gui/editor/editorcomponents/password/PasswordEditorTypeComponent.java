@@ -12,15 +12,15 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
-import net.thevpc.pnote.gui.util.PasswordComponent;
+import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class PasswordEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent {
+public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private PasswordComponent text;
     private PangaeaNoteExt currentNote;
@@ -39,6 +39,12 @@ public class PasswordEditorTypeComponent extends JPanel implements PNoteEditorTy
             }
         });
     }
+
+    @Override
+    public boolean isCompactMode() {
+        return true;
+    }
+    
 
     @Override
     public JComponent component() {

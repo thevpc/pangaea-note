@@ -24,6 +24,8 @@ import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.GuiHelper;
+import net.thevpc.pnote.gui.util.PangaeaNoteIconsCombobox;
+import net.thevpc.pnote.gui.util.PangaeaNoteTypesCombobox;
 import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteExt;
@@ -44,6 +46,7 @@ public class EditNoteDialog extends OkCancelDialog {
     private JCheckBox italicEditor;
     private JCheckBox underlinedEditor;
     private JCheckBox strikedEditor;
+    private PangaeaNoteTypesCombobox typeEditor;
 
     private boolean ok = false;
     private PangaeaNote note;
@@ -54,7 +57,10 @@ public class EditNoteDialog extends OkCancelDialog {
         this.vn = vn;
         this.note = vn.toNote();
         nameEditor = new JTextField("");
-        iconEditor = createIconListComponent(sapp);
+        typeEditor = new PangaeaNoteTypesCombobox(sapp);
+        typeEditor.setEnabled(false);
+        typeEditor.setSelectedContentType(note.getContentType(), note.getEditorType());
+        iconEditor = new PangaeaNoteIconsCombobox(sapp);
         foregroundEditor = new ColorChooserButton();
         backgroundEditor = new ColorChooserButton();
         readOnlyEditor = new JCheckBox(sapp.app().i18n().getString("Message.readOnly"));
@@ -75,6 +81,8 @@ public class EditNoteDialog extends OkCancelDialog {
         ));
         gbs.bind("nameLabel", new JLabel(sapp.app().i18n().getString("Message.name")));
         gbs.bind("nameEditor", nameEditor);
+        gbs.bind("typeLabel", new JLabel(sapp.app().i18n().getString("Message.noteType")));
+        gbs.bind("typeEditor", typeEditor);
         gbs.bind("iconLabel", new JLabel(sapp.app().i18n().getString("Message.icon")));
         gbs.bind("iconEditor", iconEditor);
         gbs.bind("forgroundLabel", new JLabel(sapp.app().i18n().getString("Message.titleForegroundColor")));

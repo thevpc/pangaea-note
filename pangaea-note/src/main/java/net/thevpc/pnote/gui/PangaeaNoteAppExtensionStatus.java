@@ -3,18 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
-
-import javax.swing.JComponent;
+package net.thevpc.pnote.gui;
 
 /**
  *
  * @author vpc
  */
-public interface EditorKitHeader {
-
-    JComponent component();
-
-    boolean acceptContentType(String contentType);
+public enum PangaeaNoteAppExtensionStatus {
+    UNLOADED, LOADING, LOADED, ERROR, DISABLED
     
 }

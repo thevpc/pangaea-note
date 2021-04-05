@@ -9,17 +9,22 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class EmpyNNodtEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent{
+public class EmpyNNodtEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent{
 
     @Override
     public JComponent component() {
         return this;
+    }
+
+    @Override
+    public boolean isCompactMode() {
+        return true;
     }
 
     @Override

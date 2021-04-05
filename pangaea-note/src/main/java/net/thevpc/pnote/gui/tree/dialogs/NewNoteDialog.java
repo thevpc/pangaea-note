@@ -6,7 +6,6 @@
 package net.thevpc.pnote.gui.tree.dialogs;
 
 import net.thevpc.common.swing.NamedValue;
-import net.thevpc.pnote.gui.util.ComboboxHelper;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -31,8 +30,9 @@ import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
 import net.thevpc.pnote.util.OtherUtils;
-import net.thevpc.pnote.gui.util.FileComponent;
-import net.thevpc.pnote.gui.util.URLComponent;
+import net.thevpc.pnote.gui.components.FileComponent;
+import net.thevpc.pnote.gui.util.PangaeaNoteIconsCombobox;
+import net.thevpc.pnote.gui.util.PangaeaNoteTypesCombobox;
 import net.thevpc.pnote.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteObjectDescriptor;
@@ -46,7 +46,7 @@ public class NewNoteDialog extends OkCancelDialog {
 
     private JTextField nameText;
     private JComboBox iconList;
-    private JComboBox typeList;
+    private PangaeaNoteTypesCombobox typeList;
     private JLabel valueLabel;
 //    private JTextField typeSourceValue;
 
@@ -61,13 +61,13 @@ public class NewNoteDialog extends OkCancelDialog {
 
         this.valueLabel = new JLabel(sapp.app().i18n().getString("Message.valueLabel"));
         nameText = new JTextField("");
-        iconList = createIconListComponent(sapp);
+        typeList = new PangaeaNoteTypesCombobox(sapp);
+        iconList = new PangaeaNoteIconsCombobox(sapp);
         typeDescriptionContent = new JScrollPane(typeDescription = new JEditorPane("text/html", ""));
         typeDescriptionContent.setPreferredSize(new Dimension(400, 100));
         typeDescription.setEditable(false);
-        typeFileValue = new FileComponent();
+        typeFileValue = new FileComponent(sapp).setReloadButtonVisible(false);
 
-        typeList = createTypeListComponent(sapp);
 
         GridBagLayoutSupport gbs = GridBagLayoutSupport.load(NewNoteDialog.class.getResource(
                 "/net/thevpc/pnote/forms/NewNoteDialog.gbl-form"
@@ -97,102 +97,6 @@ public class NewNoteDialog extends OkCancelDialog {
         onNoteTypeChange(((NamedValue) typeList.getSelectedItem()).getId());
 
         build(gbs.apply(new JPanel()), this::ok, this::cancel);
-    }
-
-    private JComboBox createIconListComponent(PangaeaNoteGuiApp sapp1) {
-        List<NamedValue> list = new ArrayList<>();
-        list.add(new NamedValue(false, "", sapp1.app().i18n().getString("Icon.none"), null));
-        for (String icon : PangaeaNoteTypes.ALL_USER_ICONS) {
-            list.add(createIconValue(icon));
-        }
-        return ComboboxHelper.createCombobox(sapp1.app(), list.toArray(new NamedValue[0]));
-    }
-
-    private List<NamedValue> createTypeListNamedValue() {
-        List<NamedValue> availableTypes = new ArrayList<>();
-//        availableTypes.add(createNoteTypeFamilyNameGroup("quick-strings"));
-//        for (String s : new String[]{PangaeaNoteTypes.STRING, PangaeaNoteTypes.PASSWORD}) {
-//            availableTypes.add(createNoteTypeFamilyNameValue(s));
-//        }
-        availableTypes.add(createNoteTypeFamilyNameGroup("simple-documents"));
-        for (String s : new String[]{PangaeaNoteTypes.PLAIN, PangaeaNoteTypes.RICH_HTML}) {
-            availableTypes.add(createNoteTypeFamilyNameValue(s));
-        }
-//        availableTypes.add(createNoteTypeFamilyNameGroup("lists"));
-        availableTypes.add(createNoteTypeFamilyNameValue(PangaeaNoteTypes.NOTE_LIST));
-        availableTypes.add(createNoteTypeFamilyNameValue(PangaeaNoteTypes.OBJECT_LIST));
-        availableTypes.add(createNoteTypeFamilyNameValue(PangaeaNoteTypes.FILE));
-
-        for (PangaeaNoteTemplate value : sapp.service().getTemplates()) {
-            String s = value.getLabel(sapp.service());
-            if (s == null) {
-                s = sapp.app().i18n().getString("PangaeaNoteTypeFamily." + value.getId());
-            }
-            NamedValue n = new NamedValue(false, value.getId(), s, sapp.service().getContentTypeIcon(value.getId()));
-            availableTypes.add(n);
-        }
-
-//        if (extra.size() > 0) {
-//            availableTypes.add(createNoteTypeFamilyNameGroup("custom"));
-//            for (PangaeaNoteTemplate value : extra.values()) {
-//                String s = value.getLabel(sapp);
-//                if (s == null) {
-//                    s = sapp.app().i18n().getString("PangaeaNoteTypeFamily." + value.getId());
-//                }
-//                NamedValue n = new NamedValue(false, value.getId(), s, null);
-//                availableTypes.add(n);
-//            }
-//        }
-        availableTypes.add(createNoteTypeFamilyNameGroup("sources"));
-        for (String s : new String[]{
-            PangaeaNoteTypes.SOURCE_HTML,
-            PangaeaNoteTypes.SOURCE_MARKDOWN,
-            PangaeaNoteTypes.SOURCE_NUTS_TEXT_FORMAT,
-            PangaeaNoteTypes.JAVA,
-            PangaeaNoteTypes.JAVASCRIPT,
-            PangaeaNoteTypes.C,
-            PangaeaNoteTypes.CPP,}) {
-            availableTypes.add(createNoteTypeFamilyNameValue(s));
-        }
-        return availableTypes;
-    }
-
-    private JComboBox createTypeListComponent(PangaeaNoteGuiApp sapp1) {
-        List<NamedValue> availableTypes = new ArrayList<>();
-        List<String> rct = sapp.config().getRecentContentTypes();
-        if (rct != null) {
-            List<NamedValue> recent = new ArrayList<>();
-            for (String id : rct) {
-                recent.add(
-                        new NamedValue(false, "recent:" + id, sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id),
-                                sapp.service().getContentTypeIcon(id)
-                        )
-                );
-            }
-            if (recent.size() > 0) {
-                availableTypes.add(createNoteTypeFamilyNameGroup("recent-documents"));
-                availableTypes.addAll(recent);
-            }
-        }
-        availableTypes.addAll(createTypeListNamedValue());
-        return ComboboxHelper.createCombobox(sapp1.app(), availableTypes.toArray(new NamedValue[0]));
-    }
-
-    protected NamedValue createNoteTypeFamilyNameValue(String id) {
-        return new NamedValue(false, id,
-                sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id),
-                sapp.service().getContentTypeIcon(id)
-        );
-    }
-
-    protected NamedValue createNoteTypeFamilyNameGroup(String id) {
-        return new NamedValue(true, id, sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id), null);
-    }
-
-    protected NamedValue createIconValue(String id) {
-        return new NamedValue(false, id,
-                sapp.app().i18n().getString("Icon." + id),
-                id);
     }
 
     protected PangaeaNote getNote() {
@@ -354,8 +258,8 @@ public class NewNoteDialog extends OkCancelDialog {
             typeDescription.setText(resolveNoteTypeDescription(id));
             valueLabel.setText(
                     objList ? sapp.app().i18n().getString("Message.valueForObjList")
-                                    : fileType ? sapp.app().i18n().getString("Message.valueForFile")
-                                                            : ""
+                            : fileType ? sapp.app().i18n().getString("Message.valueForFile")
+                                    : ""
             );
 
         } else {

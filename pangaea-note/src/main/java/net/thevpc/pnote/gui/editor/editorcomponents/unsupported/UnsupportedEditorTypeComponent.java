@@ -10,16 +10,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class UnsupportedEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent{
+public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent{
 
     public UnsupportedEditorTypeComponent() {
         add(new JLabel("Not supported"));
+    }
+
+    @Override
+    public boolean isCompactMode() {
+        return true;
     }
 
     @Override

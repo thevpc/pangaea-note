@@ -13,7 +13,7 @@ import net.thevpc.pnote.model.PangaeaNoteExt;
  *
  * @author vpc
  */
-public interface PNoteEditorTypeComponent {
+public interface PangaeaNoteEditorTypeComponent {
 
     JComponent component();
 
@@ -24,4 +24,6 @@ public interface PNoteEditorTypeComponent {
     public void setEditable(boolean b);
 
     public boolean isEditable();
+    
+    public boolean isCompactMode();
 }

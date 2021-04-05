@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
+package net.thevpc.pnote.gui.components;
 
+import net.thevpc.pnote.gui.components.FormComponent;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -18,6 +19,7 @@ import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.util.AnyDocumentListener;
 
 /**
  *

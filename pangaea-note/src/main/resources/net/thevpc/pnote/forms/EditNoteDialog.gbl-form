@@ -1,6 +1,7 @@
 [<-nameLabel      ::]
 [<=-nameEditor      ::]
 [<=-readOnlyEditor      ::]
+[<-typeLabel      ][<=-typeEditor       :=-]
 [<-iconLabel      ][<=-iconEditor       :=-]
 [<-forgroundLabel      ][<=-|forgroundEditor       :=-]
 [<-backgroundLabel      ][<=-|backgroundEditor       :=-]

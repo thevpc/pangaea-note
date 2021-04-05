@@ -29,23 +29,25 @@ import net.thevpc.pnote.gui.tree.dialogs.EditNoteDialog;
 import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangageaNoteListModel;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteListEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent {
+public class PangaeaNoteListEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private JComponentList<PangaeaNoteExt> componentList;
     private PangaeaNoteExt currentNote;
     private PangageaNoteListModel noteListModel;
     private PangaeaNoteGuiApp sapp;
     private boolean editable = true;
+    private boolean compactMode = true;
 
-    public PangaeaNoteListEditorTypeComponent(PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteListEditorTypeComponent(boolean compactMode, PangaeaNoteGuiApp sapp) {
         super(new BorderLayout());
         this.sapp = sapp;
+        this.compactMode = compactMode;
         componentList = new JComponentList<PangaeaNoteExt>(new JComponentListItem<PangaeaNoteExt>() {
             @Override
             public JComponent createComponent(int pos, int size) {
@@ -77,6 +79,10 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements PNoteE
         JScrollPane scrollPane = new JScrollPane(componentList);
         scrollPane.setWheelScrollingEnabled(true);
         add(scrollPane);
+    }
+
+    public boolean isCompactMode() {
+        return compactMode;
     }
 
     @Override

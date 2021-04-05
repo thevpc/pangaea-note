@@ -12,27 +12,34 @@ import javax.swing.JPanel;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent {
+public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private JLabel file;
     private JLabel error;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
     private PangaeaNoteGuiApp sapp;
+    private boolean compactMode;
 
-    public PangaeaNoteDocumentEditorTypeComponent(PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteDocumentEditorTypeComponent(boolean compactMode,PangaeaNoteGuiApp sapp) {
         super(new BorderLayout());
         this.sapp=sapp;
+        this.compactMode=compactMode;
         add(new JLabel("pangaea-note-document"), BorderLayout.NORTH);
         add(file = new JLabel(""), BorderLayout.CENTER);
         add(error = new JLabel(""), BorderLayout.SOUTH);
     }
+
+    public boolean isCompactMode() {
+        return compactMode;
+    }
+    
 
     @Override
     public JComponent component() {

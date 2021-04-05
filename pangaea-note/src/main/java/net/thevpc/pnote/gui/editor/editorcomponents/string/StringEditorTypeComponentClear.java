@@ -11,13 +11,13 @@ import javax.swing.event.DocumentEvent;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class StringEditorTypeComponentClear extends JTextField implements PNoteEditorTypeComponent {
+public class StringEditorTypeComponentClear extends JTextField implements PangaeaNoteEditorTypeComponent {
 
     private PangaeaNoteExt currentNote;
 
@@ -31,6 +31,11 @@ public class StringEditorTypeComponentClear extends JTextField implements PNoteE
             }
         });
 //        setBorder(BorderFactory.createLineBorder(Color.red));
+    }
+
+    @Override
+    public boolean isCompactMode() {
+        return true;
     }
 
     @Override

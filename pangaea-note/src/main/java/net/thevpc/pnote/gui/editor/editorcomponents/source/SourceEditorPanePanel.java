@@ -25,13 +25,13 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.util.GuiHelper;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class SourceEditorPanePanel extends JPanel implements PNoteEditorTypeComponent {
+public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private JEditorPaneBuilder editorBuilder;
     private PangaeaNoteExt currentNote;
@@ -178,4 +178,14 @@ public class SourceEditorPanePanel extends JPanel implements PNoteEditorTypeComp
     public boolean isEditable() {
         return editorBuilder.editor().isEditable();
     }
+
+    public JEditorPaneBuilder getEditorBuilder() {
+        return editorBuilder;
+    }
+
+    @Override
+    public boolean isCompactMode() {
+        return compactMode;
+    }
+    
 }

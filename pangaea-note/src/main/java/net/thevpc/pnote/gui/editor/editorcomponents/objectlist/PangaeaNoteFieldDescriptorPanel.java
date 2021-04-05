@@ -6,7 +6,10 @@
 package net.thevpc.pnote.gui.editor.editorcomponents.objectlist;
 
 import java.awt.Container;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -24,13 +27,13 @@ import javax.swing.JPopupMenu;
 import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
-import net.thevpc.pnote.gui.util.CheckboxesComponent;
-import net.thevpc.pnote.gui.util.ComboboxComponent;
-import net.thevpc.pnote.gui.util.FormComponent;
-import net.thevpc.pnote.gui.util.PasswordComponent;
-import net.thevpc.pnote.gui.util.TextAreaComponent;
-import net.thevpc.pnote.gui.util.TextFieldComponent;
-import net.thevpc.pnote.gui.util.URLComponent;
+import net.thevpc.pnote.gui.components.CheckboxesComponent;
+import net.thevpc.pnote.gui.components.ComboboxComponent;
+import net.thevpc.pnote.gui.components.FormComponent;
+import net.thevpc.pnote.gui.components.PasswordComponent;
+import net.thevpc.pnote.gui.components.TextAreaComponent;
+import net.thevpc.pnote.gui.components.TextFieldComponent;
+import net.thevpc.pnote.gui.components.URLComponent;
 import net.thevpc.pnote.gui.util.echoapp.AppDialog;
 import net.thevpc.pnote.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.model.PangaeaNoteField;
@@ -96,6 +99,8 @@ class PangaeaNoteFieldDescriptorPanel {
         jPopupMenu.addSeparator();
         jPopupMenu.add(createAction("hideField", () -> onHideField()));
         jPopupMenu.add(createAction("unhideFields", () -> onUnhideFields()));
+        jPopupMenu.addSeparator();
+        jPopupMenu.add(createAction("copy", () -> onCopyLabel()));
 
         FormComponent comp = createFormComponent(descr.getType());
         comp.install(sapp.app());
@@ -120,7 +125,7 @@ class PangaeaNoteFieldDescriptorPanel {
                 return new ComboboxComponent();
             }
             case CHECKBOX: {
-                return new CheckboxesComponent();
+                return new CheckboxesComponent(sapp);
             }
             case TEXTAREA: {
                 return new TextAreaComponent(sapp);
@@ -252,6 +257,19 @@ class PangaeaNoteFieldDescriptorPanel {
         }
     }
 
+    public void onCopyLabel() {
+        if (document != null) {
+            if (object != null) {
+                Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+                try {
+                    clip.setContents(new StringSelection(field.getName()), null);
+                } catch (Exception ex) {
+                    //ex.printStackTrace();
+                }
+            }
+        }
+    }
+
     public void onUnhideFields() {
         if (document != null) {
             if (object != null) {
@@ -302,7 +320,7 @@ class PangaeaNoteFieldDescriptorPanel {
                     .setInputTextFieldContent(
                             "Message.renameField.label", descr.getName()
                     )
-//                    .setPreferredSize(400, 200)
+                    //                    .setPreferredSize(400, 200)
                     .showInputDialog();
             if (r.isButton("ok") && !r.isBlankValue()) {
                 String n = r.<String>getValue().trim();
@@ -336,7 +354,7 @@ class PangaeaNoteFieldDescriptorPanel {
                     .setInputTextFieldContent(
                             "Message.addField.label", ""
                     )
-//                    .setPreferredSize(400, 200)
+                    //                    .setPreferredSize(400, 200)
                     .showInputDialog();
             if ("ok".equals(r.getButtonId())) {
                 String n = r.getValue();

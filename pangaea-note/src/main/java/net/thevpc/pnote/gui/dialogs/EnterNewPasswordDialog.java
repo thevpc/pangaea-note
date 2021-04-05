@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.common.swing.util.CancelException;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
-import net.thevpc.pnote.gui.util.PasswordComponent;
+import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
 /**

@@ -3,19 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
+package net.thevpc.pnote.gui.components;
 
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import net.thevpc.echo.Application;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
+import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 
 /**
  *
@@ -27,10 +37,12 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
     private Runnable callback;
     private Box box;
     private ItemListener itemListener;
-    private boolean editable=true;
+    private boolean editable = true;
+    private SwingApplicationsHelper.Tracker tracker;
 
-    public CheckboxesComponent() {
+    public CheckboxesComponent(PangaeaNoteGuiApp sapp) {
         super(new BorderLayout());
+        tracker = new SwingApplicationsHelper.Tracker(sapp.app());
         box = Box.createHorizontalBox();
         add(box);
         itemListener = new ItemListener() {
@@ -56,24 +68,43 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
         for (int i = 0; i < checkBoxes.size(); i++) {
             JCheckBox c = checkBoxes.get(i);
             String s = newValues.get(i);
-            if(s==null){
-                s="";
+            if (s == null) {
+                s = "";
             }
-            s=s.trim();
+            s = s.trim();
             c.setText(s);
         }
         for (int i = checkBoxes.size(); i < newValues.size(); i++) {
             String s = newValues.get(i);
-            if(s==null){
-                s="";
+            if (s == null) {
+                s = "";
             }
-            s=s.trim();
-            JCheckBox cv = new JCheckBox(s);
+            s = s.trim();
+            JCheckBox cv = createCheckBox();
+            cv.setText(s);
             cv.setEnabled(isEditable());
             cv.addItemListener(itemListener);
             checkBoxes.add(cv);
             box.add(cv);
         }
+    }
+
+    protected JCheckBox createCheckBox() {
+        JCheckBox c = new JCheckBox("value");
+        JPopupMenu p = new JPopupMenu();
+        Action a = tracker.registerStandardAction(
+                () -> {
+                    Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    try {
+                        clip.setContents(new StringSelection(c.getText()), null);
+                    } catch (Exception ex) {
+                        //ex.printStackTrace();
+                    }
+                }, "copy"
+        );
+        p.add(new JMenuItem(a));
+        c.setComponentPopupMenu(p);
+        return c;
     }
 
     @Override
@@ -128,6 +159,5 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
     public boolean isEditable() {
         return editable;
     }
-    
-    
+
 }

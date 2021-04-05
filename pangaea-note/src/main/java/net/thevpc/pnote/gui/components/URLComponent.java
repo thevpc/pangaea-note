@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
+package net.thevpc.pnote.gui.components;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import net.thevpc.echo.Application;
+import net.thevpc.pnote.gui.util.AnyDocumentListener;
+import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.util.OtherUtils;
 
 /**

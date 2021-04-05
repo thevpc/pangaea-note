@@ -5,10 +5,16 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
+import java.awt.event.ActionEvent;
+import java.io.File;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.text.StyledEditorKit;
+import net.sourceforge.tess4j.Tesseract;
+import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.Application;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
@@ -32,7 +38,7 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
 
     public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteGuiApp sapp) {
         JToolBar bar = compactMode ? null : new JToolBar();
-        Application app=sapp.app();
+        Application app = sapp.app();
         JPopupMenu popup = editorBuilder.editor().getComponentPopupMenu();
         context = new AbstractSourceEditorPaneExtension.Context(sapp, editorBuilder.editor());
         addAction("copy", new StyledEditorKit.CopyAction(), bar, popup, context);
@@ -53,6 +59,8 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
             editorBuilder.header().add(bar);
             bar.setVisible(true);
         }
+        
+
         context.setAllActionsVisible(true);
         context.setAllActionsEnabled(true);
     }

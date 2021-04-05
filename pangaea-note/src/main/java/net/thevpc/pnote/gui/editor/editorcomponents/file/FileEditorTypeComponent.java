@@ -12,17 +12,17 @@ import javax.swing.JPanel;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.URLViewer;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
-import net.thevpc.pnote.gui.util.FileComponent2;
+import net.thevpc.pnote.gui.components.FileComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class FileEditorTypeComponent extends JPanel implements PNoteEditorTypeComponent {
+public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private JLabel error;
-    private FileComponent2 comp;
+    private FileComponent comp;
     private URLViewer fileViewer;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
@@ -32,8 +32,8 @@ public class FileEditorTypeComponent extends JPanel implements PNoteEditorTypeCo
         super(new BorderLayout());
         this.sapp = sapp;
         error = new JLabel();
-        comp = new FileComponent2(sapp);
-        comp.addFileChangeListener(new FileComponent2.FileChangeListener() {
+        comp = new FileComponent(sapp).setReloadButtonVisible(true);
+        comp.addFileChangeListener(new FileComponent.FileChangeListener() {
             @Override
             public void onFilePathChanged(String path) {
                 if (currentNote != null) {
@@ -76,6 +76,12 @@ public class FileEditorTypeComponent extends JPanel implements PNoteEditorTypeCo
             }
         });
     }
+
+    @Override
+    public boolean isCompactMode() {
+        return true;
+    }
+    
 
     @Override
     public JComponent component() {

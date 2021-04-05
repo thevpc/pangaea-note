@@ -24,13 +24,13 @@ import net.thevpc.pnote.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.model.PangaeaNoteObject;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.common.swing.list.JComponentListItem;
-import net.thevpc.pnote.gui.editor.PNoteEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteObjectDocumentComponent extends JPanel implements PNoteEditorTypeComponent {
+public class PangaeaNoteObjectDocumentComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
 
     private JComponentList<PangaeaNoteObjectExt> componentList;
     private PangaeaNoteExt currentNote;
@@ -52,10 +52,12 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements PNoteE
     private SwingApplicationsHelper.Tracker gtracker;
     private boolean editable = true;
     private JButton addToObjectList;
+    private boolean compactMode;
 
-    public PangaeaNoteObjectDocumentComponent(PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteObjectDocumentComponent(boolean compactMode,PangaeaNoteGuiApp sapp) {
         super(new BorderLayout());
         this.sapp = sapp;
+        this.compactMode = compactMode;
         this.gtracker = new SwingApplicationsHelper.Tracker(sapp.app());
         componentList = new JComponentList<PangaeaNoteObjectExt>(new JComponentListItem<PangaeaNoteObjectExt>() {
             @Override
@@ -97,8 +99,12 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements PNoteE
                 this.gtracker.registerStandardAction(() -> onAddObject(), "addToObjectList")));
         add(hb, BorderLayout.NORTH);
         refreshView();
-
     }
+
+    public boolean isCompactMode() {
+        return compactMode;
+    }
+    
 
     public void refreshView() {
         bar.setVisible(

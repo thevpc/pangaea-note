@@ -9,6 +9,8 @@ import net.thevpc.pnote.service.security.OpenWallet;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import net.thevpc.pnote.gui.tree.PangaeaNoteDocumentTree;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import java.io.File;
@@ -17,12 +19,11 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import javax.swing.Action;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import net.thevpc.common.iconset.ResourcesIconSet;
 import net.thevpc.common.swing.DateTimeLabel;
@@ -39,7 +40,6 @@ import net.thevpc.echo.AppToolAction;
 import net.thevpc.echo.AppToolWindow;
 import net.thevpc.echo.AppToolWindowAnchor;
 import net.thevpc.echo.AppTools;
-import net.thevpc.echo.AppWindow;
 import net.thevpc.echo.AppWindowDisplayMode;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.SwingApplications;
@@ -60,6 +60,7 @@ import net.thevpc.pnote.util.OtherUtils;
 import net.thevpc.swing.plaf.UIPlaf;
 import net.thevpc.swing.plaf.UIPlafManager;
 import net.thevpc.common.swing.anim.AnimPoint;
+import net.thevpc.pnote.gui.extensions.Tess4JPangaeaNoteAppExtension;
 import net.thevpc.swing.plaf.UIPlafListener;
 
 /**
@@ -78,11 +79,14 @@ public class PangaeaNoteGuiApp {
     private SearchResultPanel searchResultsTool;
     private AppToolWindow documentTool;
     private List<String> recentSearchQueries = new ArrayList<>();
+    private List<PangaeaNoteAppExtensionHandler> appExtensions = new ArrayList<>();
+    private List<PangaeaNoteAppExtensionListener> appExtensionsListeners = new ArrayList<>();
     private String currentFilePath;
     private OpenWallet openWallet = new OpenWallet();
 
     public PangaeaNoteGuiApp(NutsApplicationContext appContext) {
         this.appContext = appContext;
+        addExtension(() -> new Tess4JPangaeaNoteAppExtension());
     }
 
     public PangaeaNoteDocumentTree tree() {
@@ -649,6 +653,30 @@ public class PangaeaNoteGuiApp {
                 PangaeaNoteTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION,
                 app().i18n().getString("Message.pnoteDocumentFileFilter")
         );
+    }
+
+    public void addExtension(Supplier<PangaeaNoteAppExtension> extension) {
+        PangaeaNoteAppExtensionHandlerImpl a = new PangaeaNoteAppExtensionHandlerImpl(this, extension);
+        appExtensions.add(a);
+        a.addListener("status", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                for (PangaeaNoteAppExtensionListener li : appExtensionsListeners) {
+                    li.onExtensionStatusChanged(a, (PangaeaNoteAppExtensionStatus) evt.getOldValue(), (PangaeaNoteAppExtensionStatus) evt.getNewValue());
+                }
+            }
+        });
+        for (PangaeaNoteAppExtensionListener li : appExtensionsListeners) {
+            li.onExtensionAdded(a);
+        }
+    }
+
+    public List<PangaeaNoteAppExtensionHandler> getLoadedAppExtensions() {
+        return getAppExtensions().stream().filter(x -> x.checkLoaded()).collect(Collectors.toList());
+    }
+
+    public List<PangaeaNoteAppExtensionHandler> getAppExtensions() {
+        return appExtensions;
     }
 
 }

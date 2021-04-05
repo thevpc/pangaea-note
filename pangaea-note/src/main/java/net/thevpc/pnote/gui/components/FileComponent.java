@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.gui.util;
+package net.thevpc.pnote.gui.components;
 
 import java.awt.Component;
 import java.awt.HeadlessException;
@@ -24,7 +24,7 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
  *
  * @author vpc
  */
-public class FileComponent2 extends JPanel {
+public class FileComponent extends JPanel {
 
     private JTextField textField = new JTextField();
     private JButton openFile;
@@ -35,7 +35,7 @@ public class FileComponent2 extends JPanel {
     private List<FileChangeListener> listeners = new ArrayList<>();
     private String contentString = "";
 
-    public FileComponent2(PangaeaNoteGuiApp sapp) {
+    public FileComponent(PangaeaNoteGuiApp sapp) {
         openFile = new JButton("...");
         openFile.addActionListener((e)
                 -> {
@@ -50,6 +50,7 @@ public class FileComponent2 extends JPanel {
             }
         }
         );
+        reloadFile.setVisible(false);
         textField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -68,6 +69,15 @@ public class FileComponent2 extends JPanel {
                 .bind("check", openFile)
                 .bind("reload", reloadFile)
                 .apply(this);
+    }
+
+    public boolean isReloadButtonVisible() {
+        return reloadFile.isVisible();
+    }
+
+    public FileComponent setReloadButtonVisible(boolean visible) {
+        this.reloadFile.setVisible(visible);
+        return this;
     }
 
     public JTextField getTextField() {
@@ -101,7 +111,7 @@ public class FileComponent2 extends JPanel {
         return acceptAllFileFilterUsed;
     }
 
-    public FileComponent2 setAcceptAllFileFilterUsed(boolean acceptAllFileFilterUsed) {
+    public FileComponent setAcceptAllFileFilterUsed(boolean acceptAllFileFilterUsed) {
         this.acceptAllFileFilterUsed = acceptAllFileFilterUsed;
         return this;
     }
@@ -110,7 +120,7 @@ public class FileComponent2 extends JPanel {
         return textField.getText();
     }
 
-    public FileComponent2 setValue(String s) {
+    public FileComponent setValue(String s) {
         textField.setText(s);
         return this;
     }
@@ -119,7 +129,7 @@ public class FileComponent2 extends JPanel {
         return fileFilters;
     }
 
-    public FileComponent2 setFileFilters(List<FileFilter> fileFilters) {
+    public FileComponent setFileFilters(List<FileFilter> fileFilters) {
         this.fileFilters = fileFilters;
         return this;
     }
@@ -148,7 +158,8 @@ public class FileComponent2 extends JPanel {
 
         void onFilePathRelading(String path);
     }
-    public void addFileChangeListener(FileChangeListener changeListener){
+
+    public void addFileChangeListener(FileChangeListener changeListener) {
         listeners.add(changeListener);
     }
 }
