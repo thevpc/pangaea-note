@@ -85,4 +85,9 @@ public class StringToPatternPortionImpl<T> extends AbstractStringToPatternPortio
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(text);
+    }
+
 }

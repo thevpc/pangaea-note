@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
+import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
 /**
  *
@@ -29,7 +29,7 @@ public class PangaeaNote implements Cloneable {
     public static PangaeaNote newDocument(String path) {
         PangaeaNote n = new PangaeaNote();
         n.setName("pangaea-note-document");
-        n.setContentType(PangaeaNoteTypes.PANGAEA_NOTE_DOCUMENT);
+        n.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT);
         n.setContent(path);
         return n;
     }

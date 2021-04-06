@@ -15,13 +15,17 @@ import net.thevpc.pnote.gui.tree.PangaeaNoteDocumentTree;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -34,6 +38,7 @@ import net.thevpc.common.swing.FileSelectedListener;
 import net.thevpc.common.swing.JSplashScreen;
 import net.thevpc.common.swing.MemoryUseIconTray;
 import net.thevpc.common.swing.RecentFilesMenu;
+import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.common.swing.anim.Animators;
 import net.thevpc.echo.AppDockingWorkspace;
 import net.thevpc.echo.AppToolAction;
@@ -52,7 +57,6 @@ import net.thevpc.pnote.gui.dialogs.EnterNewPasswordDialog;
 import net.thevpc.pnote.gui.dialogs.EnterPasswordDialog;
 import net.thevpc.pnote.gui.search.SearchResultPanel;
 import net.thevpc.pnote.gui.tree.PangaeaNotSupportedFileFormatsFileFilter;
-import net.thevpc.pnote.gui.util.echoapp.AppDialog;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.model.PangaeaNoteConfig;
 import net.thevpc.pnote.service.security.PasswordHandler;
@@ -60,8 +64,20 @@ import net.thevpc.pnote.util.OtherUtils;
 import net.thevpc.swing.plaf.UIPlaf;
 import net.thevpc.swing.plaf.UIPlafManager;
 import net.thevpc.common.swing.anim.AnimPoint;
-import net.thevpc.pnote.gui.extensions.Tess4JPangaeaNoteAppExtension;
+import net.thevpc.common.swing.util.CancelException;
+import net.thevpc.echo.AppDialogBuilder;
+import net.thevpc.pnote.extensions.Tess4JPangaeaNoteAppExtension;
+import net.thevpc.pnote.gui.search.SearchDialog;
+import net.thevpc.pnote.gui.util.SecureJFileChooserImpl;
+import net.thevpc.pnote.gui.dialogs.EditNoteDialog;
+import net.thevpc.pnote.gui.dialogs.NewNoteDialog;
+import net.thevpc.pnote.model.CypherInfo;
+import net.thevpc.pnote.model.PangaeaNote;
+import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.model.ReturnType;
 import net.thevpc.swing.plaf.UIPlafListener;
+import net.thevpc.echo.AppDialogResult;
+import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
 /**
  *
@@ -83,6 +99,8 @@ public class PangaeaNoteGuiApp {
     private List<PangaeaNoteAppExtensionListener> appExtensionsListeners = new ArrayList<>();
     private String currentFilePath;
     private OpenWallet openWallet = new OpenWallet();
+    private long modificationsCount;
+    private PangaeaNote lastSavedDocument;
 
     public PangaeaNoteGuiApp(NutsApplicationContext appContext) {
         this.appContext = appContext;
@@ -99,6 +117,11 @@ public class PangaeaNoteGuiApp {
 
     public PangaeaNoteService service() {
         return service;
+    }
+
+    public void resetModifications() {
+        this.modificationsCount = 0;
+        onChangePath(currentFilePath);
     }
 
     public void setLastOpenPath(String path) {
@@ -121,14 +144,15 @@ public class PangaeaNoteGuiApp {
     }
 
     public void onChangePath(String newPath) {
+        String modSuffix = modificationsCount > 0 ? " (*)" : "";
         if (newPath == null || newPath.length() == 0) {
             this.currentFilePath = null;
-            app.mainWindow().get().title().set("Pangaea-Note: " + "<" + app.i18n().getString("Message.noName") + ">");
+            app.mainWindow().get().title().set("Pangaea-Note: " + "<" + app.i18n().getString("Message.noName") + ">" + modSuffix);
         } else {
             recentFilesMenu.addFile(newPath);
             config.addRecentFile(newPath);
             this.currentFilePath = newPath;
-            app.mainWindow().get().title().set("Pangaea-Note: " + newPath);
+            app.mainWindow().get().title().set("Pangaea-Note: " + newPath + modSuffix);
             setLastOpenPath(newPath);
         }
     }
@@ -178,7 +202,7 @@ public class PangaeaNoteGuiApp {
         recentFilesMenu.addFileSelectedListener(new FileSelectedListener() {
             @Override
             public void fileSelected(RecentFileEvent event) {
-                tree.openDocument(new File(event.getFile()), false);
+                openDocument(new File(event.getFile()), false);
             }
         });
     }
@@ -305,7 +329,7 @@ public class PangaeaNoteGuiApp {
         AppToolAction newfileAction = tools.addAction(new PNoteAction("NewFile", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.openNewDocument(false);
+                openNewDocument(false);
             }
         }, "/mainWindow/menuBar/File/NewFile", "/mainWindow/toolBar/Default/NewFile");
 //        newfileAction.mnemonic().set(KeyEvent.VK_N);
@@ -313,10 +337,18 @@ public class PangaeaNoteGuiApp {
 
         PangaeaSplashScreen.get().tic();
 
+        AppToolAction reopenAction = tools.addAction(new PNoteAction("OpenLastFile", this) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openLastDocument(false);
+            }
+        }, "/mainWindow/menuBar/File/OpenLastFile");
+        reopenAction.accelerator().set("control shoft O");
+
         AppToolAction openAction = tools.addAction(new PNoteAction("OpenFile", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.openDocument(false);
+                openDocument(false);
             }
         }, "/mainWindow/menuBar/File/Open", "/mainWindow/toolBar/Default/Open");
         openAction.mnemonic().set(KeyEvent.VK_O);
@@ -325,7 +357,7 @@ public class PangaeaNoteGuiApp {
         AppToolAction reloadAction = tools.addAction(new PNoteAction("ReloadFile", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.reloadDocument(false);
+                reloadDocument(false);
             }
         }, "/mainWindow/menuBar/File/Reload", "/mainWindow/toolBar/Default/Reload");
         reloadAction.mnemonic().set(KeyEvent.VK_R);
@@ -335,7 +367,7 @@ public class PangaeaNoteGuiApp {
         AppToolAction saveAction = tools.addAction(new PNoteAction("Save", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.saveDocument();
+                saveDocument();
             }
         }, "/mainWindow/menuBar/File/Save", "/mainWindow/toolBar/Default/Save");
         PangaeaSplashScreen.get().tic();
@@ -351,16 +383,16 @@ public class PangaeaNoteGuiApp {
         AppToolAction saveAsAction = tools.addAction(new PNoteAction("SaveAs", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.saveAsDocument();
+                saveAsDocument();
             }
         }, "/mainWindow/menuBar/File/SaveAs"/*, "/mainWindow/toolBar/Default/SaveAs"*/);
 
         tools.addAction(new PNoteAction("CloseDocument", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.openNewDocument(false); // close is same as new!!
+                openNewDocument(false); // close is same as new!!
             }
-        }, "/mainWindow/menuBar/File/CloseDocument", "/mainWindow/toolBar/Default/CloseDocument");
+        }, "/mainWindow/menuBar/File/CloseDocument");
         PangaeaSplashScreen.get().tic();
         tools.addSeparator("/mainWindow/menuBar/File/Separator1");
 
@@ -386,8 +418,8 @@ public class PangaeaNoteGuiApp {
         AppToolAction exitAction = tools.addAction(new PNoteAction("Exit", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (tree.isModifiedDocument()) {
-                    tree.saveDocument();
+                if (isModifiedDocument()) {
+                    saveDocument();
                 }
                 app.shutdown();
             }
@@ -400,7 +432,7 @@ public class PangaeaNoteGuiApp {
         AppToolAction a = tools.addAction(new PNoteAction("Search", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.onAddChild();
+                addNote();
             }
         }, "/mainWindow/menuBar/Edit/AddNote"/*, "/mainWindow/toolBar/Default/SaveAs"*/);
         a.mnemonic().set(KeyEvent.VK_N);
@@ -409,7 +441,7 @@ public class PangaeaNoteGuiApp {
         a = tools.addAction(new PNoteAction("Search", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tree.onSearch();
+                searchNote();
             }
         }, "/mainWindow/menuBar/Edit/Search"/*, "/mainWindow/toolBar/Default/SaveAs"*/);
         a.mnemonic().set(KeyEvent.VK_F);
@@ -452,7 +484,7 @@ public class PangaeaNoteGuiApp {
         PangaeaSplashScreen.get().tic();
         bindConfig();
         PangaeaSplashScreen.get().tic();
-        tree.openNewDocument(false);
+        openNewDocument(false);
 //        folders.openDocument(service().createSampleDocumentNote());
         PangaeaSplashScreen.get().tic();
         PangaeaSplashScreen.get().closeSplash();
@@ -479,7 +511,7 @@ public class PangaeaNoteGuiApp {
 //        );
 //        frame().getRootPane().registerKeyboardAction(
 //                (e) -> {
-//                    tree.onAddChild();
+//                    tree.addNote();
 //                },
 //                KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK),
 //                JComponent.WHEN_IN_FOCUSED_WINDOW
@@ -572,8 +604,8 @@ public class PangaeaNoteGuiApp {
         newDialog()
                 .setTitleId("Message.error")
                 .setContent(new JLabel(e.getMessage()))
-                .withOkOnlyButton(c -> c.closeDialog())
-                .build().setVisible(true);
+                .withOkOnlyButton(c -> c.getDialog().closeDialog())
+                .build().showDialog();
     }
 
     public void showError(PangaeaNoteError e) {
@@ -615,7 +647,7 @@ public class PangaeaNoteGuiApp {
                 return "yes".equals(newDialog()
                         .setTitleId("Message.invalidPassword.askRetype")
                         .setContentTextId("Message.invalidPassword.askRetype")
-                        .withYesNoButtons(c -> c.closeDialog(), c -> c.closeDialog())
+                        .withYesNoButtons()
                         .build().showDialog());
             }
         };
@@ -640,8 +672,8 @@ public class PangaeaNoteGuiApp {
         return currentFilePath;
     }
 
-    public AppDialog.Builder newDialog() {
-        return AppDialog.of(app());
+    public AppDialogBuilder newDialog() {
+        return app().newDialog();
     }
 
     public javax.swing.filechooser.FileFilter createPangaeaDocumentSupportedFileFilter() {
@@ -650,7 +682,7 @@ public class PangaeaNoteGuiApp {
 
     public javax.swing.filechooser.FileFilter createPangaeaDocumentFileFilter() {
         return new ExtensionFileChooserFilter(
-                PangaeaNoteTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION,
+                PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION,
                 app().i18n().getString("Message.pnoteDocumentFileFilter")
         );
     }
@@ -677,6 +709,354 @@ public class PangaeaNoteGuiApp {
 
     public List<PangaeaNoteAppExtensionHandler> getAppExtensions() {
         return appExtensions;
+    }
+
+    public PangaeaNoteExt getDocument() {
+        return tree().getDocument();
+    }
+
+    public boolean isModifiedDocument() {
+        PangaeaNote newDoc = getDocument().toNote();
+        boolean mod = lastSavedDocument != null && !lastSavedDocument.equals(newDoc);
+        if (mod) {
+//            System.out.println("modified: " + newDoc + "\nexpected: " + lastSavedDocument);
+        }
+        return mod;
+    }
+
+    public void snapshotDocument() {
+        lastSavedDocument = tree.getDocument().toNote();
+        resetModifications();
+//        System.out.println("snapshotted:" + lastSavedDocument);
+    }
+
+    public ReturnType trySaveChangesOrDiscard() {
+        if (isModifiedDocument()) {
+            String s = newDialog()
+                    .setTitleId("Message.askSaveDocument")
+                    .setContentTextId("Message.askSaveDocument")
+                    .withYesNoButtons()
+                    .build().showDialog();
+
+            if ("yes".equals(s)) {
+                return saveDocument();
+            } else if ("no".equals(s)) {
+                //DISCARD
+                return ReturnType.SUCCESS;
+            } else {
+                return ReturnType.CANCEL;
+            }
+        }
+        return ReturnType.SUCCESS;
+    }
+
+    public ReturnType closeDocument(boolean discardChanges) {
+        return openNode(PangaeaNote.newDocument(), discardChanges);
+    }
+
+    public ReturnType openNewDocument(boolean discardChanges) {
+        return openNode(PangaeaNote.newDocument(), discardChanges);
+    }
+
+    private ReturnType openNode(PangaeaNote note, boolean discardChanges) {
+        if (!discardChanges) {
+            ReturnType s = trySaveChangesOrDiscard();
+            if (s == ReturnType.CANCEL || s == ReturnType.FAIL) {
+                return s;
+            }
+        }
+        if (!PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(note.getContentType())) {
+            throw new IllegalArgumentException("expected Document Note");
+        }
+
+        SwingUtilities3.invokeLater(() -> {
+            tree().setDocumentNote(PangaeaNoteExt.of(note));
+            snapshotDocument();
+            onChangePath(note.getContent());
+        });
+        return ReturnType.SUCCESS;
+    }
+
+    public ReturnType openDocument(File file, boolean discardChanges) {
+        if (!discardChanges) {
+            ReturnType s = trySaveChangesOrDiscard();
+            if (s == ReturnType.CANCEL || s == ReturnType.FAIL) {
+                return s;
+            }
+        }
+        PangaeaNote n = null;
+        try {
+            n = service().loadDocument(file, wallet());
+        } catch (CancelException ex) {
+            return ReturnType.CANCEL;
+        } catch (Exception ex) {
+            showError(ex);
+            return ReturnType.FAIL;
+        }
+        if (n.error == null) {
+            openNode(n, true);
+            return ReturnType.SUCCESS;
+        } else {
+            showError(n.error);
+            return ReturnType.FAIL;
+        }
+    }
+
+    public ReturnType importFileInto(String... preferred) {
+        return importFileInto(getSelectedNoteOrDocument(), preferred);
+    }
+
+    public ReturnType importFileInto(PangaeaNoteExt current, String... preferred) {
+        JFileChooser jfc = new JFileChooser();
+        jfc.setCurrentDirectory(new File(getValidLastOpenPath()));
+        if (preferred.length == 0) {
+            jfc.addChoosableFileFilter(createPangaeaDocumentSupportedFileFilter());
+        }
+        Set<String> preferredSet = new HashSet<>(Arrays.asList(preferred));
+        if (preferredSet.isEmpty() || preferredSet.contains(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT)) {
+            jfc.addChoosableFileFilter(createPangaeaDocumentFileFilter());
+        }
+        if (preferredSet.isEmpty() || preferredSet.contains("ctd")) {
+            jfc.addChoosableFileFilter(new ExtensionFileChooserFilter("ctd", app().i18n().getString("Message.ctdDocumentFileFilter")));
+        }
+        jfc.setAcceptAllFileFilterUsed(!preferredSet.isEmpty());
+        if (jfc.showOpenDialog(frame()) == JFileChooser.APPROVE_OPTION) {
+            File file = jfc.getSelectedFile();
+            setLastOpenPath(file.getPath());
+            if (file.getName().endsWith("." + PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION)) {
+                PangaeaNote n = service().loadDocument(file, wallet());
+                for (PangaeaNote c : n.getChildren()) {
+                    current.addChild(PangaeaNoteExt.of(c));
+                }
+            } else if (file.getName().endsWith(".ctd")) {
+                PangaeaNote n = service().loadCherryTreeXmlFile(file);
+                for (PangaeaNote c : n.getChildren()) {
+                    current.addChild(PangaeaNoteExt.of(c));
+                }
+            }
+            tree.updateTree();
+            return ReturnType.CANCEL;
+        } else {
+            tree.updateTree();
+            return ReturnType.CANCEL;
+        }
+    }
+
+    public ReturnType reloadDocument(boolean discardChanges) {
+        if (!discardChanges) {
+            ReturnType s = trySaveChangesOrDiscard();
+            if (s == ReturnType.CANCEL || s == ReturnType.FAIL) {
+                return s;
+            }
+        }
+        String c = getSelectedNote().getContent();
+        if (c == null || c.length() == 0) {
+            //openNewDocument(false);
+            return ReturnType.CANCEL;
+        } else {
+            return openDocument(new File(c), true);
+        }
+    }
+
+    public ReturnType openLastDocument(boolean discardChanges) {
+        List<String> rf = config().getRecentFiles();
+        if(rf!=null && rf.size()>0){
+            String file=rf.get(0);
+            return openDocument(new File(file),discardChanges);
+        }
+        return ReturnType.FAIL;
+    }
+    
+    public ReturnType openDocument(boolean discardChanges) {
+        if (!discardChanges) {
+            ReturnType s = trySaveChangesOrDiscard();
+            if (s == ReturnType.CANCEL || s == ReturnType.FAIL) {
+                return s;
+            }
+        }
+        JFileChooser jfc = new JFileChooser();
+        jfc.setCurrentDirectory(new File(getValidLastOpenPath()));
+        jfc.addChoosableFileFilter(createPangaeaDocumentFileFilter());
+        jfc.setAcceptAllFileFilterUsed(false);
+        if (jfc.showOpenDialog(frame()) == JFileChooser.APPROVE_OPTION) {
+            return openDocument(jfc.getSelectedFile(), true);
+        } else {
+            return ReturnType.CANCEL;
+        }
+    }
+
+    public ReturnType saveAsDocument() {
+        SecureJFileChooserImpl jfc = new SecureJFileChooserImpl();
+        jfc.setCurrentDirectory(new File(getValidLastOpenPath()));
+        jfc.addChoosableFileFilter(createPangaeaDocumentFileFilter());
+        jfc.setAcceptAllFileFilterUsed(false);
+        boolean doSecureDocument = false;
+        if (getDocument().getCypherInfo() == null) {
+            jfc.getSecureCheckbox().setSelected(false);
+            jfc.getSecureCheckbox().setVisible(true);
+            jfc.getSecureCheckbox().setText(app().i18n().getString("Message.secureDocument"));
+            doSecureDocument = true;
+        } else {
+            jfc.getSecureCheckbox().setSelected(isSecureAlgo(getDocument().getCypherInfo().getAlgo()));
+            jfc.getSecureCheckbox().setVisible(true);
+            jfc.getSecureCheckbox().setText(app().i18n().getString("Message.secureDocument"));
+            doSecureDocument = false;
+        }
+        if (jfc.showSaveDialog(frame()) == JFileChooser.APPROVE_OPTION) {
+            setLastOpenPath(jfc.getSelectedFile().getPath());
+            if (doSecureDocument && jfc.getSecureCheckbox().isSelected()) {
+                getDocument().setCypherInfo(new CypherInfo(PangaeaNoteService.SECURE_ALGO, ""));
+            }
+            try {
+                String canonicalPath = jfc.getSelectedFile().getCanonicalPath();
+                if (!canonicalPath.endsWith("." + PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION) && !new File(canonicalPath).exists()) {
+                    canonicalPath = canonicalPath + "." + PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION;
+                }
+                getDocument().setContent(canonicalPath);
+                service().saveDocument(getDocument().toNote(), wallet());
+                onChangePath(canonicalPath);
+                snapshotDocument();
+                config().addRecentFile(canonicalPath);
+                saveConfig();
+                return ReturnType.SUCCESS;
+            } catch (Exception ex) {
+                showError(ex);
+                return ReturnType.FAIL;
+            }
+        }
+        return ReturnType.CANCEL;
+    }
+
+    private boolean isSecureAlgo(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    public ReturnType saveDocument() {
+        if (OtherUtils.isBlank(getDocument().getContent())) {
+            return saveAsDocument();
+        } else {
+            try {
+                onChangePath(getDocument().getContent());
+                if (service().saveDocument(getDocument().toNote(), wallet())) {
+                    snapshotDocument();
+                }
+                return ReturnType.SUCCESS;
+            } catch (Exception ex) {
+                showError(ex);
+                return ReturnType.FAIL;
+            }
+        }
+    }
+
+    public void searchNote() {
+        SearchDialog dialog = new SearchDialog(this);
+        dialog.showDialogAndSearch(getSelectedNoteOrDocument());
+    }
+
+    public void editNote() {
+        PangaeaNote n = new EditNoteDialog(this, getSelectedNote()).showDialog();
+        if (n != null) {
+            onDocumentChanged();
+            tree.invalidate();
+            tree.repaint();
+            tree().fireOnSelectedNote(getSelectedNote());
+        }
+    }
+
+    public void renameNote() {
+        PangaeaNoteExt vn = getSelectedNote();
+        if (vn != null) {
+            AppDialogResult r = newDialog().withOkCancelButtons()
+                    .setTitleId("Message.renameNote")
+                    .setInputTextFieldContent("Message.renameNote.label", vn.getName())
+                    .showInputDialog();
+            if (!r.isBlankValue() && r.isButton("ok")) {
+                PangaeaNote a = vn.toNote().setName(r.<String>getValue());
+                service().updateNoteProperties(vn, a);
+                onDocumentChanged();
+                tree.invalidate();
+                tree.repaint();
+                tree().fireOnSelectedNote(getSelectedNote());
+            }
+        }
+    }
+
+    public void addNodeAfter() {
+        NewNoteDialog a = new NewNoteDialog(this);
+        PangaeaNote n = a.showDialog(this::showError);
+        if (n != null) {
+            PangaeaNoteExt current = getSelectedNote();
+            if (current != null) {
+                PangaeaNoteExt cc = new PangaeaNoteExt().copyFrom(n);
+                service().prepareChildForInsertion(current, cc);
+                current.addAfterThis(cc);
+                onDocumentChanged();
+                tree().updateTree();
+                tree().setSelectedNote(cc);
+            }
+        }
+    }
+
+    public void addNoteBefore() {
+        NewNoteDialog a = new NewNoteDialog(this);
+        PangaeaNote n = a.showDialog(this::showError);
+        if (n != null) {
+            PangaeaNoteExt current = getSelectedNote();
+            if (current != null) {
+                PangaeaNoteExt cc = new PangaeaNoteExt().copyFrom(n);
+                service().prepareChildForInsertion(current, cc);
+                current.addBeforeThis(cc);
+                onDocumentChanged();
+                tree().updateTree();
+                tree().setSelectedNote(cc);
+            }
+        }
+    }
+
+    public void addNote() {
+        NewNoteDialog a = new NewNoteDialog(this);
+        PangaeaNote n = a.showDialog(this::showError);
+        if (n != null) {
+            PangaeaNoteExt current = getSelectedNoteOrDocument();
+            PangaeaNoteExt cc = new PangaeaNoteExt().copyFrom(n);
+            service().prepareChildForInsertion(current, cc);
+            current.addChild(cc);
+            onDocumentChanged();
+            tree().updateTree();
+            tree().setSelectedNote(cc);
+        }
+    }
+
+    public PangaeaNoteExt getSelectedNote() {
+        return tree().getSelectedNote();
+    }
+
+    public PangaeaNoteExt getSelectedNoteOrDocument() {
+        return tree().getSelectedNoteOrDocument();
+    }
+
+    public void deleteSelectedNote() {
+        PangaeaNoteExt n = getSelectedNote();
+        if (n != null) {
+            n.delete();
+            onDocumentChanged();
+            tree().updateTree();
+            tree().setSelectedNote(null);
+        }
+    }
+
+    public void duplicateNote() {
+        PangaeaNoteExt current = getSelectedNote();
+        if (current != null) {
+            onDocumentChanged();
+            tree().setSelectedNote(current.addDuplicate());
+            tree().updateTree();
+        }
+    }
+
+    public void onDocumentChanged() {
+        modificationsCount++;
+        onChangePath(currentFilePath);
     }
 
 }

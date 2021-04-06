@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
-import net.thevpc.pnote.gui.editor.editorcomponents.richeditor.SourceEditorPanePanelHtmlExtension;
+import net.thevpc.pnote.types.html.editor.SourceEditorPanePanelHtmlExtension;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -45,6 +45,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
         public void anyChange(DocumentEvent e) {
             if (currentNote != null) {
 //                System.out.println("update note:" + editorBuilder.editor().getText());
+                sapp.onDocumentChanged();
                 currentNote.setContent(editorBuilder.editor().getText());
             }
         }
@@ -187,5 +188,5 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
     public boolean isCompactMode() {
         return compactMode;
     }
-    
+
 }

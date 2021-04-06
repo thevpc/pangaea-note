@@ -19,6 +19,7 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.search.PangaeaNoteExtSearchResult;
+import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 
 /**
  *
@@ -35,7 +36,7 @@ public class SearchDialog extends OkCancelDialog {
     private boolean ok = false;
 
     public SearchDialog(PangaeaNoteGuiApp sapp) throws HeadlessException {
-        super(sapp,"Message.search");
+        super(sapp, "Message.search");
 
         this.sapp = sapp;
         this.valueLabel = new JLabel(sapp.app().i18n().getString("Message.search"));
@@ -49,9 +50,9 @@ public class SearchDialog extends OkCancelDialog {
         gbs.bind("label", new JLabel(sapp.app().i18n().getString("Message.searchLabel")));
         gbs.bind("textEditor", queryEditor);
         gbs.bind("case", caseEditor);
-        
+
         build(gbs.apply(new JPanel()), this::ok, this::cancel);
-        setPreferredSize(new Dimension(400,200));
+        setPreferredSize(new Dimension(400, 200));
     }
 
     protected void install() {
@@ -81,7 +82,26 @@ public class SearchDialog extends OkCancelDialog {
                 resultPanel.resetResults();
                 resultPanel.setSearching(true);
                 sapp.addRecentSearchQuery(s);
-                PangaeaNoteExtSearchResult e = sapp.service().search(note, s);
+                PangaeaNoteExtSearchResult e = sapp.service().search(note, s, new SearchProgressMonitor() {
+                    @Override
+                    public void startSearch() {
+                        resultPanel.setSearchProgress(0, "searching...");
+//                        System.out.println("start search");
+                    }
+
+                    @Override
+                    public void searchProgress(Object current) {
+                        if (current instanceof PangaeaNoteExt) {
+                            resultPanel.setSearchProgress(0, "searching in " + ((PangaeaNoteExt) current).getName());
+                        }
+//                        System.out.println("search in: "+current);
+                    }
+
+                    @Override
+                    public void completeSearch() {
+//                        System.out.println("complete search");
+                    }
+                });
                 e.stream().forEach(x -> {
                     resultPanel.appendResult(x);
                 });
@@ -92,7 +112,7 @@ public class SearchDialog extends OkCancelDialog {
     }
 
     public String showDialog() {
-        Consumer<Exception> exHandler=sapp::showError;
+        Consumer<Exception> exHandler = sapp::showError;
         while (true) {
             install();
             this.ok = false;
@@ -109,7 +129,7 @@ public class SearchDialog extends OkCancelDialog {
 
     public String get() {
         if (ok) {
-            return (String)queryEditor.getSelectedItem();
+            return (String) queryEditor.getSelectedItem();
         }
         return null;
     }

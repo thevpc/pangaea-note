@@ -10,13 +10,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.filechooser.FileFilter;
+import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 
 public class PangaeaNotSupportedFileFormatsFileFilter extends FileFilter {
 
     private PangaeaNoteGuiApp sapp;
-    private Set<String> extensions = new HashSet<String>(Arrays.asList(PangaeaNoteTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION, "ctd"));
+    private Set<String> extensions = new HashSet<String>(Arrays.asList(PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION, "ctd"));
     private String description;
 
     public PangaeaNotSupportedFileFormatsFileFilter(PangaeaNoteGuiApp sapp) {

@@ -62,27 +62,29 @@ public class StringQuerySearch<T> {
         }
     }
 
-    public Stream<StringSearchResult<T>> search(DocumentTextNavigator<T> doc) {
-        return searchByAllPatterns(doc);
+    public Stream<StringSearchResult<T>> search(DocumentTextNavigator<T> doc, SearchProgressMonitor monitor) {
+        return searchByAllPatterns(doc, monitor);
     }
 
-    private Stream<StringSearchResult<T>> searchByAllPatterns(DocumentTextNavigator<T> doc) {
+    private Stream<StringSearchResult<T>> searchByAllPatterns(DocumentTextNavigator<T> doc, SearchProgressMonitor monitor) {
         Stream<StringSearchResult<T>> s = Stream.empty();
         for (Pattern pattern : all) {
-            List<StringSearchResult<T>> li = searchByPattern(pattern, doc).collect(Collectors.toList());
-            if(li.isEmpty()){
+            List<StringSearchResult<T>> li = searchByPattern(pattern, doc, monitor).collect(Collectors.toList());
+            if (li.isEmpty()) {
                 return Stream.empty();
             }
-            s=Stream.concat(s, li.stream());
+            s = Stream.concat(s, li.stream());
         }
         return s;
     }
 
-    private Stream<StringSearchResult<T>> searchByPattern(Pattern pattern, DocumentTextNavigator<T> doc) {
+    private Stream<StringSearchResult<T>> searchByPattern(Pattern pattern, DocumentTextNavigator<T> doc, SearchProgressMonitor monitor) {
+        monitor.searchProgress(doc);
         List<StringSearchResult<T>> found = new ArrayList<>();
         Iterator<DocumentTextPart<T>> it = doc.iterator();
         while (it.hasNext()) {
             DocumentTextPart p = it.next();
+            monitor.searchProgress(p);
             Matcher m = pattern.matcher(p.getString());
             while (m.find()) {
                 int s = m.start();
@@ -113,7 +115,7 @@ public class StringQuerySearch<T> {
                     sb.append(chars[i]);
                     break;
                 }
-                default:{
+                default: {
                     sb.append(chars[i]);
                 }
             }

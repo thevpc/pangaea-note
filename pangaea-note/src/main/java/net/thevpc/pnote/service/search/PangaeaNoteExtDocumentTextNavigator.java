@@ -9,11 +9,11 @@ import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
+import net.thevpc.pnote.types.plain.PangaeaNotePlainTextService;
 
 /**
  *
@@ -34,24 +34,20 @@ public class PangaeaNoteExtDocumentTextNavigator implements DocumentTextNavigato
         List<Iterator<DocumentTextPart<PangaeaNoteExt>>> parts = new ArrayList<>();
         parts.add(new TextStringToPatternHandler("name", note, "name", note.getName()).iterator());
         parts.add(new TextStringToPatternHandler("tags", note, "tags", String.join(" ", note.getTags())).iterator());
-        String ct = note.getContentType();
-        if (ct == null) {
-            ct = PangaeaNoteTypes.PLAIN;
-        }
-        switch (ct) {
-            case PangaeaNoteTypes.OBJECT_LIST: {
-                parts.add(new PangageaNoteObjectDocumentTextNavigator(service, note, note.getContent()).iterator());
-                break;
-            }
-            default: {
-                parts.add(new TextStringToPatternHandler("content", note, "content", note.getContent()).iterator());
-            }
-        }
+        String ct = service.normalizeContentType(note.getContentType());
+        List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> i = service.getContentTypeService(ct)
+                .resolveTextNavigators(note);
+        parts.addAll(i);
         List<DocumentTextPart<PangaeaNoteExt>> li = new ArrayList<>();
         for (Iterator<DocumentTextPart<PangaeaNoteExt>> o : parts) {
             o.forEachRemaining(li::add);
         }
         return li.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf("note: "+note.getName());
     }
 
 }

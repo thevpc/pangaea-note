@@ -34,6 +34,7 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
             @Override
             public void anyChange(DocumentEvent e) {
                 if (currentNote != null) {
+                    sapp.onDocumentChanged();
                     currentNote.setContent(text.getContentString());
                 }
             }
@@ -44,7 +45,6 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
     public boolean isCompactMode() {
         return true;
     }
-    
 
     @Override
     public JComponent component() {

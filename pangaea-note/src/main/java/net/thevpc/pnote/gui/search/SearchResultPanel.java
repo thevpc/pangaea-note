@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -63,6 +64,8 @@ public class SearchResultPanel extends JPanel {
 
         void setSearching(boolean b);
 
+        void setSearchProgress(double progressOrNaN, String text);
+
     }
 
     public static class SearchResultPanelItemImpl extends JPanel implements SearchResultPanelItem {
@@ -70,6 +73,7 @@ public class SearchResultPanel extends JPanel {
         private boolean searching;
         private PangaeaNoteGuiApp sapp;
         private JTable table = new JTable();
+        private JProgressBar bar = new JProgressBar();
         private DefaultTableModel model = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -109,9 +113,15 @@ public class SearchResultPanel extends JPanel {
             JScrollPane scroll = new JScrollPane(table);
             scroll.setPreferredSize(new Dimension(50, 50));
             add(scroll);
+            add(bar, BorderLayout.SOUTH);
+            bar.setMinimum(0);
+            bar.setMaximum(100);
+            bar.setValue(0);
         }
 
         public void resetResults() {
+            bar.setIndeterminate(false);
+            bar.setVisible(false);
             SwingUtilities3.invokeLater(() -> {
                 while (model.getRowCount() > 0) {
                     model.removeRow(0);
@@ -129,7 +139,25 @@ public class SearchResultPanel extends JPanel {
             });
         }
 
+        public void setSearchProgress(double progressOrNaN, String text) {
+            if (Double.isNaN(progressOrNaN) || progressOrNaN < 0 || progressOrNaN > 1) {
+                bar.setIndeterminate(true);
+                bar.setString(text);
+                bar.setStringPainted(true);
+            } else {
+                bar.setStringPainted(true);
+                bar.setString(null);
+                bar.setValue((int) (progressOrNaN * 100));
+                bar.setIndeterminate(true);
+                bar.setIndeterminate(true);
+            }
+
+        }
+
         public void setSearching(boolean b) {
+            bar.setIndeterminate(b);
+            bar.setVisible(b);
+            bar.setStringPainted(b);
             this.searching = b;
         }
 

@@ -23,8 +23,10 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
 
     private JTextField text = new JTextField();
     private PangaeaNoteExt currentNote;
+    private PangaeaNoteGuiApp sapp;
 
-    public StringEditorTypeComponent() {
+    public StringEditorTypeComponent(PangaeaNoteGuiApp sapp) {
+        this.sapp=sapp;
         GridBagLayoutSupport.of("[^$-==item]")
                 .bind("item", text)
                 .apply(this);
@@ -32,6 +34,7 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
             @Override
             public void anyChange(DocumentEvent e) {
                 if (currentNote != null) {
+                    sapp.onDocumentChanged();
                     currentNote.setContent(text.getText());
                 }
             }
@@ -43,7 +46,6 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
     public boolean isCompactMode() {
         return true;
     }
-    
 
     @Override
     public JComponent component() {

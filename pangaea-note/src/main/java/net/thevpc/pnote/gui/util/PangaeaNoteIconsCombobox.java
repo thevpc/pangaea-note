@@ -23,7 +23,7 @@ public class PangaeaNoteIconsCombobox extends JComboBox {
     public PangaeaNoteIconsCombobox(PangaeaNoteGuiApp sapp) {
         this.sapp = sapp;
         List<NamedValue> list = new ArrayList<>();
-        list.add(new NamedValue(false, "", sapp.app().i18n().getString("Icon.none"), null));
+        list.add(new NamedValue(false, "", sapp.app().i18n().getString("Icon.none"), null,0));
         for (String icon : PangaeaNoteTypes.ALL_USER_ICONS) {
             list.add(createIconValue(icon));
         }
@@ -38,7 +38,7 @@ public class PangaeaNoteIconsCombobox extends JComboBox {
     protected NamedValue createIconValue(String id) {
         return new NamedValue(false, id,
                 sapp.app().i18n().getString("Icon." + id),
-                id);
+                id,0);
     }
 
 }

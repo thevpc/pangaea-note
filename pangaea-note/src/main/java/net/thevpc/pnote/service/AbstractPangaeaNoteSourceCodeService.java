@@ -1,0 +1,70 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package net.thevpc.pnote.service;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import net.thevpc.pnote.gui.PangaeaContentTypes;
+import net.thevpc.pnote.gui.PangaeaNoteTypes;
+import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.service.ContentTypeSelector;
+import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.service.PangaeaNoteTypeService;
+import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
+import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
+
+/**
+ *
+ * @author vpc
+ */
+public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNoteTypeService {
+
+    private String contentType;
+    private String icon;
+
+    public AbstractPangaeaNoteSourceCodeService(String contentType, String icon) {
+        this.contentType = contentType;
+        this.icon = icon;
+    }
+
+    @Override
+    public ContentTypeSelector[] getContentTypeSelectors() {
+        return new ContentTypeSelector[]{
+            new ContentTypeSelector(getContentType(), getContentType(), PangaeaNoteTypes.EDITOR_SOURCE, "sources", 0)
+        };
+    }
+
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Override
+    public void onInstall(PangaeaNoteService service) {
+    }
+
+    @Override
+    public String getContentTypeIcon(boolean folder, boolean expanded) {
+        return icon;
+    }
+
+    public String[] normalizeEditorTypes(String editorType) {
+        return new String[]{PangaeaNoteTypes.EDITOR_SOURCE};
+    }
+
+    @Override
+    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
+        return Arrays.asList(
+                new TextStringToPatternHandler("content", note, "content", note.getContent()).iterator()
+        );
+    }
+
+    @Override
+    public boolean isEmptyContent(String content) {
+        return (content == null || content.trim().length() == 0);
+    }
+}

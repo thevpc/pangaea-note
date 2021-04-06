@@ -13,13 +13,22 @@ import net.thevpc.pnote.model.PangaeaNote;
  */
 public interface PangaeaNoteTemplate {
 
+    default String getGroup(){
+        return "templates";
+    }
+
     String getId();
+
     String getIcon();
+
+    default int getOrder() {
+        return 0;
+    }
 
     void prepare(PangaeaNote n, PangaeaNoteService sapp);
 
     public default String getLabel(PangaeaNoteService sapp) {
         return null;
     }
-    
+
 }

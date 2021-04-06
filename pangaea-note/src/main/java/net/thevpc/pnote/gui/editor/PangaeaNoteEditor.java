@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.gui.editor;
 
-import net.thevpc.pnote.gui.editor.editorcomponents.source.SourceEditorPanePanel;
 import net.thevpc.pnote.gui.editor.editorcomponents.empty.EmpyNNodtEditorTypeComponent;
 import net.thevpc.pnote.gui.editor.editorcomponents.unsupported.UnsupportedEditorTypeComponent;
 import java.awt.BorderLayout;
@@ -23,20 +22,14 @@ import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.Application;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
-import net.thevpc.pnote.gui.editor.editorcomponents.file.FileEditorTypeComponent;
-import net.thevpc.pnote.gui.editor.editorcomponents.pnotedocument.PangaeaNoteDocumentEditorTypeComponent;
-import net.thevpc.pnote.gui.editor.editorcomponents.notelist.PangaeaNoteListEditorTypeComponent;
-import net.thevpc.pnote.gui.editor.editorcomponents.objectlist.PangaeaNoteObjectDocumentComponent;
-import net.thevpc.pnote.gui.editor.editorcomponents.password.PasswordEditorTypeComponent;
-import net.thevpc.pnote.gui.editor.editorcomponents.string.StringEditorTypeComponent;
 import net.thevpc.pnote.gui.util.DefaultObjectListModel;
 import net.thevpc.common.swing.JTabbedButtons;
 import net.thevpc.common.swing.ObjectListModel;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.common.swing.ObjectListModelListener;
-import net.thevpc.pnote.gui.editor.editorcomponents.richeditor.RichEditor;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtensionHandler;
 import net.thevpc.pnote.service.PangaeaNoteExtEditorListener;
+import net.thevpc.pnote.service.PangaeaNoteTypeService;
 
 /**
  *
@@ -125,20 +118,11 @@ public class PangaeaNoteEditor extends JPanel {
     }
 
     public PangaeaNoteEditorTypeComponent createEditor(String name) {
-        switch (name) {
-//        components.put(PangaeaNoteTypes.EDITOR_WYSIWYG, new RichEditor(compactMode,sapp));//"HTML"
-            case PangaeaNoteTypes.EDITOR_WYSIWYG:
-                return new RichEditor(compactMode, sapp);
-            case PangaeaNoteTypes.EDITOR_SOURCE:
-                return new SourceEditorPanePanel(true, compactMode, sapp);//"Source Code"
-            case PangaeaNoteTypes.EDITOR_FILE:
-                return new FileEditorTypeComponent(sapp);
-            case PangaeaNoteTypes.EDITOR_PANGAEA_NOTE_DOCUMENT:
-                return new PangaeaNoteDocumentEditorTypeComponent(compactMode, sapp);
-            case PangaeaNoteTypes.EDITOR_OBJECT_LIST:
-                return new PangaeaNoteObjectDocumentComponent(compactMode, sapp);
-            case PangaeaNoteTypes.EDITOR_NOTE_LIST:
-                return new PangaeaNoteListEditorTypeComponent(compactMode, sapp);
+        for (PangaeaNoteTypeService t : sapp.service().getContentTypeServices()) {
+            PangaeaNoteEditorTypeComponent c=t.createEditor(name,compactMode,sapp);
+            if(c!=null){
+                return c;
+            }
         }
         return null;
     }

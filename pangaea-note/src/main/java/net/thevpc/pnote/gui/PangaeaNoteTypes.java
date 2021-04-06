@@ -24,45 +24,10 @@ public class PangaeaNoteTypes {
     public static final String EDITOR_SOURCE = "source";
     public static final String EDITOR_UNSUPPORTED = "unsupported";
 
-    public static final String UNSUPPORTED = "application/unsupported";
-    public static final String PLAIN = "text/plain";
-    public static final String HTML = "text/html";
-    public static final String MARKDOWN = "text/markdown";
-    public static final String NUTS_TEXT_FORMAT = "text/nuts-text-format";
-    public static final String JAVA = "text/java";
-    public static final String JAVASCRIPT = "text/javascript";
-    public static final String C = "text/c";
-    public static final String CPP = "text/cpp";
-    public static final String SH = "text/sh";
-    public static final String PANGAEA_NOTE_DOCUMENT = "application/pangaea-note-document";
-    public static final String FILE = "application/pangaea-note-file";
-    public static final String NOTE_LIST = "application/pangaea-note-list";
-    public static final String OBJECT_LIST = "application/pangaea-note-object-list";
 
-    public static final String PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION = "pnote";
-
-    public static final String RICH_HTML = "text/html:" + EDITOR_WYSIWYG;
-    public static final String RICH_MARKDOWN = "text/markdown:" + EDITOR_WYSIWYG;
-    public static final String RICH_NUTS_TEXT_FORMAT = "text/nuts-text-format:" + EDITOR_WYSIWYG;
-    public static final String SOURCE_HTML = "text/html:" + EDITOR_SOURCE;
-    public static final String SOURCE_MARKDOWN = "text/markdown:" + EDITOR_SOURCE;
-    public static final String SOURCE_NUTS_TEXT_FORMAT = "text/nuts-text-format:" + EDITOR_SOURCE;
-
-    public static Set<String> ALL_CONTENT_TYPES = new LinkedHashSet<String>(
-            Arrays.asList(PLAIN,
-                    HTML,
-                    MARKDOWN,
-                    NUTS_TEXT_FORMAT,
-                    JAVA,
-                    JAVASCRIPT,
-                    C,
-                    CPP,
-                    PANGAEA_NOTE_DOCUMENT,
-                    FILE,
-                    NOTE_LIST,
-                    OBJECT_LIST
-            )
-    );
+//    public static Set<String> ALL_CONTENT_TYPES = new LinkedHashSet<String>(
+//            Arrays.asList(PangaeaContentTypes.PLAIN, PangaeaContentTypes.HTML, PangaeaContentTypes.MARKDOWN, PangaeaContentTypes.NUTS_TEXT_FORMAT, PangaeaContentTypes.JAVA, PangaeaContentTypes.JAVASCRIPT, PangaeaContentTypes.C, PangaeaContentTypes.CPP, PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT, PangaeaContentTypes.FILE, PangaeaContentTypes.NOTE_LIST, PangaeaContentTypes.OBJECT_LIST)
+//    );
 
     public static Set<String> ALL_USER_ICONS = new TreeSet<String>(
             Arrays.asList(
@@ -88,8 +53,6 @@ public class PangaeaNoteTypes {
                     "heart",
                     "moon",
                     "network",
-                    "pangaea-note-list",
-                    "pangaea-note-object-list",
                     "password",
                     "phone",
                     "smile",
