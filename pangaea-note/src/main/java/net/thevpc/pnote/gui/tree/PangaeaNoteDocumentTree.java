@@ -51,7 +51,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         super(new BorderLayout());
         this.sapp = sapp;
         this.app = sapp.app();
-        model = new ObservableNoteTreeModel(new PangaeaNoteExt().newDocument());
+        model = new ObservableNoteTreeModel(PangaeaNoteExt.of(this.sapp.service().newDocument()));
         tree = new JTree(model);
         tree.setRootVisible(false);
         tree.setDragEnabled(true);
@@ -211,7 +211,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         importCustomMenu.add(new TreeAction("ImportPangaeaNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT);
+                sapp.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
             }
         });
         importCustomMenu.add(new TreeAction("ImportCherryTree", this) {

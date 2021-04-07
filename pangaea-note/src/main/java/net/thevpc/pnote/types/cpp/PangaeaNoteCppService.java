@@ -6,6 +6,7 @@
 package net.thevpc.pnote.types.cpp;
 
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -16,7 +17,7 @@ public class PangaeaNoteCppService extends AbstractPangaeaNoteSourceCodeService 
     public static final String CPP = "text/cpp";
 
     public PangaeaNoteCppService() {
-        super(CPP, "file-cpp");
+        super(PangaeaNoteContentType.of(CPP), "file-cpp");
     }
 
 }

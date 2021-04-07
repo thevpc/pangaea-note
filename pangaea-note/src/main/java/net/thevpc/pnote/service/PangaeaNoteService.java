@@ -13,8 +13,6 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -29,16 +27,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.swing.util.CancelException;
 import net.thevpc.echo.ItemPath;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsContentType;
-import net.thevpc.nuts.NutsIOException;
-import net.thevpc.nuts.NutsLogVerb;
+import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.NutsElementFormat;
 import net.thevpc.nuts.NutsStoreLocation;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
@@ -50,16 +45,6 @@ import net.thevpc.pnote.service.search.PangaeaNoteExtSearchResult;
 import net.thevpc.pnote.service.search.VNoteSearchFilter;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import net.thevpc.pnote.service.security.InvalidSecretException;
-import net.thevpc.pnote.util.OtherUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import net.thevpc.pnote.service.refactor.EmptySourceContentTypeReplacer;
 import net.thevpc.pnote.service.refactor.PangaeaContentTypeReplacer;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
@@ -75,15 +60,19 @@ import net.thevpc.pnote.types.ntf.PangaeaNoteNTFService;
 import net.thevpc.pnote.types.objectlist.PangaeaObjectListService;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.types.sh.PangaeaNoteShService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
+import net.thevpc.pnote.types.html.PangaeaNoteHtmlWysiwygService;
 
 public class PangaeaNoteService {
+
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(PangaeaNoteService.class.getName());
 
     public static final String SECURE_ALGO = PangaeaNoteObfuscatorDefault.ID;
     private NutsApplicationContext context;
     private I18n i18n;
-    private LinkedHashMap<String, PangaeaNoteTemplate> extra = new LinkedHashMap<>();
     private List<PangaeaContentTypeReplacer> typeReplacers = new ArrayList<>();
-    private Map<String, PangaeaNoteTypeService> typeServices = new HashMap<>();
+    private LinkedHashMap<PangaeaNoteContentType, PangaeaNoteTemplate> extra = new LinkedHashMap<>();
+    private Map<PangaeaNoteContentType, PangaeaNoteTypeService> typeServices = new LinkedHashMap<>();
 
     public PangaeaNoteService(NutsApplicationContext context, I18n i18n) {
         this.context = context;
@@ -91,11 +80,12 @@ public class PangaeaNoteService {
         typeReplacers.add(new EmptySourceContentTypeReplacer(this));
 
         installNoteTypeService(new PangaeaNotePlainTextService());
-        installNoteTypeService(new PangaeaNoteHtmlService());
+        installNoteTypeService(new PangaeaNoteHtmlWysiwygService());
         installNoteTypeService(new PangaeaNoteFileService());
         installNoteTypeService(new PangaeaNoteListService());
         installNoteTypeService(new PangaeaObjectListService());
         installNoteTypeService(new PangaeaNoteEmbeddedService());
+        installNoteTypeService(new PangaeaNoteHtmlService());
         installNoteTypeService(new PangaeaNoteJavaService());
         installNoteTypeService(new PangaeaNoteCppService());
         installNoteTypeService(new PangaeaNoteCService());
@@ -115,7 +105,7 @@ public class PangaeaNoteService {
         service.onInstall(this);
     }
 
-    public PangaeaNoteTypeService findContentTypeService(String type) {
+    public PangaeaNoteTypeService findContentTypeService(PangaeaNoteContentType type) {
         PangaeaNoteTypeService s = typeServices.get(type);
         if (s != null) {
             return s;
@@ -123,7 +113,7 @@ public class PangaeaNoteService {
         return null;
     }
 
-    public PangaeaNoteTypeService getContentTypeService(String type) {
+    public PangaeaNoteTypeService getContentTypeService(PangaeaNoteContentType type) {
         PangaeaNoteTypeService s = findContentTypeService(type);
         if (s != null) {
             return s;
@@ -136,11 +126,16 @@ public class PangaeaNoteService {
     }
 
     public void register(PangaeaNoteTemplate a) {
-        extra.put(a.getId(), a);
+        extra.put(a.getContentType(), a);
     }
 
     public List<PangaeaNoteTemplate> getTemplates() {
         return new ArrayList<>(extra.values());
+    }
+
+    public NutsElementFormat element() {
+        return getContext().getWorkspace().formats().element()
+                .setSession(getContext().getSession());
     }
 
     public NutsApplicationContext getContext() {
@@ -152,7 +147,7 @@ public class PangaeaNoteService {
         for (PangaeaNote c : n.getChildren()) {
             unloadNode(c);
         }
-        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(n.getContentType())) {
+        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
             n.getChildren().clear();
         }
         return n;
@@ -163,7 +158,7 @@ public class PangaeaNoteService {
     }
 
     public boolean isDocumentNote(PangaeaNote n) {
-        return PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(n.getContentType());
+        return PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType());
     }
 
     public String stringifyAny(Object value) {
@@ -188,7 +183,7 @@ public class PangaeaNoteService {
         }
     }
 
-    public PangaeaNoteTemplate getTemplate(String contentType) {
+    public PangaeaNoteTemplate getTemplate(PangaeaNoteContentType contentType) {
         return extra.get(contentType);
     }
 
@@ -196,21 +191,66 @@ public class PangaeaNoteService {
         if (id == null || id.trim().length() == 0) {
             return false;
         }
-        String[] a = id.split(":");
-        if (a.length == 0) {
+        PangaeaNoteContentType c = PangaeaNoteContentType.of(id);
+        if (c == null) {
             return false;
         }
-        if (a.length == 1) {
-            return id.equals(normalizeContentType(id));
+        if (extra.containsKey(c)) {
+            return true;
         }
-        if (a.length == 2) {
-            if (!normalizeContentType(a[0]).equals(a[0])) {
-                return false;
-            }
-            String et = normalizeEditorType(a[0], a[1]);
-            return a[1].equals(et);
+        if (typeServices.containsKey(c)) {
+            return true;
         }
         return false;
+    }
+
+    public NutsElement stringToElement(String string) {
+        return string == null ? element().forPrimitive().buildNull() : element().forPrimitive().buildString(string);
+    }
+
+    public String elementToString(NutsElement string) {
+        if (string == null) {
+            return null;
+        }
+        if (string.isNull()) {
+            return null;
+        }
+        if (string.isString()) {
+            return string.asString();
+        }
+        return string.toString();
+    }
+
+    public boolean isEmptyContent(NutsElement content) {
+        if (content == null) {
+            return true;
+        }
+        switch (content.type()) {
+            case NULL: {
+                return true;
+            }
+            case ARRAY: {
+                return content.asArray().isEmpty();
+            }
+            case OBJECT: {
+                return content.asObject().isEmpty();
+            }
+            case STRING: {
+                return content.asString().trim().isEmpty();
+            }
+            default: {
+                return content.asString().trim().isEmpty();
+            }
+        }
+    }
+
+    public String getDocumentPath(PangaeaNoteExt selectedNote) {
+        return ((PangaeaNoteEmbeddedService) getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
+                .getContentValueAsPath(selectedNote.getContent());
+    }
+    public String getDocumentPath(PangaeaNote selectedNote) {
+        return ((PangaeaNoteEmbeddedService) getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
+                .getContentValueAsPath(selectedNote.getContent());
     }
 
     public static class SaveError {
@@ -260,8 +300,9 @@ public class PangaeaNoteService {
         List<SaveError> errors = new ArrayList<>();
         boolean b = false;
         String root = null;
-        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(n.getContentType())) {
-            String c = n.getContent();
+        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
+
+            String c = PangaeaNoteEmbeddedService.of(this).getContentValueAsPath(n.getContent());
             if (c != null && c.trim().length() > 0) {
                 root = c;
             }
@@ -283,8 +324,8 @@ public class PangaeaNoteService {
             saveDocument(c, path.child(String.valueOf(c.getName())), passwordHandler, errors, root);
         }
         boolean saved = false;
-        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(n.getContentType())) {
-            String c = n.getContent();
+        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
+            String c = PangaeaNoteEmbeddedService.of(this).getContentValueAsPath(n.getContent());
             if (c != null && c.trim().length() > 0) {
                 c = c.trim();
                 try {
@@ -311,20 +352,18 @@ public class PangaeaNoteService {
                         CypherInfo ci = obs.encrypt(n, () -> passwordHandler.askForSavePassword(f.getPath(), root));
                         n.setCypherInfo(ci);
                         PangaeaNote n2 = new PangaeaNote();
-                        n2.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT);
+                        n2.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
                         n2.setCreationTime(n.getCreationTime());
                         n2.setLastModified(n.getLastModified());
                         n2.setCypherInfo(ci);
-                        getContext().getWorkspace().formats().element()
+                        element()
                                 .setContentType(NutsContentType.JSON)
                                 .setValue(n2)
-                                .setSession(context.getSession())
                                 .println(f);
                     } else {
-                        getContext().getWorkspace().formats().element()
+                        element()
                                 .setContentType(NutsContentType.JSON)
                                 .setValue(n)
-                                .setSession(context.getSession())
                                 .println(f);
                     }
 //                    if (cypherInfo != null && ((cypherInfo.getAlgo() == null) ||)
@@ -335,7 +374,7 @@ public class PangaeaNoteService {
                 } catch (Exception ex) {
                     errors.add(new SaveError(n, path, ex));
                 }
-                n.setContent(c);//push back the path
+                n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(c));//push back the path
             } else {
                 errors.add(new SaveError(n, path, new IOException("missing file path for " + n.getName())));
             }
@@ -366,10 +405,9 @@ public class PangaeaNoteService {
         if (pf != null) {
             pf.mkdirs();
         }
-        getContext().getWorkspace().formats().element()
+        element()
                 .setContentType(NutsContentType.JSON)
                 .setValue(c)
-                .setSession(context.getSession())
                 .println(configFilePath);
     }
 
@@ -379,8 +417,9 @@ public class PangaeaNoteService {
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
         try {
-            PangaeaNoteConfig n = getContext().getWorkspace().formats().element()
-                    .setContentType(NutsContentType.JSON).setSession(context.getSession())
+            System.out.println("load config from: " + getConfigFilePath());
+            PangaeaNoteConfig n = element()
+                    .setContentType(NutsContentType.JSON)
                     .parse(getConfigFilePath(),
                             PangaeaNoteConfig.class);
             if (n != null) {
@@ -398,11 +437,11 @@ public class PangaeaNoteService {
 
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {
         if (!n.isLoaded()) {
-            if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(n.getContentType())) {
-                String nodePath = n.getContent();
+            if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
+                String nodePath = PangaeaNoteEmbeddedService.of(this).getContentValueAsPath(n.getContent());
                 nodePath = nodePath == null ? "" : nodePath.trim();
                 if (nodePath.length() > 0) {
-                    PangaeaNote rawNode = getContext().getWorkspace().formats().element()
+                    PangaeaNote rawNode = element()
                             .setContentType(NutsContentType.JSON).setSession(context.getSession())
                             .parse(new File(nodePath), PangaeaNote.class);
                     n.copyFrom(rawNode);
@@ -425,7 +464,7 @@ public class PangaeaNoteService {
                             a.setCypherInfo(new CypherInfo(cypherInfo.getAlgo(), ""));
                         }
                         n.copyFrom(a);
-                        n.setContent(nodePath);
+                        n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(nodePath));
                     }
                 }
             }
@@ -473,14 +512,11 @@ public class PangaeaNoteService {
     }
 
     public PangaeaNote loadDocument(File file, PasswordHandler passwordHandler, boolean loadAll, String root) {
-//        PangaeaNote n = getContext().getWorkspace().formats().element()
-//                .setContentType(NutsContentType.JSON).setSession(context.getSession())
-//                .parse(file, PangaeaNote.class);
         try {
-            PangaeaNote n = PangaeaNote.newDocument(file.getPath());
+            PangaeaNote n = newDocument(file.getPath());
             loadNode(n, passwordHandler, loadAll, root);
-            if (!PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(n.getContentType())) {
-                throw new IOException("Invalid content type. Expected " + PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT + ". got " + n.getContentType());
+            if (!PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
+                throw new IOException("Invalid content type. Expected " + PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString() + ". got " + n.getContentType());
             }
             return n;
         } catch (IOException ex) {
@@ -488,372 +524,16 @@ public class PangaeaNoteService {
         }
     }
 
-    private static void setLenientFeature(DocumentBuilderFactory dbFactory, String s, boolean b) {
-        try {
-            dbFactory.setFeature(s, b);
-        } catch (Exception ex) {
-            //
-        }
+    public PangaeaNote newDocument() {
+        return newDocument(null).setLoaded(true);
     }
 
-    public PangaeaNote loadCherryTreeXmlFile(File file) {
-        try {
-            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-            boolean safe = true;
-            if (safe) {
-                documentFactory.setExpandEntityReferences(false);
-                // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
-                // Xerces 2 only - http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl
-                setLenientFeature(documentFactory, "http://apache.org/xml/features/disallow-doctype-decl", true);
-
-                // If you can't completely disable DTDs, then at least do the following:
-                // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-general-entities
-                // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-general-entities
-                // JDK7+ - http://xml.org/sax/features/external-general-entities
-                setLenientFeature(documentFactory, "http://xerces.apache.org/xerces-j/features.html#external-general-entities", false);
-                setLenientFeature(documentFactory, "http://xerces.apache.org/xerces2-j/features.html#external-general-entities", false);
-                setLenientFeature(documentFactory, "http://xml.org/sax/features/external-general-entities", false);
-
-                // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-parameter-entities
-                // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities
-                // JDK7+ - http://xml.org/sax/features/external-parameter-entities
-                setLenientFeature(documentFactory, "http://xerces.apache.org/xerces-j/features.html#external-parameter-entities", false);
-                setLenientFeature(documentFactory, "http://xml.org/sax/features/external-parameter-entities", false);
-                setLenientFeature(documentFactory, "http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities", false);
-
-                // Disable external DTDs as well
-                setLenientFeature(documentFactory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                // and these as well, per Timothy Morgan's 2014 paper: "XML Schema, DTD, and Entity Attacks"
-                documentFactory.setXIncludeAware(false);
-                documentFactory.setValidating(false);
-            }
-            DocumentBuilder b;
-            try {
-                b = documentFactory.newDocumentBuilder();
-            } catch (ParserConfigurationException ex) {
-                throw new NutsIOException(context.getSession().getWorkspace(), ex);
-            }
-
-            b.setErrorHandler(new ErrorHandler() {
-                @Override
-                public void warning(SAXParseException exception) throws SAXException {
-                    context.getSession().getWorkspace().log().of(PangaeaNoteService.class).with().session(context.getSession())
-                            .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
-                }
-
-                @Override
-                public void error(SAXParseException exception) throws SAXException {
-                    context.getSession().getWorkspace().log().of(PangaeaNoteService.class).with().session(context.getSession())
-                            .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
-                }
-
-                @Override
-                public void fatalError(SAXParseException exception) throws SAXException {
-                    context.getSession().getWorkspace().log().of(PangaeaNoteService.class).with().session(context.getSession())
-                            .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
-                }
-            });
-
-            Document doc = b.parse(file);
-            NodeList childNodes = doc.getDocumentElement().getChildNodes();
-            PangaeaNote cherryDocument = PangaeaNote.newDocument();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node n = childNodes.item(i);
-                if (n instanceof Element) {
-                    Element e = (Element) n;
-//                    if (e.getTagName().equals("node") || e.getTagName().equals("rich_text")) {
-                    PangaeaNote a = parseCherryTreeXmlNote(e);
-                    if (a != null) {
-                        cherryDocument.getChildren().add(a);
-                    }
-//                    }
-                }
-            }
-            return cherryDocument;
-        } catch (SAXException ex) {
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
-    static class RichText {
-
-        Map<String, String> style = new HashMap<>();
-        String text;
-        boolean escaped;
-
-        public boolean isEscaped() {
-            return escaped;
-        }
-
-        public RichText setEscaped(boolean escaped) {
-            this.escaped = escaped;
-            return this;
-        }
-
-        public Map<String, String> getStyle() {
-            return style;
-        }
-
-        public RichText setStyle(Map<String, String> style) {
-            this.style = style;
-            return this;
-        }
-
-        public RichText addStyle(String k, String v) {
-            if (!OtherUtils.isBlank(v)) {
-                this.style.put(k, v);
-            }
-            return this;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public RichText setText(String text) {
-            this.text = text;
-            return this;
-        }
-
-    }
-
-    public PangaeaNote parseCherryTreeXmlNote(org.w3c.dom.Element e) {
-        switch (e.getTagName()) {
-            case "node": {
-                PangaeaNote nn = new PangaeaNote();
-                nn.setContent(PangaeaNoteHtmlService.HTML);
-                //custom_icon_id="0" foreground="" is_bold="False" name="commandes et factures" prog_lang="custom-colors" readonly="False" tags="" ts_creation="0.0" ts_lastsave="0.0" unique_id="5"
-                //custom_icon_id="0" foreground="" is_bold="False" prog_lang="custom-colors" readonly="False" ts_creation="0.0" ts_lastsave="0.0" unique_id="5"
-                NamedNodeMap attrs = e.getAttributes();
-                Map<String, String> noteContentStyle = new HashMap<>();
-                for (int i = 0; i < attrs.getLength(); i++) {
-                    Node attr = attrs.item(i);
-                    if (attr instanceof Attr) {
-                        Attr a = (Attr) attr;
-                        String k = a.getName();
-                        String v = a.getValue();
-                        if (!OtherUtils.isBlank(k)) {
-                            switch (k) {
-                                case "name": {
-                                    nn.setName(v);
-                                    break;
-                                }
-                                case "tags": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        nn.setTags(
-                                                Arrays.asList(
-                                                        v.split("[ ,;:]")
-                                                ).stream().filter(x -> x.length() > 0)
-                                                        .collect(Collectors.toSet())
-                                        );
-                                    }
-                                    break;
-                                }
-                                case "custom_icon_id": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        int x = 0;
-                                        try {
-                                            x = Integer.parseInt(v);
-                                        } catch (Exception ex) {
-                                            //
-                                        }
-                                        if (x > 0) {
-                                            x = (x - 1) % PangaeaNoteTypes.ALL_USER_ICONS.size();
-                                            nn.setIcon((String) (PangaeaNoteTypes.ALL_USER_ICONS.toArray()[x]));
-                                        }
-                                    }
-                                    break;
-                                }
-                                case "foregournd": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        nn.setTitleForeground(v);
-                                    }
-                                    break;
-                                }
-                                case "background": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        nn.setTitleBackground(v);
-                                    }
-                                    break;
-                                }
-                                case "readonly": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        nn.setReadOnly(Boolean.parseBoolean(v));
-                                    }
-                                    break;
-                                }
-                                case "is_bold": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        nn.setTitleBold(Boolean.parseBoolean(v));
-                                    }
-                                    break;
-                                }
-                                case "ts_creation": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        double d = 0;
-                                        try {
-                                            d = Double.parseDouble(v);
-                                        } catch (Exception ex) {
-                                            //ignore
-                                        }
-                                        if (d != 0) {
-                                            long ln = Double.doubleToLongBits(d);
-                                            try {
-                                                nn.setCreationTime(Instant.ofEpochMilli(ln));
-                                            } catch (Exception ex) {
-                                                //ignore
-                                            }
-                                        }
-                                        nn.setTitleBold(Boolean.parseBoolean(v));
-                                    }
-                                    break;
-                                }
-                                case "ts_lastsave": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        double d = 0;
-                                        try {
-                                            d = Double.parseDouble(v);
-                                        } catch (Exception ex) {
-                                            //ignore
-                                        }
-                                        if (d != 0) {
-                                            long ln = Double.doubleToLongBits(d);
-                                            try {
-                                                nn.setLastModified(Instant.ofEpochMilli(ln));
-                                            } catch (Exception ex) {
-                                                //ignore
-                                            }
-                                        }
-                                        nn.setTitleBold(Boolean.parseBoolean(v));
-                                    }
-                                    break;
-                                }
-                                case "prog_lang": {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        switch (v) {
-                                            case "java": {
-                                                nn.setContentType(PangaeaNoteJavaService.JAVA);
-                                                break;
-                                            }
-                                            case "c": {
-                                                nn.setContentType(PangaeaNoteCService.C);
-                                                break;
-                                            }
-                                            case "cpp": {
-                                                nn.setContentType(PangaeaNoteCppService.CPP);
-                                                break;
-                                            }
-                                            case "custom-colors": {
-                                                nn.setContentType(PangaeaNoteHtmlService.HTML);
-                                                break;
-                                            }
-                                            default: {
-                                                nn.setContentType(PangaeaNotePlainTextService.PLAIN);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-                                default: {
-                                    if (!OtherUtils.isBlank(v)) {
-                                        nn.getProperties().put(k, v);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                List<RichText> richTexts = new ArrayList<>();
-                NodeList childNodes = e.getChildNodes();
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    Node c = childNodes.item(i);
-                    if (c instanceof Element) {
-                        Element e2 = (Element) c;
-                        if (e2.getTagName().equals("node")) {
-                            nn.getChildren().add(parseCherryTreeXmlNote(e2));
-                        } else if (e2.getTagName().equals("rich_text")) {
-                            String link = e.getAttribute("link");
-                            if (!OtherUtils.isBlank(link)) {
-                                richTexts.add(
-                                        new RichText()
-                                                .addStyle("foreground", e2.getAttribute("foreground"))
-                                                .addStyle("background", e2.getAttribute("background"))
-                                                .setText(
-                                                        "<a href='" + link + "'>"
-                                                        + OtherUtils.escapeHtml(e.getTextContent())
-                                                        + "/>"
-                                                ).setEscaped(true)
-                                );
-                            } else {
-                                richTexts.add(
-                                        new RichText()
-                                                .addStyle("foreground", e2.getAttribute("foreground"))
-                                                .addStyle("background", e2.getAttribute("background"))
-                                                .setText(e.getTextContent())
-                                );
-                            }
-
-                        }
-                    }
-                }
-                if (nn.getContentType().equals(PangaeaNoteHtmlService.HTML)) {
-                    nn.setContent(
-                            "<html><head>"
-                            + (noteContentStyle.isEmpty() ? "" : ("<style>" + buildStyle(noteContentStyle) + "</style>"))
-                            + "</head><body>"
-                            + richTexts.stream().map(x -> {
-                                String t = x.getText();
-                                if (!t.isEmpty()) {
-                                    if (x.style.isEmpty()) {
-                                        return x.isEscaped() ? t
-                                                : ("<pre>"
-                                                + OtherUtils.escapeHtml(t)
-                                                + "</pre>");
-                                    } else {
-                                        StringBuilder sb = new StringBuilder();
-                                        sb.append("<div style='");
-                                        sb.append(buildStyle(x.style));
-                                        sb.append("'>");
-                                        sb.append(
-                                                x.isEscaped() ? t
-                                                : ("<pre>"
-                                                + OtherUtils.escapeHtml(t)
-                                                + "</pre>")
-                                        );
-                                        sb.append("</div>");
-                                        return sb;
-                                    }
-                                }
-                                return t;
-                            }).collect(Collectors.joining())
-                            + "</body></html>"
-                    );
-                } else {
-                    nn.setContent(
-                            richTexts.stream().map(x -> x.getText()).collect(Collectors.joining())
-                    );
-                }
-                return nn;
-            }
-            default: {
-//                System.out.println("ignored");
-            }
-        }
-        return null;
-    }
-
-    private String buildStyle(Map<String, String> s) {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> entry : s.entrySet()) {
-            sb.append(entry.getKey());
-            sb.append(" : ");
-            sb.append(entry.getValue());
-            sb.append("; ");
-        }
-        return sb.toString();
+    public PangaeaNote newDocument(String path) {
+        PangaeaNote n = new PangaeaNote();
+        n.setName("pangaea-note-document");
+        n.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
+        n.setContent(path == null ? null : context.getWorkspace().formats().element().forPrimitive().buildString(path));
+        return n;
     }
 
     public PangaeaNoteExtSearchResult search(PangaeaNoteExt n, String query, SearchProgressMonitor monitor) {
@@ -879,13 +559,13 @@ public class PangaeaNoteService {
         return new PangaeaNoteExtSearchResult(n, curr);
     }
 
-    public boolean changeNoteContentType(PangaeaNoteExt toUpdate, String newContentType) {
-        String newContentType0 = newContentType;
-        String oldContentType = normalizeContentType(toUpdate.getContentType());
-        newContentType = normalizeContentType(newContentType);
+    public boolean changeNoteContentType(PangaeaNoteExt toUpdate, String newContentType00) {
+        String newContentType0 = newContentType00;
+        PangaeaNoteContentType oldContentType = normalizeContentType(toUpdate.getContentType());
+        PangaeaNoteContentType newContentType = normalizeContentType(newContentType0);
         if (oldContentType.equals(newContentType)) {
             if (!Objects.equals(newContentType0, toUpdate.getContentType())) {
-                toUpdate.setContentType(newContentType);
+                toUpdate.setContentType(newContentType.toString());
                 return true;
             }
             return false;
@@ -929,14 +609,14 @@ public class PangaeaNoteService {
         if (parent.getParent() == null) {
             //root! ignore
         } else {
-            getContentTypeService(parent.getContentType())
+            getContentTypeService(normalizeContentType(parent.getContentType()))
                     .onPostUpdateChildNoteProperties(toUpdate, before);
         }
     }
 
     public String prepareChildForInsertion(PangaeaNoteExt parent, PangaeaNoteExt child) {
         String name = child.getName();
-        String contentType = child.getContentType();
+        String contentType0 = child.getContentType();
         if (name == null) {
             name = "";
         }
@@ -946,7 +626,7 @@ public class PangaeaNoteService {
         if (m.find()) {
             base = m.group("base");
         }
-        contentType = normalizeContentType(contentType);
+        PangaeaNoteContentType contentType = normalizeContentType(contentType0);
         if (base.isEmpty()) {
             base = i18n.getString("PangaeaNoteTypeFamily." + contentType);
         }
@@ -965,7 +645,7 @@ public class PangaeaNoteService {
         }
     }
 
-    public String generateNewChildName(PangaeaNote note, String name, String contentType) {
+    public String generateNewChildName(PangaeaNote note, String name, String contentType0) {
         if (name == null) {
             name = "";
         }
@@ -975,7 +655,7 @@ public class PangaeaNoteService {
         if (m.find()) {
             base = m.group("base");
         }
-        contentType = normalizeContentType(contentType);
+        PangaeaNoteContentType contentType = normalizeContentType(contentType0);
         if (base.isEmpty()) {
             base = i18n.getString("PangaeaNoteTypeFamily." + contentType);
         }
@@ -993,14 +673,16 @@ public class PangaeaNoteService {
     }
 
     public String getNoteIcon(PangaeaNote note, boolean folder, boolean expanded) {
-        return getContentTypeIcon(note.getContentType(), note.getIcon(), note.getFolderIcon(), folder, expanded);
+        return getContentTypeIcon(
+                normalizeContentType(note.getContentType()),
+                note.getIcon(), note.getFolderIcon(), folder, expanded);
     }
 
-    public String getContentTypeIcon(String contentType) {
+    public String getContentTypeIcon(PangaeaNoteContentType contentType) {
         return getContentTypeIcon(contentType, null, null, false, false);
     }
 
-    public String getContentTypeIcon(String contentType, String preferredNormalIcon, String preferredFolderIcon, boolean folder, boolean expanded) {
+    public String getContentTypeIcon(PangaeaNoteContentType contentType, String preferredNormalIcon, String preferredFolderIcon, boolean folder, boolean expanded) {
         String icon;
         if (folder) {
             icon = preferredFolderIcon;
@@ -1039,20 +721,27 @@ public class PangaeaNoteService {
         return "unknown";
     }
 
-    public Set<String> getBaseContentTypes() {
-        LinkedHashSet<String> all = new LinkedHashSet<>();
+    public Set<PangaeaNoteContentType> getBaseContentTypes() {
+        LinkedHashSet<PangaeaNoteContentType> all = new LinkedHashSet<>();
         all.addAll(typeServices.keySet());
         return all;
     }
 
-    public Set<String> getAllContentTypes() {
-        LinkedHashSet<String> all = new LinkedHashSet<>();
+    public Set<PangaeaNoteContentType> getAllContentTypes() {
+        LinkedHashSet<PangaeaNoteContentType> all = new LinkedHashSet<>();
         all.addAll(typeServices.keySet());
-        all.addAll(extra.values().stream().map(x -> x.getId()).collect(Collectors.toList()));
+        all.addAll(extra.values().stream().map(x -> x.getContentType()).collect(Collectors.toList()));
         return all;
     }
 
-    public String normalizeContentType(String ct) {
+    public PangaeaNoteContentType normalizeContentType(PangaeaNoteContentType t) {
+        if (t == null) {
+            return PangaeaNoteContentType.of(PangaeaNotePlainTextService.PLAIN);
+        }
+        return t;
+    }
+
+    public PangaeaNoteContentType normalizeContentType(String ct) {
         if (ct == null) {
             ct = "";
         }
@@ -1060,52 +749,37 @@ public class PangaeaNoteService {
         if (ct.isEmpty()) {
             ct = PangaeaNotePlainTextService.PLAIN;
         }
-        switch (ct) {
-            case "application/pangaea-note-object-list": {
-                //old version
-                return PangaeaObjectListService.OBJECT_LIST;
-            }
+        PangaeaNoteContentType ct0 = PangaeaNoteContentType.of(ct);
+        if (ct0 == null) {
+            ct0 = PangaeaNoteContentType.of(PangaeaNotePlainTextService.PLAIN);
         }
-        Set<String> allct = getAllContentTypes();
-        if (allct.contains(ct)) {
-            return ct;
-        }
-        if (ct.contains(":")) {
-            ct = ct.substring(0, ct.indexOf(':'));
-            return normalizeContentType(ct);
-        }
-        if (!ct.contains("/")) {
-            for (String t : allct) {
-                if (t.endsWith("/" + ct)) {
-                    return t;
-                }
-            }
+        Set<PangaeaNoteContentType> allct = getAllContentTypes();
+        if (allct.contains(ct0)) {
+            return ct0;
         }
         LOG.log(Level.WARNING, "invalid content type {0}", ct);
         return PangaeaContentTypes.UNSUPPORTED;
     }
-    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(PangaeaNoteService.class.getName());
 
-    public String[] getEditorTypes(String contentType) {
-        return normalizeEditorTypes(contentType, null);
+    public String getEditorType(PangaeaNoteContentType contentType) {
+        return normalizeEditorType(contentType, null);
     }
 
-    public String normalizeEditorType(String contentType, String editorType) {
-        return normalizeEditorTypes(contentType, editorType)[0];
-    }
-
-    public String[] normalizeEditorTypes(String contentType, String editorType) {
+    public String normalizeEditorType(PangaeaNoteContentType contentType, String editorType) {
         if (editorType == null) {
             editorType = "";
         }
         editorType = editorType.trim().toLowerCase();
-        PangaeaNoteTypeService s = findContentTypeService(normalizeContentType(contentType));
+        PangaeaNoteTypeService s = findContentTypeService(contentType);
         if (s != null) {
-            return s.normalizeEditorTypes(editorType);
+            String a = s.normalizeEditorType(editorType);
+            if (a != null) {
+                return a;
+            }
         }
 //        PangaeaNoteTemplate t = extra.values().stream().filter(x->x.getId().equals(contentType)).findAny().orElse(null);
 //        t.get
-        return new String[]{PangaeaNoteTypes.EDITOR_UNSUPPORTED};
+        return PangaeaNoteTypes.EDITOR_UNSUPPORTED;
     }
 
     public boolean isValidIcon(String icon) {

@@ -5,35 +5,26 @@
  */
 package net.thevpc.pnote.service;
 
+import net.thevpc.pnote.model.PangaeaNoteContentType;
+
 /**
  *
  * @author vpc
  */
 public class ContentTypeSelector {
-    private String id;
-    private String contentType;
-    private String editorType;
+
+    private PangaeaNoteContentType contentType;
     private String group;
     private int order;
 
-    public ContentTypeSelector(String id, String contentType, String editorType, String group, int order) {
-        this.id = id;
+    public ContentTypeSelector(PangaeaNoteContentType contentType, String group, int order) {
         this.contentType = contentType;
-        this.editorType = editorType;
         this.group = group;
         this.order = order;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getContentType() {
+    public PangaeaNoteContentType getContentType() {
         return contentType;
-    }
-
-    public String getEditorType() {
-        return editorType;
     }
 
     public String getGroup() {
@@ -43,5 +34,5 @@ public class ContentTypeSelector {
     public int getOrder() {
         return order;
     }
-    
+
 }

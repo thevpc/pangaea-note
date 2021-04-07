@@ -55,7 +55,7 @@ public class EditNoteDialog extends OkCancelDialog {
         nameEditor = new JTextField("");
         typeEditor = new PangaeaNoteTypesCombobox(sapp);
 //        typeEditor.setEnabled(false);
-        typeEditor.setSelectedContentType(note.getContentType(), note.getEditorType());
+        typeEditor.setSelectedContentType(sapp.service().normalizeContentType(note.getContentType()), note.getEditorType());
         iconEditor = new PangaeaNoteIconsCombobox(sapp);
         foregroundEditor = new ColorChooserButton();
         backgroundEditor = new ColorChooserButton();

@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import net.thevpc.common.swing.ExtensionFileChooserFilter;
 import net.thevpc.common.swing.GridBagLayoutSupport;
+import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
@@ -35,8 +36,8 @@ import net.thevpc.pnote.gui.util.PangaeaNoteIconsCombobox;
 import net.thevpc.pnote.gui.util.PangaeaNoteTypesCombobox;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.service.PangaeaNoteTemplate;
-import net.thevpc.pnote.types.file.PangaeaNoteFileService;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -48,8 +49,6 @@ public class NewNoteDialog extends OkCancelDialog {
     private JComboBox iconList;
     private PangaeaNoteTypesCombobox typeList;
     private JLabel valueLabel;
-//    private JTextField typeSourceValue;
-
     private FileComponent typeFileValue;
     private JScrollPane typeDescriptionContent;
     private JEditorPane typeDescription;
@@ -101,44 +100,31 @@ public class NewNoteDialog extends OkCancelDialog {
     protected PangaeaNote getNote() {
         PangaeaNote n = new PangaeaNote();
         n.setName(nameText.getText());
+        String selectedContentTypeId = typeList.getSelectedContentTypeId();
+        if (selectedContentTypeId == null) {
+            throw new IllegalArgumentException("missing content type");
+        }
         if (nameText.getText() == null || nameText.getText().trim().length() == 0) {
             String betterName = typeList.getSelectedItem().toString();
             nameText.setText(betterName);
             n.setName(betterName);
             //throw new IllegalArgumentException("missing note name");
         }
+        PangaeaNoteContentType ct = PangaeaNoteContentType.of(selectedContentTypeId);
+        n.setContentType(ct.toString());
         NamedValue selectedIcon = (NamedValue) iconList.getSelectedItem();
         n.setIcon(selectedIcon != null ? selectedIcon.getId() : null);
-        NamedValue selectedContentType = (NamedValue) typeList.getSelectedItem();
-        if (selectedContentType == null) {
-            throw new IllegalArgumentException("missing content type");
-        }
-        String selectedContentTypeId = selectedContentType.getId();
-        if (selectedContentTypeId.startsWith("recent:")) {
-            selectedContentTypeId = selectedContentTypeId.substring("recent:".length());
-        }
 
-        String[] contentTypeId = selectedContentTypeId.split(":");
-        n.setContentType(contentTypeId[0]);
-        if (contentTypeId.length > 1) {
-            n.setEditorType(contentTypeId[1]);
-        }
-        switch (selectedContentTypeId) {
-            case PangaeaNoteFileService.FILE:
-            case PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT: {
-                n.setContent(typeFileValue.getContentString());
-                break;
+        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(selectedContentTypeId)) {
+            n.setContent(PangaeaNoteEmbeddedService.of(sapp.service()).getContentValueAsElement(typeFileValue.getContentString()));
+        } else {
+            PangaeaNoteTemplate z = sapp.service().getTemplate(ct);
+            if (z != null) {
+                z.prepare(n, sapp.service());
+            } else {
+                NutsElement dv = sapp.service().getContentTypeService(ct).createDefaultContent();
+                n.setContent(dv);
             }
-            default: {
-                PangaeaNoteTemplate z = sapp.service().getTemplate(selectedContentTypeId);
-                if (z != null) {
-                    z.prepare(n, sapp.service());
-                } else {
-                    String dv = sapp.service().getContentTypeService(selectedContentTypeId).createDefaultContent();
-                    n.setContent(dv);
-                }
-            }
-
         }
         List<String> recentContentTypes = new ArrayList<>();
         recentContentTypes.add(0, selectedContentTypeId);
@@ -206,8 +192,8 @@ public class NewNoteDialog extends OkCancelDialog {
         if (id == null || id.isEmpty() || id.equals("id")) {
             id = "none";
         }
-        if (id.startsWith("recent:")) {
-            id = id.substring("recent:".length());
+        if (id.startsWith("recent-")) {
+            id = id.substring("recent-".length());
         }
         String s = sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id + ".help");
         if (s.startsWith("resource://")) {
@@ -231,24 +217,22 @@ public class NewNoteDialog extends OkCancelDialog {
 
     private void onNoteTypeChange(String id) {
         if (id != null) {
-            boolean fileType = id.equals(PangaeaNoteFileService.FILE) || id.equals(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT);
+            boolean embeddedDocumentType = id.equals(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
 
-            typeFileValue.setVisible(fileType);
+            typeFileValue.setVisible(embeddedDocumentType);
 
-            typeFileValue.setAcceptAllFileFilterUsed(id.equals(PangaeaNoteFileService.FILE));
+            typeFileValue.setAcceptAllFileFilterUsed(embeddedDocumentType);
             typeFileValue.getFileFilters().clear();
-            if (id.equals(PangaeaNoteFileService.FILE)) {
-                typeFileValue.setAcceptAllFileFilterUsed(true);
-            } else if (id.equals(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT)) {
+            if (embeddedDocumentType) {
                 typeFileValue.setAcceptAllFileFilterUsed(true);
                 typeFileValue.getFileFilters().add(new ExtensionFileChooserFilter(
                         PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION,
                         sapp.app().i18n().getString("Message.pnoteDocumentFileFilter")
                 ));
             }
-            valueLabel.setVisible(fileType);
+            valueLabel.setVisible(embeddedDocumentType);
             typeDescription.setText(resolveNoteTypeDescription(id));
-            valueLabel.setText(fileType ? sapp.app().i18n().getString("Message.valueForFile") : "");
+            valueLabel.setText(embeddedDocumentType ? sapp.app().i18n().getString("Message.valueForFile") : "");
 
         } else {
             valueLabel.setVisible(false);

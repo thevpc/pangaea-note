@@ -8,14 +8,12 @@ package net.thevpc.pnote.service;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.pnote.gui.PangaeaContentTypes;
+import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.service.ContentTypeSelector;
-import net.thevpc.pnote.service.PangaeaNoteService;
-import net.thevpc.pnote.service.PangaeaNoteTypeService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -23,28 +21,28 @@ import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
  */
 public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNoteTypeService {
 
-    private String contentType;
+    private PangaeaNoteContentType contentType;
     private String icon;
+    private PangaeaNoteService service;
 
-    public AbstractPangaeaNoteSourceCodeService(String contentType, String icon) {
+    public AbstractPangaeaNoteSourceCodeService(PangaeaNoteContentType contentType, String icon) {
         this.contentType = contentType;
         this.icon = icon;
     }
 
     @Override
-    public ContentTypeSelector[] getContentTypeSelectors() {
-        return new ContentTypeSelector[]{
-            new ContentTypeSelector(getContentType(), getContentType(), PangaeaNoteTypes.EDITOR_SOURCE, "sources", 0)
-        };
+    public ContentTypeSelector getContentTypeSelector() {
+        return new ContentTypeSelector(getContentType(), "sources", 0);
     }
 
     @Override
-    public String getContentType() {
+    public PangaeaNoteContentType getContentType() {
         return contentType;
     }
 
     @Override
     public void onInstall(PangaeaNoteService service) {
+        this.service = service;
     }
 
     @Override
@@ -52,19 +50,50 @@ public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNot
         return icon;
     }
 
-    public String[] normalizeEditorTypes(String editorType) {
-        return new String[]{PangaeaNoteTypes.EDITOR_SOURCE};
+    @Override
+    public String normalizeEditorType(String editorType) {
+        return PangaeaNoteTypes.EDITOR_SOURCE;
     }
 
     @Override
     public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
         return Arrays.asList(
-                new TextStringToPatternHandler("content", note, "content", note.getContent()).iterator()
+                new TextStringToPatternHandler("content", note, "content", getContentAsString(note.getContent())).iterator()
         );
     }
 
-    @Override
-    public boolean isEmptyContent(String content) {
-        return (content == null || content.trim().length() == 0);
+    public NutsElement getContentAsElement(String s) {
+        return service.stringToElement(s);
     }
+
+    public String getContentAsString(NutsElement s) {
+        return service.elementToString(s);
+    }
+
+    @Override
+    public boolean isEmptyContent(NutsElement content) {
+        if (content == null) {
+            return true;
+        }
+        switch (content.type()) {
+            case ARRAY: {
+                return content.asArray().isEmpty();
+            }
+            case OBJECT: {
+                return content.asObject().isEmpty();
+            }
+            case STRING: {
+                return content.asString().trim().isEmpty();
+            }
+            default: {
+                return content.asString().trim().isEmpty();
+            }
+        }
+    }
+
+    @Override
+    public NutsElement createDefaultContent() {
+        return service.stringToElement("");
+    }
+
 }

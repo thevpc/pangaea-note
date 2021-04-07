@@ -6,6 +6,7 @@
 package net.thevpc.pnote.types.javascript;
 
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -16,7 +17,7 @@ public class PangaeaNoteJavascriptService extends AbstractPangaeaNoteSourceCodeS
     public static final String JAVASCRIPT = "text/javascript";
 
     public PangaeaNoteJavascriptService() {
-        super(JAVASCRIPT, "file-javascript");
+        super(PangaeaNoteContentType.of(JAVASCRIPT), "file-javascript");
     }
     
 }

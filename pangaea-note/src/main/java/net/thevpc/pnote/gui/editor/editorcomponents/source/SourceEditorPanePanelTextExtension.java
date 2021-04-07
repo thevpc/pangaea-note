@@ -18,6 +18,7 @@ import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.Application;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -47,7 +48,7 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
         addSeparator(bar, popup, context);
         addContentTypeChangeListener(context, new ContentTypeChangeListener() {
             @Override
-            public void onContentTypeChanged(String contentType, Context context) {
+            public void onContentTypeChanged(PangaeaNoteContentType contentType, Context context) {
                 if (bar != null) {
                     bar.setVisible(true);
                 }

@@ -54,7 +54,7 @@ public class ComboboxHelper {
                         super.getListCellRendererComponent(list, nv.getName(), index, isSelected, cellHasFocus);
                         if (value instanceof NamedValue) {
                             String icon = ((NamedValue) value).getIcon();
-                            setIcon((icon != null && icon.length() > 0) ? app.iconSet().icon(icon).get() : null);
+                            setIcon((icon != null && icon.length() > 0) ? app.iconSets().icon(icon).get() : null);
                         } else {
                             setIcon(null);
                         }

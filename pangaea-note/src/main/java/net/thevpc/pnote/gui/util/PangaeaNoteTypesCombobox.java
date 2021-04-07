@@ -15,6 +15,7 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.service.ContentTypeSelector;
 import net.thevpc.pnote.service.PangaeaNoteTemplate;
 import net.thevpc.pnote.service.PangaeaNoteTypeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 import net.thevpc.pnote.util.OtherUtils;
 
 /**
@@ -33,9 +34,8 @@ public class PangaeaNoteTypesCombobox extends JComboBox {
             List<NamedValue> recent = new ArrayList<>();
             for (String id : rct) {
                 if (sapp.service().isValidContentTypeExt(id)) {
-                    recent.add(
-                            new NamedValue(false, "recent:" + id, sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id),
-                                    sapp.service().getContentTypeIcon(id),0
+                    recent.add(new NamedValue(false, "recent-" + id, sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id),
+                                    sapp.service().getContentTypeIcon(PangaeaNoteContentType.of(id)), 0
                             )
                     );
                 }
@@ -55,8 +55,8 @@ public class PangaeaNoteTypesCombobox extends JComboBox {
             return null;
         }
         String id = a.getId();
-        if(id.startsWith("recent:")){
-            id=id.substring("recent:".length());
+        if (id.startsWith("recent-")) {
+            id = id.substring("recent-".length());
         }
         return id;
     }
@@ -67,32 +67,29 @@ public class PangaeaNoteTypesCombobox extends JComboBox {
 //                sapp.service().getContentTypeIcon(id)
 //        );
 //    }
-
     protected final NamedValue createNoteTypeFamilyNameGroup(String id) {
-        return new NamedValue(true, id, sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id), null,0);
+        return new NamedValue(true, id, sapp.app().i18n().getString("PangaeaNoteTypeFamily." + id), null, 0);
     }
-
 
     private List<NamedValue> createTypeListNamedValue() {
         List<NamedValue> availableTypes = new ArrayList<>();
         LinkedHashMap<String, List<NamedValue>> selectors = new LinkedHashMap<>();
-        for (String s : sapp.service().getBaseContentTypes()) {
+        for (PangaeaNoteContentType s : sapp.service().getBaseContentTypes()) {
             PangaeaNoteTypeService cs = sapp.service().getContentTypeService(s);
-            for (ContentTypeSelector contentTypeSelector : cs.getContentTypeSelectors()) {
-                String g = contentTypeSelector.getGroup();
-                List<NamedValue> li = selectors.get(g);
-                if (li == null) {
-                    li = new ArrayList<>();
-                    selectors.put(g, li);
-                }
-                li.add(
-                        new NamedValue(false, contentTypeSelector.getId(),
-                                sapp.app().i18n().getString("PangaeaNoteTypeFamily." + contentTypeSelector.getId()),
-                                sapp.service().getContentTypeIcon(contentTypeSelector.getId()),
-                                contentTypeSelector.getOrder()
-                        )
-                );
+            ContentTypeSelector contentTypeSelector = cs.getContentTypeSelector();
+            String g = contentTypeSelector.getGroup();
+            List<NamedValue> li = selectors.get(g);
+            if (li == null) {
+                li = new ArrayList<>();
+                selectors.put(g, li);
             }
+            li.add(
+                    new NamedValue(false, contentTypeSelector.getContentType().toString(),
+                            sapp.app().i18n().getString("PangaeaNoteTypeFamily." + contentTypeSelector.getContentType().toString()),
+                            sapp.service().getContentTypeIcon(contentTypeSelector.getContentType()),
+                            contentTypeSelector.getOrder()
+                    )
+            );
         }
 
         for (PangaeaNoteTemplate template : sapp.service().getTemplates()) {
@@ -107,9 +104,9 @@ public class PangaeaNoteTypesCombobox extends JComboBox {
             }
             String s = template.getLabel(sapp.service());
             if (s == null) {
-                s = sapp.app().i18n().getString("PangaeaNoteTypeFamily." + template.getId());
+                s = sapp.app().i18n().getString("PangaeaNoteTypeFamily." + template.getContentType().toString());
             }
-            NamedValue n = new NamedValue(false, template.getId(), s, sapp.service().getContentTypeIcon(template.getId()),
+            NamedValue n = new NamedValue(false, template.getContentType().toString(), s, sapp.service().getContentTypeIcon(template.getContentType()),
                     template.getOrder()
             );
             li.add(n);
@@ -122,7 +119,7 @@ public class PangaeaNoteTypesCombobox extends JComboBox {
         return availableTypes;
     }
 
-    public void setSelectedContentType(String contentType, String editorType) {
+    public void setSelectedContentType(PangaeaNoteContentType contentType, String editorType) {
         int s = getModel().getSize();
         for (int i = 0; i < s; i++) {
             NamedValue v = (NamedValue) getModel().getElementAt(i);
@@ -132,7 +129,7 @@ public class PangaeaNoteTypesCombobox extends JComboBox {
                     return;
                 }
             }
-            String ct = sapp.service().normalizeContentType(v.getId());
+            PangaeaNoteContentType ct = sapp.service().normalizeContentType(v.getId());
             if (ct.equals(contentType)) {
                 String[] ss = v.getId().split(":");
                 if (ss.length == 1) {

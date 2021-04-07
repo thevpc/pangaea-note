@@ -5,11 +5,11 @@
  */
 package net.thevpc.pnote.types.notelist.refactor;
 
-import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.refactor.PangaeaContentTypeReplacer;
 import net.thevpc.pnote.types.notelist.PangaeaNoteListService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -24,18 +24,18 @@ public class NoteListToAnythingContentTypeReplacer implements PangaeaContentType
     }
 
     @Override
-    public int getSupportLevel(PangaeaNoteExt toUpdate, String oldContentType, String newContentType) {
-        if (PangaeaNoteListService.NOTE_LIST.equals(oldContentType)) {
+    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, PangaeaNoteContentType newContentType) {
+        if (PangaeaNoteListService.C_NOTE_LIST.equals(oldContentType)) {
             return 10;
         }
         return -1;
     }
 
     @Override
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, String oldContentType, String newContentType) {
-        if (PangaeaNoteListService.NOTE_LIST.equals(oldContentType)) {
-            toUpdate.setContent("");
-            toUpdate.setContentType(newContentType);
+    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, net.thevpc.pnote.model.PangaeaNoteContentType newContentType) {
+        if (PangaeaNoteListService.C_NOTE_LIST.equals(oldContentType)) {
+            toUpdate.setContent(service.getContentTypeService(newContentType).createDefaultContent());
+            toUpdate.setContentType(newContentType.toString());
             toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
         }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
 import net.thevpc.pnote.util.OtherUtils;
 
@@ -30,7 +31,7 @@ public class PangaeaNoteExt {
     private String icon;
     private String contentType;
     private String editorType;
-    private String content;
+    private NutsElement content;
     private boolean readOnly;
     private transient boolean loaded;
     private Set<String> tags = new HashSet<String>();
@@ -45,10 +46,6 @@ public class PangaeaNoteExt {
     private String titleForeground;
     private String titleBackground;
     public transient PangaeaNoteError error;
-
-    public static PangaeaNoteExt newDocument() {
-        return of(PangaeaNote.newDocument());
-    }
 
     public static PangaeaNoteExt of(PangaeaNote n) {
         return new PangaeaNoteExt().copyFrom(n);
@@ -199,13 +196,13 @@ public class PangaeaNoteExt {
         }
     }
 
-    public String getContent() {
+    public NutsElement getContent() {
         return content;
     }
 
-    public void setContent(String value) {
+    public void setContent(NutsElement value) {
         if (!Objects.equals(this.content, value)) {
-            String old = this.content;
+            NutsElement old = this.content;
             this.content = value;
             fireChangeEvent(this, "content", old, value);
         }

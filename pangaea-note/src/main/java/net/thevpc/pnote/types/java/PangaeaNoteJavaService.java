@@ -6,6 +6,7 @@
 package net.thevpc.pnote.types.java;
 
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -16,6 +17,6 @@ public class PangaeaNoteJavaService extends AbstractPangaeaNoteSourceCodeService
     public static final String JAVA = "text/java";
 
     public PangaeaNoteJavaService() {
-        super(JAVA,"file-java");
+        super(PangaeaNoteContentType.of(JAVA),"file-java");
     }
 }

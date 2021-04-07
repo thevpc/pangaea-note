@@ -6,6 +6,7 @@
 package net.thevpc.pnote.types.c;
 
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -16,7 +17,7 @@ public class PangaeaNoteCService extends AbstractPangaeaNoteSourceCodeService {
     public static final String C = "text/c";
 
     public PangaeaNoteCService() {
-        super(C,"file-c");
+        super(PangaeaNoteContentType.of(C),"file-c");
     }
 
     

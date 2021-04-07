@@ -8,6 +8,7 @@ package net.thevpc.pnote.types.objectlist.search;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteField;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteFieldDescriptor;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteObject;
@@ -18,7 +19,6 @@ import net.thevpc.pnote.service.search.strsearch.StringToPatternPortionImpl;
 import net.thevpc.pnote.util.OtherUtils;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
-import net.thevpc.pnote.types.notelist.PangaeaNoteListService;
 import net.thevpc.pnote.types.objectlist.PangaeaObjectListService;
 
 /**
@@ -31,14 +31,13 @@ public class PangageaNoteObjectDocumentTextNavigator implements DocumentTextNavi
     private PangageaNoteObjectDocument document;
     private PangaeaNoteExt note;
 
-    public PangageaNoteObjectDocumentTextNavigator(PangaeaNoteService service, PangaeaNoteExt note, Object source) {
+    public PangageaNoteObjectDocumentTextNavigator(PangaeaNoteService service, PangaeaNoteExt note, NutsElement source) {
         this.service = service;
         this.note = note;
         PangaeaObjectListService s = (PangaeaObjectListService) service.getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
         document
                 = source == null ? new PangageaNoteObjectDocument()
-                        : source instanceof PangageaNoteObjectDocument ? (PangageaNoteObjectDocument) source
-                                : s.parseObjectDocument(String.valueOf(source));
+                        : s.getContentAsObject(source);
     }
 
     @Override

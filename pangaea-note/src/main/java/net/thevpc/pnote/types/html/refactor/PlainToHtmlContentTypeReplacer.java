@@ -9,6 +9,7 @@ import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.refactor.PangaeaContentTypeReplacer;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -23,7 +24,7 @@ public class PlainToHtmlContentTypeReplacer implements PangaeaContentTypeReplace
     }
 
     @Override
-    public int getSupportLevel(PangaeaNoteExt toUpdate, String oldContentType, String newContentType) {
+    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, PangaeaNoteContentType newContentType) {
         if (PangaeaContentTypes.isSourceCode(oldContentType)) {
             if (PangaeaContentTypes.isSourceCode(newContentType)) {
                 return 10;
@@ -43,22 +44,22 @@ public class PlainToHtmlContentTypeReplacer implements PangaeaContentTypeReplace
     }
 
     @Override
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, String oldContentType, String newContentType) {
+    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, net.thevpc.pnote.model.PangaeaNoteContentType newContentType) {
         if (PangaeaContentTypes.isSourceCode(oldContentType)) {
             if (PangaeaContentTypes.isSourceCode(newContentType)) {
-                toUpdate.setContentType(newContentType);
+                toUpdate.setContentType(newContentType.toString());
                 toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
             }
         }
         if (PangaeaContentTypes.isXmlLike(oldContentType)) {
             if (PangaeaContentTypes.isXmlLike(newContentType)) {
-                toUpdate.setContentType(newContentType);
+                toUpdate.setContentType(newContentType.toString());
                 toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
             }
         }
         if (PangaeaContentTypes.isFormattedText(oldContentType)) {
             if (PangaeaContentTypes.isFormattedText(newContentType)) {
-                toUpdate.setContentType(newContentType);
+                toUpdate.setContentType(newContentType.toString());
                 toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
             }
         }

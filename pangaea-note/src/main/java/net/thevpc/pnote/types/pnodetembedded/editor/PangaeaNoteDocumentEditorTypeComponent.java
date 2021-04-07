@@ -13,6 +13,7 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
 /**
  *
@@ -54,7 +55,8 @@ public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements Pa
     public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
         try {
             this.currentNote = note;
-            if (note.getContent() == null || note.getContent().length() == 0) {
+            String path = PangaeaNoteEmbeddedService.of(sapp.service()).getContentValueAsPath(note.getContent());
+            if (path == null || path.length() == 0) {
                 error.setText("missing file");
             } else {
                 if (!note.isLoaded()) {

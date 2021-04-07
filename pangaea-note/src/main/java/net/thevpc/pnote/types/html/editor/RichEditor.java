@@ -41,7 +41,7 @@ public class RichEditor extends JPanel implements PangaeaNoteEditorTypeComponent
             if (currentNote != null) {
 //                System.out.println("update note:" + editorBuilder.editor().getText());
                 sapp.onDocumentChanged();
-                currentNote.setContent(editorBuilder.editor().getText());
+                currentNote.setContent(sapp.service().stringToElement(editorBuilder.editor().getText()));
             }
         }
     };
@@ -119,7 +119,7 @@ public class RichEditor extends JPanel implements PangaeaNoteEditorTypeComponent
     @Override
     public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
         this.currentNote = note;
-        editorBuilder.editor().setText(note.getContent());
+        editorBuilder.editor().setText(sapp.service().elementToString(note.getContent()));
     }
 
     @Override

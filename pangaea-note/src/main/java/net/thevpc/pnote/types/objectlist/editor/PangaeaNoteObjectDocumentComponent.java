@@ -24,9 +24,7 @@ import net.thevpc.pnote.types.objectlist.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteObject;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.common.swing.list.JComponentListItem;
-import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.types.notelist.PangaeaNoteListService;
 import net.thevpc.pnote.types.objectlist.PangaeaObjectListService;
 
 /**
@@ -45,10 +43,15 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
         }
 
         @Override
-        public void onValueChanged() {
-            onValueChangedImpl();
-
+        public void onListValuesChanged() {
+            onListValuesChangedImpl();
         }
+
+        @Override
+        public void onFieldValueChanged() {
+            onFieldValueChangedImpl();
+        }
+
     };
     private JToolBar bar = new JToolBar();
     private PangaeaNoteGuiApp sapp;
@@ -128,9 +131,9 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
 
     @Override
     public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
-        PangaeaObjectListService s = (PangaeaObjectListService)sapp.service().getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
+        PangaeaObjectListService s = (PangaeaObjectListService) sapp.service().getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
         this.currentNote = note;
-        this.dynamicDocument = s.parseObjectDocument(note.getContent());
+        this.dynamicDocument = s.getContentAsObject(note.getContent());
         componentList.setAllObjects(createAllList());
         setEditable(!note.isReadOnly());
         refreshView();
@@ -151,40 +154,58 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
     private void onAddObject() {
         if (currentNote != null) {
             dynamicDocument.addValue(dynamicDocument.getDescriptor().createObject());
-            onComponentsListChanged();
+            onListValuesChangedImpl();
         }
     }
 
-    private void onComponentsListChanged() {
+    public void onStructureChangedImpl() {
+        onListValuesChangedImpl();
+    }
+
+    public void onFieldValueChangedImpl() {
+        PangaeaObjectListService s = (PangaeaObjectListService) sapp.service().getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
+        currentNote.setContent(s.getContentAsElement(this.dynamicDocument));
+        sapp.onDocumentChanged();
+    }
+
+    public void onListValuesChangedImpl() {
+        PangaeaObjectListService s = (PangaeaObjectListService) sapp.service().getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
+        currentNote.setContent(s.getContentAsElement(this.dynamicDocument));
+        sapp.onDocumentChanged();
         componentList.setAllObjects(createAllList());
         refreshView();
     }
 
-    public void onStructureChangedImpl() {
-        onValueChangedImpl();
-        onComponentsListChanged();
-    }
-
-    public void onValueChangedImpl() {
-        sapp.onDocumentChanged();
-        PangaeaObjectListService s = (PangaeaObjectListService)sapp.service().getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
-        currentNote.setContent(s.stringifyDescriptor(this.dynamicDocument)
-        );
-    }
-
     private void onRemoveAllObjects() {
         if (dynamicDocument != null) {
-            dynamicDocument.getValues().clear();
-            componentList.setAllObjects(new ArrayList<>());
-            onComponentsListChanged();
+            String s = sapp.newDialog()
+                    .setTitleId("Message.warning")
+                    .setContentTextId("Message.askDeleteAllObjects")
+                    .withYesNoButtons()
+                    .build().showDialog();
+
+            if ("yes".equals(s)) {
+                dynamicDocument.getValues().clear();
+                componentList.setAllObjects(new ArrayList<>());
+                onListValuesChangedImpl();
+            }
+
         }
     }
 
     private void onRemoveObjectAt(int index) {
         if (dynamicDocument != null) {
             if (dynamicDocument.getValues() != null) {
-                dynamicDocument.getValues().remove(index);
-                onComponentsListChanged();
+                String s = sapp.newDialog()
+                        .setTitleId("Message.warning")
+                        .setContentTextId("Message.askDeleteObject")
+                        .withYesNoButtons()
+                        .build().showDialog();
+
+                if ("yes".equals(s)) {
+                    dynamicDocument.getValues().remove(index);
+                    onListValuesChangedImpl();
+                }
             }
         }
     }
@@ -202,7 +223,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
             _ensureValues();
             PangaeaNoteObject o = dynamicDocument.getValues().get(index);
             dynamicDocument.getValues().add(index + 1, o.copy());
-            onComponentsListChanged();
+            onListValuesChangedImpl();
         }
     }
 
@@ -214,7 +235,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
         if (dynamicDocument != null) {
             _ensureValues();
             _onSwitchValues(index, index - 1);
-            onComponentsListChanged();
+            onListValuesChangedImpl();
         }
     }
 
@@ -222,7 +243,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
         if (dynamicDocument != null) {
             _ensureValues();
             _onSwitchValues(index, index + 1);
-            onComponentsListChanged();
+            onListValuesChangedImpl();
         }
     }
 
@@ -232,7 +253,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
                 dynamicDocument.setValues(new ArrayList<>());
             }
             dynamicDocument.getValues().add(index, dynamicDocument.getDescriptor().createObject());
-            onComponentsListChanged();
+            onListValuesChangedImpl();
         }
     }
 

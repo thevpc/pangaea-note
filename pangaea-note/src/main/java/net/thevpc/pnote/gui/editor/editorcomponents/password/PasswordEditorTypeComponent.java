@@ -35,7 +35,7 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
             public void anyChange(DocumentEvent e) {
                 if (currentNote != null) {
                     sapp.onDocumentChanged();
-                    currentNote.setContent(text.getContentString());
+                    currentNote.setContent(sapp.service().stringToElement(text.getContentString()));
                 }
             }
         });
@@ -62,7 +62,7 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
         if (note == null) {
             text.setContentString("");
         } else {
-            text.setContentString(note.getContent());
+            text.setContentString(sapp.service().elementToString(note.getContent()));
         }
         text.setEditable(!note.isReadOnly());
     }

@@ -24,8 +24,6 @@ import net.thevpc.common.swing.list.JComponentList;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.common.swing.list.JComponentListItem;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
-import net.thevpc.pnote.gui.PangaeaContentTypes;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.dialogs.EditNoteDialog;
 import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.model.PangaeaNote;
@@ -100,7 +98,7 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
     @Override
     public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
         this.currentNote = note;
-        PangaeaNoteListService s = (PangaeaNoteListService) sapp.service().getContentTypeService(PangaeaNoteListService.NOTE_LIST);
+        PangaeaNoteListService s = (PangaeaNoteListService) sapp.service().getContentTypeService(PangaeaNoteListService.C_NOTE_LIST);
         this.noteListModel = s.parseNoteListModel(note.getContent());
         if (this.noteListModel == null) {
             this.noteListModel = new PangageaNoteListModel();
@@ -118,7 +116,7 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
                 n.remove(name);
             }
             sapp.onDocumentChanged();
-            PangaeaNoteListService s = (PangaeaNoteListService) sapp.service().getContentTypeService(PangaeaNoteListService.NOTE_LIST);
+            PangaeaNoteListService s = (PangaeaNoteListService) sapp.service().getContentTypeService(PangaeaNoteListService.C_NOTE_LIST);
             this.currentNote.setContent(s.stringifyNoteListInfo(this.noteListModel));
         }
         return false;
@@ -280,11 +278,12 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
             b = GuiHelper.parseColor(value.getTitleForeground());
             check.setForeground(b != null ? b : _foreground);
             String iconName = sapp.service().getNoteIcon(value.toNote(), value.getChildren().size() > 0, false);
-            Icon icon = sapp.app().iconSet().icon(iconName).get();
+            Icon icon = sapp.app().iconSets().icon(iconName).get();
             border.setIcon(icon);
             repaint();
         }
 
+        @Override
         public void setEditable(boolean editable) {
             super.setEditable(editable);
             check.setEnabled(editable);

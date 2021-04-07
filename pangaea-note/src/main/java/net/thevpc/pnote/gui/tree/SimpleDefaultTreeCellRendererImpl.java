@@ -14,10 +14,8 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import net.thevpc.echo.Application;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.util.OtherUtils;
 import sun.swing.DefaultLookup;
 
 /**
@@ -105,7 +103,7 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
         if (value instanceof PangaeaNoteExt) {
             PangaeaNoteExt n = (PangaeaNoteExt) value;
             String iconName = sapp.service().getNoteIcon(n.toNote(), n.getChildren().size() > 0, expanded);
-            Icon icon = app.iconSet().icon(iconName).get();
+            Icon icon = app.iconSets().icon(iconName).get();
             setIcon(icon);
         } else {
             setIcon(resolveIcon("file"));
@@ -117,7 +115,7 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
         if (name == null || name.length() == 0) {
             return null;
         }
-        return app.iconSet().icon(name).get();
+        return app.iconSets().icon(name).get();
     }
 
 }

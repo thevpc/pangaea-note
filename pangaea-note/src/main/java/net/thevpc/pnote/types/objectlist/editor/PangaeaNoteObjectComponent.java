@@ -28,7 +28,7 @@ import net.thevpc.pnote.types.objectlist.model.PangaeaNoteFieldType;
  */
 public class PangaeaNoteObjectComponent extends JPanel {
 
-    private boolean editable=true;
+    private boolean editable = true;
     private PangaeaNoteObjectExt currentValue;
     private List<PangaeaNoteFieldDescriptorPanel> components = new ArrayList<>();
     private PangaeaNoteObjectTracker objectTracker;
@@ -42,9 +42,19 @@ public class PangaeaNoteObjectComponent extends JPanel {
         }
 
         @Override
-        public void onValueChanged() {
-            objectTracker.onValueChanged();
+        public void onListValuesChanged() {
+            if (objectTracker != null) {
+                objectTracker.onListValuesChanged();
+            }
         }
+
+        @Override
+        public void onFieldValueChanged() {
+            if (objectTracker != null) {
+                objectTracker.onFieldValueChanged();
+            }
+        }
+
     };
 
     public PangaeaNoteObjectComponent(PangaeaNoteObjectTracker objectTracker, PangaeaNoteGuiApp sapp) {
@@ -142,8 +152,8 @@ public class PangaeaNoteObjectComponent extends JPanel {
             PangaeaNoteFieldDescriptorPanel cad = components.get(i);
             if (cad.getDescr().getType() == PangaeaNoteFieldType.TEXTAREA) {
                 c.gridy = row;
+                c.gridwidth = 3;
                 c.gridheight = 1;
-                c.gridwidth = 2;
                 c.gridx = 0;
                 c.weighty = 0;
                 add(cad.getLabel(), c.clone());
@@ -194,14 +204,15 @@ public class PangaeaNoteObjectComponent extends JPanel {
             component.setEditable(isEditable());
         }
     }
-    
-    public void setEditable(boolean b){
-        this.editable=b;
+
+    public void setEditable(boolean b) {
+        this.editable = b;
         for (PangaeaNoteFieldDescriptorPanel component : components) {
             component.setEditable(b);
         }
     }
-    public boolean isEditable(){
+
+    public boolean isEditable() {
         return editable;
     }
 

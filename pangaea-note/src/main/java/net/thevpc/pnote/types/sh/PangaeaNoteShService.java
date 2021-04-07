@@ -6,6 +6,7 @@
 package net.thevpc.pnote.types.sh;
 
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -16,7 +17,8 @@ public class PangaeaNoteShService extends AbstractPangaeaNoteSourceCodeService {
     public static final String SH = "text/sh";
 
     public PangaeaNoteShService() {
-        super(SH, "file-sh");
+        super(PangaeaNoteContentType.of(SH), "file-sh");
     }
+    
 
 }

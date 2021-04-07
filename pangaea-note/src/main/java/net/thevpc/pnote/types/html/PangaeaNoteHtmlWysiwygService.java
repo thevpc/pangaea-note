@@ -33,38 +33,36 @@ import org.w3c.tidy.Tidy;
  *
  * @author vpc
  */
-public class PangaeaNoteHtmlService implements PangaeaNoteTypeService {
+public class PangaeaNoteHtmlWysiwygService implements PangaeaNoteTypeService {
 
-    public static final PangaeaNoteContentType HTML = PangaeaNoteContentType.of("text/html");
-
+    public static final PangaeaNoteContentType RICH_HTML = PangaeaNoteContentType.of("text/html;editor=wysiwyg");
     private PangaeaNoteService service;
-
-    public PangaeaNoteHtmlService() {
+    public PangaeaNoteHtmlWysiwygService() {
     }
 
     @Override
     public ContentTypeSelector getContentTypeSelector() {
-        return new ContentTypeSelector(getContentType(), "sources", 0);
+        return new ContentTypeSelector(getContentType(), "simple-documents", 0);
     }
 
     @Override
     public PangaeaNoteContentType getContentType() {
-        return HTML;
+        return RICH_HTML;
     }
 
     @Override
     public void onInstall(PangaeaNoteService service) {
-        this.service = service;
+        this.service=service;
         service.installTypeReplacer(new PlainToHtmlContentTypeReplacer(service));
     }
 
     @Override
     public String getContentTypeIcon(boolean folder, boolean expanded) {
-        return "file-html";
+        return "datatype-rich";
     }
 
     public String normalizeEditorType(String editorType) {
-        return PangaeaNoteTypes.EDITOR_SOURCE;
+        return PangaeaNoteTypes.EDITOR_WYSIWYG;
     }
 
     @Override
@@ -83,10 +81,6 @@ public class PangaeaNoteHtmlService implements PangaeaNoteTypeService {
         return null;
     }
 
-    public String getContentAsString(NutsElement e) {
-        return service.elementToString(e);
-    }
-
     @Override
     public boolean isEmptyContent(NutsElement element) {
         String content = service.elementToString(element);
@@ -94,6 +88,10 @@ public class PangaeaNoteHtmlService implements PangaeaNoteTypeService {
             return true;
         }
         return extractTextFromHtml(content).trim().isEmpty();
+    }
+    
+    public String getContentAsString(NutsElement e) {
+        return service.elementToString(e);
     }
 
     private String extractTextFromHtml(String content) {
@@ -125,10 +123,9 @@ public class PangaeaNoteHtmlService implements PangaeaNoteTypeService {
         }
         return text.toString();
     }
-
-    @Override
+    
+      @Override
     public NutsElement createDefaultContent() {
         return service.stringToElement("");
     }
-
 }

@@ -30,6 +30,7 @@ import net.thevpc.common.swing.ObjectListModelListener;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtensionHandler;
 import net.thevpc.pnote.service.PangaeaNoteExtEditorListener;
 import net.thevpc.pnote.service.PangaeaNoteTypeService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -42,16 +43,6 @@ public class PangaeaNoteEditor extends JPanel {
     private PangaeaNoteExt currentNote;
     private JPanel container;
     private String editorTypeI18nPrefix = "EditorType";
-    private JTabbedButtons noteEditorsSelector /*{
-        @Override
-        protected void updateButton(JButton b, int pos, int size) {
-            b.setOpaque(false);
-            b.setBackground(null);
-            b.setMargin(new Insets(0, 0, 0, 0));
-            b.setBorder(new RoundedBorder(5));
-        }
-    }*/;
-    private Component editorsSelectorSuffix;
     private List<PangaeaNoteExtEditorListener> listeners = new ArrayList<>();
     private EditorOnLocalChangePropertyListenerImpl editorOnLocalChangePropertyListenerImpl = new EditorOnLocalChangePropertyListenerImpl();
     private PangaeaNoteGuiApp sapp;
@@ -67,26 +58,6 @@ public class PangaeaNoteEditor extends JPanel {
         this.setBorder(null);
         container = this;
 //        add(container, BorderLayout.CENTER);
-
-        if (!compactMode) {
-            Box hb = Box.createHorizontalBox();
-            noteEditorsSelector = new JTabbedButtons();
-            editorsSelectorSuffix = Box.createHorizontalStrut(5);
-            hb.add(noteEditorsSelector);
-            hb.add(editorsSelectorSuffix);
-            hb.add(Box.createHorizontalGlue());
-            add(hb, BorderLayout.NORTH);
-            noteEditorsSelector.addListener(new ObjectListModelListener() {
-                @Override
-                public void onSelected(Object component, int index) {
-                    String editorType = (String) component;
-                    if (currentNote != null) {
-                        currentNote.setEditorType(editorType);
-                        setNote(currentNote);
-                    }
-                }
-            });
-        }
 
         components.put("empty", new EmpyNNodtEditorTypeComponent());
         components.put(PangaeaNoteTypes.EDITOR_UNSUPPORTED, new UnsupportedEditorTypeComponent());
@@ -119,8 +90,8 @@ public class PangaeaNoteEditor extends JPanel {
 
     public PangaeaNoteEditorTypeComponent createEditor(String name) {
         for (PangaeaNoteTypeService t : sapp.service().getContentTypeServices()) {
-            PangaeaNoteEditorTypeComponent c=t.createEditor(name,compactMode,sapp);
-            if(c!=null){
+            PangaeaNoteEditorTypeComponent c = t.createEditor(name, compactMode, sapp);
+            if (c != null) {
                 return c;
             }
         }
@@ -154,9 +125,9 @@ public class PangaeaNoteEditor extends JPanel {
         ((CardLayout) container.getLayout()).show(container, okName);
     }
 
-    public ObjectListModel createEditorTypeModel(String contentType) {
+    public ObjectListModel createEditorTypeModel(PangaeaNoteContentType contentType) {
         contentType = sapp.service().normalizeContentType(contentType);
-        String[] all = sapp.service().getEditorTypes(contentType);
+        String all = sapp.service().getEditorType(contentType);
         return new DefaultObjectListModel(
                 Arrays.asList(all),
                 x -> app.i18n().getString(editorTypeI18nPrefix + "." + x)
@@ -172,19 +143,8 @@ public class PangaeaNoteEditor extends JPanel {
         if (note == null) {
             showEditor("empty");
         } else {
-            String contentType = sapp.service().normalizeContentType(note.getContentType());
+            PangaeaNoteContentType contentType = sapp.service().normalizeContentType(note.getContentType());
             String editorType = sapp.service().normalizeEditorType(contentType, note.getEditorType());
-            String[] all = sapp.service().getEditorTypes(contentType);
-            if (!compactMode) {
-                if (all.length == 0 || all.length == 1) {
-                    noteEditorsSelector.setVisible(true);
-                    editorsSelectorSuffix.setVisible(true);
-                } else {
-                    noteEditorsSelector.setVisible(true);
-                    editorsSelectorSuffix.setVisible(true);
-                    noteEditorsSelector.setModel(createEditorTypeModel(contentType));
-                }
-            }
             getEditor(editorType).setNote(note, sapp);//TODO FIX ME
             showEditor(editorType);
         }
@@ -197,11 +157,6 @@ public class PangaeaNoteEditor extends JPanel {
 
         @Override
         public void propertyUpdated(PropertyEvent e) {
-            if (!compactMode) {
-                noteEditorsSelector.setModel(createEditorTypeModel(
-                        currentNote == null ? null : currentNote.getContentType()
-                ));
-            }
         }
     }
 

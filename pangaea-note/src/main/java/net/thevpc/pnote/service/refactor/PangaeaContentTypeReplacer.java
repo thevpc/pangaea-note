@@ -6,12 +6,13 @@
 package net.thevpc.pnote.service.refactor;
 
 import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
  * @author vpc
  */
 public interface PangaeaContentTypeReplacer {
-    int getSupportLevel(PangaeaNoteExt toUpdate, String oldContentType, String newContentType);
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, String oldContentType, String newContentType);
+    int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, PangaeaNoteContentType newContentType);
+    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, net.thevpc.pnote.model.PangaeaNoteContentType newContentType);
 }

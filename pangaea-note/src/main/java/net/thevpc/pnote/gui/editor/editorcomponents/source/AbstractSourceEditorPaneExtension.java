@@ -13,14 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JEditorPane;
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.text.EditorKit;
+import net.thevpc.common.swing.JDropDownButton;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -36,6 +40,120 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
             }
         };
     }
+
+    public static class ActionInfo {
+
+        private String id;
+        private ActionListener listener;
+        private String messageId;
+        private String constMessage;
+        private Icon constIcon;
+
+        public ActionInfo(String id, ActionListener a) {
+            this.id = id;
+            this.listener = a;
+        }
+
+        public String getMessageId() {
+            return messageId;
+        }
+
+        public ActionInfo setMessageId(String messageId) {
+            this.messageId = messageId;
+            return this;
+        }
+
+        public String getConstMessage() {
+            return constMessage;
+        }
+
+        public ActionInfo setConstMessage(String staticMessage) {
+            this.constMessage = staticMessage;
+            return this;
+        }
+
+        public Icon getConstIcon() {
+            return constIcon;
+        }
+
+        public ActionInfo setConstIcon(Icon constIcon) {
+            this.constIcon = constIcon;
+            return this;
+        }
+
+    }
+
+    public void addActionList(String id, ActionInfo[] sub, JToolBar bar, JPopupMenu popup, Context context) {
+        if (bar != null) {
+            JDropDownButton insertMenu = new JDropDownButton("");
+            insertMenu.setHideActionText(true);
+            SwingApplicationsHelper.registerButton(insertMenu, null, "$Action." + id+".icon", context.sapp.app());
+            insertMenu.setQuickActionDelay(0);
+            for (ActionInfo actionInfo : sub) {
+                if (actionInfo == null) {
+                    insertMenu.addSeparator();
+                } else {
+                    Action a = null;
+                    if (!(actionInfo.listener instanceof Action)) {
+                        a = al(actionInfo.listener);
+                    } else {
+                        a = (Action) actionInfo.listener;
+                    }
+                    String messageId = "Action." + actionInfo.id;
+                    String iconId = "$Action." + actionInfo.id + ".icon";
+                    if (actionInfo.messageId != null) {
+                        messageId = actionInfo.messageId;
+                    }
+                    if (actionInfo.constMessage != null) {
+                        messageId = null;
+                        a.putValue(AbstractAction.NAME, actionInfo.constMessage);
+                    }
+                    if (actionInfo.constIcon != null) {
+                        iconId = null;
+                        a.putValue(AbstractAction.SMALL_ICON, actionInfo.constIcon);
+                    }
+                    insertMenu.add(SwingApplicationsHelper.registerAction(a, messageId, iconId, context.app()));
+                }
+            }
+            bar.add(insertMenu);
+        }
+        if (popup != null) {
+            JMenu insertMenu = new JMenu("");
+            SwingApplicationsHelper.registerButton(insertMenu, "Action."+id, "$Action."+id+".icon", context.sapp.app());
+            for (ActionInfo actionInfo : sub) {
+                if (actionInfo == null) {
+                    insertMenu.addSeparator();
+                } else {
+                    Action a = null;
+                    if (!(actionInfo.listener instanceof Action)) {
+                        a = al(actionInfo.listener);
+                    } else {
+                        a = (Action) actionInfo.listener;
+                    }
+                    String messageId = "Action." + actionInfo.id;
+                    String iconId = "$Action." + actionInfo.id + ".icon";
+                    if (actionInfo.messageId != null) {
+                        messageId = actionInfo.messageId;
+                    }
+                    if (actionInfo.constMessage != null) {
+                        messageId = null;
+                        a.putValue(AbstractAction.NAME, actionInfo.constMessage);
+                    }
+                    if (actionInfo.constIcon != null) {
+                        iconId = null;
+                        a.putValue(AbstractAction.SMALL_ICON, actionInfo.constIcon);
+                    }
+                    insertMenu.add(SwingApplicationsHelper.registerAction(a, messageId, iconId, context.app()));
+                }
+            }
+            popup.add(insertMenu);
+        }
+    }
+
+    public void addAction(ActionInfo id, JToolBar bar, JPopupMenu popup, Context context) {
+        addActionListener(id.id, id.listener, bar, popup, context);
+    }
+
     public void addActionListener(String id, ActionListener a, JToolBar bar, JPopupMenu popup, Context context) {
         Action pa = prepareAction(id, al(a), context);
         if (bar != null) {
@@ -69,7 +187,7 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
         SwingApplicationsHelper.unregisterAction(a, context.app());
         return a;
     }
-    
+
     public Action prepareAction(String id, Action a, Context context) {
         SwingApplicationsHelper.registerAction(a, "Action." + id, "$Action." + id + ".icon", context.app());
         context.add(a);
@@ -94,7 +212,7 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
 
     public static interface ContentTypeChangeListener {
 
-        void onContentTypeChanged(String contentType, Context context);
+        void onContentTypeChanged(PangaeaNoteContentType contentType, Context context);
     }
 
     public static class Context {
@@ -117,6 +235,7 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
         public Application app() {
             return app;
         }
+
         public PangaeaNoteService service() {
             return sapp.service();
         }

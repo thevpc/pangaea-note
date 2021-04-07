@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
@@ -28,6 +29,7 @@ import net.thevpc.pnote.types.objectlist.templates.UrlCardTemplate;
 import net.thevpc.pnote.types.objectlist.templates.WifiConnectionTemplate;
 import net.thevpc.pnote.types.objectlist.refactor.ObjectListToAnythingContentTypeReplacer;
 import net.thevpc.pnote.types.objectlist.search.PangageaNoteObjectDocumentTextNavigator;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -35,7 +37,7 @@ import net.thevpc.pnote.types.objectlist.search.PangageaNoteObjectDocumentTextNa
  */
 public class PangaeaObjectListService implements PangaeaNoteTypeService {
 
-    public static final String OBJECT_LIST = "application/pangaea-object-list";
+    public static final PangaeaNoteContentType OBJECT_LIST = PangaeaNoteContentType.of("application/pangaea-object-list");
 
     private PangaeaNoteService service;
 
@@ -43,14 +45,12 @@ public class PangaeaObjectListService implements PangaeaNoteTypeService {
     }
 
     @Override
-    public ContentTypeSelector[] getContentTypeSelectors() {
-        return new ContentTypeSelector[]{
-            new ContentTypeSelector(getContentType(), getContentType(), PangaeaNoteTypes.EDITOR_OBJECT_LIST, "simple-documents", 0)
-        };
+    public ContentTypeSelector getContentTypeSelector() {
+        return new ContentTypeSelector(getContentType(), "simple-documents", 0);
     }
 
     @Override
-    public String getContentType() {
+    public PangaeaNoteContentType getContentType() {
         return OBJECT_LIST;
     }
 
@@ -71,8 +71,8 @@ public class PangaeaObjectListService implements PangaeaNoteTypeService {
         return "pangaea-object-list";
     }
 
-    public String[] normalizeEditorTypes(String editorType) {
-        return new String[]{PangaeaNoteTypes.EDITOR_OBJECT_LIST};
+    public String normalizeEditorType(String editorType) {
+        return PangaeaNoteTypes.EDITOR_OBJECT_LIST;
     }
 
     @Override
@@ -92,27 +92,24 @@ public class PangaeaObjectListService implements PangaeaNoteTypeService {
     }
 
     @Override
-    public String createDefaultContent() {
-        return stringifyDescriptor(new PangageaNoteObjectDocument()
+    public NutsElement createDefaultContent() {
+        return getContentAsElement(new PangageaNoteObjectDocument()
                 .setDescriptor(new PangaeaNoteObjectDescriptor())
                 .setValues(new ArrayList<>())
         );
     }
 
-    public String stringifyDescriptor(PangageaNoteObjectDocument dynamicDocument) {
-        return service.stringifyAny(dynamicDocument);
+    public NutsElement getContentAsElement(PangageaNoteObjectDocument dynamicDocument) {
+        return service.element().convert(dynamicDocument, NutsElement.class);
     }
 
-    public PangageaNoteObjectDocument parseObjectDocument(String s) {
-        return service.parseAny(s, PangageaNoteObjectDocument.class);
+    public PangageaNoteObjectDocument getContentAsObject(NutsElement s) {
+        return service.element().convert(s, PangageaNoteObjectDocument.class);
     }
 
     @Override
-    public boolean isEmptyContent(String content) {
-        if (content == null || content.trim().length() == 0) {
-            return true;
-        }
-        PangageaNoteObjectDocument a = parseObjectDocument(content);
+    public boolean isEmptyContent(NutsElement content) {
+        PangageaNoteObjectDocument a = getContentAsObject(content);
         if (a == null) {
             return true;
         }

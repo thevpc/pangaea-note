@@ -6,18 +6,19 @@
 package net.thevpc.pnote.service;
 
 import net.thevpc.pnote.model.PangaeaNote;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
  * @author vpc
  */
-public interface PangaeaNoteTemplate {
+public interface PangaeaNoteTemplate extends PangaeaNoteTypeServiceBase{
 
     default String getGroup(){
         return "templates";
     }
 
-    String getId();
+    PangaeaNoteContentType getContentType();
 
     String getIcon();
 

@@ -7,7 +7,6 @@ package net.thevpc.pnote.types.objectlist.templates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.types.objectlist.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteFieldDescriptor;
 import net.thevpc.pnote.model.PangaeaNote;
@@ -15,7 +14,6 @@ import net.thevpc.pnote.types.objectlist.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteFieldType;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.templates.AbstractPangaeaNoteTemplate;
-import net.thevpc.pnote.types.notelist.PangaeaNoteListService;
 import net.thevpc.pnote.types.objectlist.PangaeaObjectListService;
 
 /**
@@ -37,8 +35,8 @@ public class UrlCardTemplate extends AbstractPangaeaNoteTemplate {
                         .addField(new PangaeaNoteFieldDescriptor().setName(str("password",service)).setType(PangaeaNoteFieldType.PASSWORD))
                         .addField(new PangaeaNoteFieldDescriptor().setName(str("url",service)).setType(PangaeaNoteFieldType.URL))
                         .addField(new PangaeaNoteFieldDescriptor().setName(str("notes",service)).setType(PangaeaNoteFieldType.TEXTAREA)));
-        n.setContentType(PangaeaObjectListService.OBJECT_LIST);
-        n.setContent(s.stringifyDescriptor(doc.setValues(new ArrayList<>(Arrays.asList(doc.getDescriptor().createObject())))));
+        n.setContentType(PangaeaObjectListService.OBJECT_LIST.toString());
+        n.setContent(s.getContentAsElement(doc.setValues(new ArrayList<>(Arrays.asList(doc.getDescriptor().createObject())))));
     }
 
 }

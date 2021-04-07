@@ -35,7 +35,7 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
             public void anyChange(DocumentEvent e) {
                 if (currentNote != null) {
                     sapp.onDocumentChanged();
-                    currentNote.setContent(text.getText());
+                    currentNote.setContent(sapp.service().stringToElement(text.getText()));
                 }
             }
         });
@@ -62,7 +62,7 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
         if (note == null) {
             text.setText("");
         } else {
-            text.setText(note.getContent());
+            text.setText(sapp.service().elementToString(note.getContent()));
         }
         text.setEditable(!note.isReadOnly());
 

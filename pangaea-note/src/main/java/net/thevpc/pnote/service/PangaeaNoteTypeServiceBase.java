@@ -3,16 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.thevpc.pnote.types.objectlist.editor;
+package net.thevpc.pnote.service;
+
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
  * @author vpc
  */
-public interface PangaeaNoteObjectTracker {
-
-    void onStructureChanged();
-
-    void onListValuesChanged();
-    void onFieldValueChanged();
+public interface PangaeaNoteTypeServiceBase {
+    PangaeaNoteContentType getContentType();
+    
 }

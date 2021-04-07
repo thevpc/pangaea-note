@@ -5,9 +5,9 @@
  */
 package net.thevpc.pnote.service.refactor;
 
-import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
  *
@@ -22,17 +22,17 @@ public class AnythingToPlainContentTypeReplacer implements PangaeaContentTypeRep
     }
 
     @Override
-    public int getSupportLevel(PangaeaNoteExt toUpdate, String oldContentType, String newContentType) {
-        if (newContentType.startsWith("text/")) {
+    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, PangaeaNoteContentType newContentType) {
+        if (newContentType.getMajor().endsWith("text")) {
             return 10;
         }
         return -1;
     }
 
     @Override
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, String oldContentType, String newContentType) {
-        if (newContentType.startsWith("text/")) {
-            toUpdate.setContentType(newContentType);
+    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, net.thevpc.pnote.model.PangaeaNoteContentType newContentType) {
+        if (newContentType.getMajor().endsWith("text")) {
+            toUpdate.setContentType(newContentType.toString());
             toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
         }
         

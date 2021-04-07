@@ -34,7 +34,6 @@ import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.gui.components.TextAreaComponent;
 import net.thevpc.pnote.gui.components.TextFieldComponent;
 import net.thevpc.pnote.gui.components.URLComponent;
-import net.thevpc.echo.swing.core.dialog.SwingAppDialog;
 import net.thevpc.pnote.types.objectlist.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteField;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteFieldDescriptor;
@@ -146,7 +145,7 @@ class PangaeaNoteFieldDescriptorPanel {
             this.field.setValue(getStringValue());
         }
         if (objectTracker != null) {
-            objectTracker.onValueChanged();
+            objectTracker.onListValuesChanged();
         }
     }
 
@@ -342,8 +341,16 @@ class PangaeaNoteFieldDescriptorPanel {
 
     public void onRemoveField() {
         if (document != null) {
-            document.removeField(descr.getName());
-            callOnStructureChanged();
+            String s = sapp.newDialog()
+                    .setTitleId("Message.warning")
+                    .setContentTextId("Message.askDeleteField")
+                    .withYesNoButtons()
+                    .build().showDialog();
+
+            if ("yes".equals(s)) {
+                document.removeField(descr.getName());
+                callOnStructureChanged();
+            }
         }
     }
 

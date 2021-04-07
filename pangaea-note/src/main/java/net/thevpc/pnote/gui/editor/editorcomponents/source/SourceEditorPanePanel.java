@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
-import net.thevpc.pnote.types.html.editor.SourceEditorPanePanelHtmlExtension;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -40,13 +39,12 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
     private boolean editable = true;
     private PangaeaNoteGuiApp sapp;
     private SourceEditorPaneExtension textExtension = new SourceEditorPanePanelTextExtension();
-    private SourceEditorPaneExtension htmlExtension = new SourceEditorPanePanelHtmlExtension();
     DocumentListener documentListener = new AnyDocumentListener() {
         public void anyChange(DocumentEvent e) {
             if (currentNote != null) {
 //                System.out.println("update note:" + editorBuilder.editor().getText());
                 sapp.onDocumentChanged();
-                currentNote.setContent(editorBuilder.editor().getText());
+                currentNote.setContent(sapp.service().stringToElement(editorBuilder.editor().getText()));
             }
         }
     };
@@ -99,7 +97,6 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
             editorBuilder.editor().setComponentPopupMenu(popup);
         }
         textExtension.prepareEditor(editorBuilder, compactMode, sapp);
-        htmlExtension.prepareEditor(editorBuilder, compactMode, sapp);
         if (!compactMode) {
             this.editorBuilder.header().addGlue();
         }
@@ -136,19 +133,15 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
     @Override
     public void uninstall() {
         textExtension.uninstall(editorBuilder, sapp);
-        htmlExtension.uninstall(editorBuilder, sapp);
     }
 
     @Override
     public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
         this.currentNote = note;
-        String c = note.getContent();
+        String c = sapp.service().elementToString(note.getContent());
         String type = note.getContentType();
         if (type == null) {
             type = "";
-        }
-        if (source && "text/html".equals(type)) {
-            type = "text/plain";//should change this
         }
         editorBuilder.editor().setContentType(type.isEmpty() ? "text/plain" : type);
         editorBuilder.editor().setText(c == null ? "" : c);

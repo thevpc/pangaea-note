@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
@@ -22,17 +23,7 @@ import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
  */
 public class PangaeaNote implements Cloneable {
 
-    public static PangaeaNote newDocument() {
-        return newDocument(null).setLoaded(true);
-    }
-
-    public static PangaeaNote newDocument(String path) {
-        PangaeaNote n = new PangaeaNote();
-        n.setName("pangaea-note-document");
-        n.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT);
-        n.setContent(path);
-        return n;
-    }
+    
 
     private String version;
     private Instant creationTime;
@@ -48,7 +39,7 @@ public class PangaeaNote implements Cloneable {
     private String folderIcon;
     private String contentType;
     private String editorType;
-    private String content;
+    private NutsElement content;
     private boolean readOnly;
     private Set<String> tags = new HashSet<String>();
     private List<PangaeaNote> children = new ArrayList<>();
@@ -82,11 +73,11 @@ public class PangaeaNote implements Cloneable {
         this.editorType = editorType;
     }
 
-    public String getContent() {
+    public NutsElement getContent() {
         return content;
     }
 
-    public PangaeaNote setContent(String content) {
+    public PangaeaNote setContent(NutsElement content) {
         this.content = content;
         return this;
     }

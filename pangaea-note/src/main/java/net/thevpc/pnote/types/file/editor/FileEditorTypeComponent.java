@@ -40,7 +40,7 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
                 if (currentNote != null) {
                     String t = comp.getTextField().getText();
                     if (!Objects.equals(t, currentNote.getContent())) {
-                        currentNote.setContent(t);
+                        currentNote.setContent(sapp.service().stringToElement(t));
                         sapp.onDocumentChanged();
                     }
                 }
@@ -52,7 +52,7 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
                 if (currentNote != null) {
                     String t = comp.getTextField().getText();
                     if (!Objects.equals(t, currentNote.getContent())) {
-                        currentNote.setContent(t);
+                        currentNote.setContent(sapp.service().stringToElement(t));
                         sapp.onDocumentChanged();
                     }
 
@@ -109,7 +109,7 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
     @Override
     public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
         this.currentNote = note;
-        String c = note.getContent();
+        String c = sapp.service().elementToString(note.getContent());
         fileViewer.load(c);
     }
 

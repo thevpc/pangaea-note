@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.gui;
 
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 
 /**

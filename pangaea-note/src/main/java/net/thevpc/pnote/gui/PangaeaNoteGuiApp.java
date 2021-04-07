@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.gui;
 
+import java.awt.Color;
 import net.thevpc.pnote.service.security.OpenWallet;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
 import java.awt.event.ActionEvent;
@@ -29,7 +30,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import net.thevpc.common.iconset.ResourcesIconSet;
+import net.thevpc.common.iconset.ColorIconTransform;
+import net.thevpc.common.iconset.DefaultIconSet;
+import net.thevpc.common.iconset.NoIconSet;
 import net.thevpc.common.swing.DateTimeLabel;
 import net.thevpc.common.swing.DefaultRecentFilesModel;
 import net.thevpc.common.swing.ExtensionFileChooserFilter;
@@ -77,6 +80,7 @@ import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.model.ReturnType;
 import net.thevpc.swing.plaf.UIPlafListener;
 import net.thevpc.echo.AppDialogResult;
+import net.thevpc.pnote.extensions.CherryTreeImporter;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
 /**
@@ -175,8 +179,9 @@ public class PangaeaNoteGuiApp {
     }
 
     public void bindConfig() {
-        app.iconSet().id().listeners().add(x -> {
-            config.setIconSet(((String) x.getNewValue()));
+        app.iconSets().listeners().add(x -> {
+            config.setIconSet(app.iconSets().id().get());
+            config.setIconSetSize(app.iconSets().config().get().getWidth());
             saveConfig();
         });
         app.i18n().locale().listeners().add(x -> {
@@ -215,7 +220,7 @@ public class PangaeaNoteGuiApp {
         config = service.loadConfig(() -> {
             //default config...
             PangaeaNoteConfig c = new PangaeaNoteConfig();
-            c.setIconSet("feather-black-16");
+            c.setIconSet("feather-black");
             c.setPlaf("FlatLight");
             return c;
         });
@@ -223,7 +228,12 @@ public class PangaeaNoteGuiApp {
 
     public void applyConfigToUI() {
         if (app.iconSets().containsKey(config.getIconSet())) {
-            app.iconSet().id().set(config.getIconSet());
+            app.iconSets().id().set(config.getIconSet());
+        }
+        if (config.getIconSetSize() > 3) {
+            app.iconSets().config().set(
+                    app.iconSets().config().get().setSize(config.getIconSetSize())
+            );
         }
         if (config.getLocale() != null && config.getLocale().length() > 0) {
             app.i18n().locale().set(new Locale(config.getLocale()));
@@ -257,14 +267,15 @@ public class PangaeaNoteGuiApp {
         app.i18n().bundles().add("net.thevpc.echo.swing.app");
         app.i18n().bundles().add("net.thevpc.pnote.messages.pnote-locale-independent");
         app.i18n().bundles().add("net.thevpc.pnote.messages.pnote-messages");
-        for (String iconSetId : new String[]{"feather-black", "feather-white"}) {
-            for (int iconSize : new int[]{16, 24, 32}) {
-                app.iconSets().add(new ResourcesIconSet(
-                        iconSetId + "-" + iconSize, iconSize,
-                        "/net/thevpc/pnote/iconsets/" + iconSetId,
-                        getClass().getClassLoader()));
-            }
-        }
+        app.iconSets().add(new NoIconSet("no-icon"));
+        app.iconSets().add(new DefaultIconSet("feather-black", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), null));
+        app.iconSets().add(new DefaultIconSet("feather-white", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, Color.white)));
+        app.iconSets().add(new DefaultIconSet("feather-blue", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(22, 60, 90))));
+        app.iconSets().add(new DefaultIconSet("feather-cyan", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(32, 99, 155))));
+        app.iconSets().add(new DefaultIconSet("feather-green", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(60, 174, 163))));
+        app.iconSets().add(new DefaultIconSet("feather-yellow", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(246, 213, 92))));
+        app.iconSets().add(new DefaultIconSet("feather-red", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(237, 85, 59))));
+
         PangaeaSplashScreen.get().tic();
         service = new PangaeaNoteService(appContext, app.i18n());
         System.out.println("loading config: " + service.getConfigFilePath());
@@ -272,9 +283,9 @@ public class PangaeaNoteGuiApp {
         loadConfig();
         //initialize UI from config before loading the window...
         if (app.iconSets().containsKey(config.getIconSet())) {
-            app.iconSet().id().set(config.getIconSet());
+            app.iconSets().id().set(config.getIconSet());
         } else {
-            app.iconSet().id().set(app.iconSets().values().get(0).getId());
+            app.iconSets().id().set(app.iconSets().values().get(0).getId());
         }
         if (config.getLocale() != null && config.getLocale().length() > 0) {
             app.i18n().locale().set(new Locale(config.getLocale()));
@@ -370,6 +381,20 @@ public class PangaeaNoteGuiApp {
                 saveDocument();
             }
         }, "/mainWindow/menuBar/File/Save", "/mainWindow/toolBar/Default/Save");
+
+//        tools.addAction(new PNoteAction("Save", this) {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                UIPlafManager.getCurrentManager().resizeRelativeFonts(UIPlafManager.getCurrentManager().getAppFontRelative() + 0.1f);
+//            }
+//        }, "/mainWindow/menuBar/File/Fplus", "/mainWindow/toolBar/Default/Fplus");
+//
+//        tools.addAction(new PNoteAction("Save", this) {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                UIPlafManager.getCurrentManager().resizeRelativeFonts(UIPlafManager.getCurrentManager().getAppFontRelative() - 0.1f);
+//            }
+//        }, "/mainWindow/menuBar/File/Fmoins", "/mainWindow/toolBar/Default/Fmoins");
         PangaeaSplashScreen.get().tic();
         saveAction.mnemonic().set(KeyEvent.VK_S);
         saveAction.accelerator().set("control S");
@@ -458,10 +483,13 @@ public class PangaeaNoteGuiApp {
         PangaeaSplashScreen.get().tic();
         SwingApplications.Helper.addViewPlafActions(app);
         PangaeaSplashScreen.get().tic();
+//        SwingApplications.Helper.addViewFontSizeActions(app);
+        PangaeaSplashScreen.get().tic();
         SwingApplications.Helper.addViewLocaleActions(app, new Locale[]{Locale.ENGLISH, Locale.FRENCH});
         PangaeaSplashScreen.get().tic();
 
         SwingApplications.Helper.addViewIconActions(app);
+        SwingApplications.Helper.addViewIconSizeActions(app);
         PangaeaSplashScreen.get().tic();
         SwingApplications.Helper.addViewAppearanceActions(app);
         PangaeaSplashScreen.get().tic();
@@ -520,37 +548,29 @@ public class PangaeaNoteGuiApp {
             @Override
             public void plafChanged(UIPlaf plaf) {
                 if (plaf.isDark()) {
-                    String iconsetId = app.iconSet().id().get();
+                    String iconsetId = app.iconSets().id().get();
                     if (iconsetId != null) {
                         switch (iconsetId) {
-                            case "feather-black-16": {
-                                app.iconSet().id().set("feather-white-16");
+                            case "feather-black": {
+                                app.iconSets().id().set("feather-white");
                                 break;
                             }
-                            case "feather-black-24": {
-                                app.iconSet().id().set("feather-white-24");
-                                break;
-                            }
-                            case "feather-black-32": {
-                                app.iconSet().id().set("feather-white-32");
+                            case "feather-blue": {
+                                app.iconSets().id().set("feather-yellow");
                                 break;
                             }
                         }
                     }
                 } else if (plaf.isLight()) {
-                    String iconsetId = app.iconSet().id().get();
+                    String iconsetId = app.iconSets().id().get();
                     if (iconsetId != null) {
                         switch (iconsetId) {
-                            case "feather-white-16": {
-                                app.iconSet().id().set("feather-black-16");
+                            case "feather-white": {
+                                app.iconSets().id().set("feather-black");
                                 break;
                             }
-                            case "feather-white-24": {
-                                app.iconSet().id().set("feather-black-24");
-                                break;
-                            }
-                            case "feather-white-32": {
-                                app.iconSet().id().set("feather-black-32");
+                            case "feather-yellow": {
+                                app.iconSets().id().set("feather-blue");
                                 break;
                             }
                         }
@@ -751,11 +771,11 @@ public class PangaeaNoteGuiApp {
     }
 
     public ReturnType closeDocument(boolean discardChanges) {
-        return openNode(PangaeaNote.newDocument(), discardChanges);
+        return openNode(service().newDocument(), discardChanges);
     }
 
     public ReturnType openNewDocument(boolean discardChanges) {
-        return openNode(PangaeaNote.newDocument(), discardChanges);
+        return openNode(service().newDocument(), discardChanges);
     }
 
     private ReturnType openNode(PangaeaNote note, boolean discardChanges) {
@@ -765,14 +785,17 @@ public class PangaeaNoteGuiApp {
                 return s;
             }
         }
-        if (!PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.equals(note.getContentType())) {
+        if (!PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(note.getContentType())) {
             throw new IllegalArgumentException("expected Document Note");
         }
 
         SwingUtilities3.invokeLater(() -> {
             tree().setDocumentNote(PangaeaNoteExt.of(note));
             snapshotDocument();
-            onChangePath(note.getContent());
+            onChangePath(
+                    ((PangaeaNoteEmbeddedService) service().getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
+                            .getContentValueAsPath(note.getContent())
+            );
         });
         return ReturnType.SUCCESS;
     }
@@ -813,7 +836,7 @@ public class PangaeaNoteGuiApp {
             jfc.addChoosableFileFilter(createPangaeaDocumentSupportedFileFilter());
         }
         Set<String> preferredSet = new HashSet<>(Arrays.asList(preferred));
-        if (preferredSet.isEmpty() || preferredSet.contains(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT)) {
+        if (preferredSet.isEmpty() || preferredSet.contains(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString())) {
             jfc.addChoosableFileFilter(createPangaeaDocumentFileFilter());
         }
         if (preferredSet.isEmpty() || preferredSet.contains("ctd")) {
@@ -829,7 +852,7 @@ public class PangaeaNoteGuiApp {
                     current.addChild(PangaeaNoteExt.of(c));
                 }
             } else if (file.getName().endsWith(".ctd")) {
-                PangaeaNote n = service().loadCherryTreeXmlFile(file);
+                PangaeaNote n = new CherryTreeImporter(service()).loadCherryTreeXmlFile(file);
                 for (PangaeaNote c : n.getChildren()) {
                     current.addChild(PangaeaNoteExt.of(c));
                 }
@@ -849,7 +872,14 @@ public class PangaeaNoteGuiApp {
                 return s;
             }
         }
-        String c = getSelectedNote().getContent();
+        PangaeaNoteExt selectedNote = getSelectedNote();
+        if (selectedNote == null) {
+            return ReturnType.CANCEL;
+        }
+        if (!service().isDocumentNote(selectedNote.toNote())) {
+            return ReturnType.CANCEL;
+        }
+        String c = service().getDocumentPath(selectedNote);
         if (c == null || c.length() == 0) {
             //openNewDocument(false);
             return ReturnType.CANCEL;
@@ -860,13 +890,13 @@ public class PangaeaNoteGuiApp {
 
     public ReturnType openLastDocument(boolean discardChanges) {
         List<String> rf = config().getRecentFiles();
-        if(rf!=null && rf.size()>0){
-            String file=rf.get(0);
-            return openDocument(new File(file),discardChanges);
+        if (rf != null && rf.size() > 0) {
+            String file = rf.get(0);
+            return openDocument(new File(file), discardChanges);
         }
         return ReturnType.FAIL;
     }
-    
+
     public ReturnType openDocument(boolean discardChanges) {
         if (!discardChanges) {
             ReturnType s = trySaveChangesOrDiscard();
@@ -912,7 +942,7 @@ public class PangaeaNoteGuiApp {
                 if (!canonicalPath.endsWith("." + PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION) && !new File(canonicalPath).exists()) {
                     canonicalPath = canonicalPath + "." + PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION;
                 }
-                getDocument().setContent(canonicalPath);
+                getDocument().setContent(service().stringToElement(canonicalPath));
                 service().saveDocument(getDocument().toNote(), wallet());
                 onChangePath(canonicalPath);
                 snapshotDocument();
@@ -932,11 +962,11 @@ public class PangaeaNoteGuiApp {
     }
 
     public ReturnType saveDocument() {
-        if (OtherUtils.isBlank(getDocument().getContent())) {
+        if (service().isEmptyContent(getDocument().getContent())) {
             return saveAsDocument();
         } else {
             try {
-                onChangePath(getDocument().getContent());
+                onChangePath(service().getDocumentPath(getDocument()));
                 if (service().saveDocument(getDocument().toNote(), wallet())) {
                     snapshotDocument();
                 }
@@ -1038,10 +1068,18 @@ public class PangaeaNoteGuiApp {
     public void deleteSelectedNote() {
         PangaeaNoteExt n = getSelectedNote();
         if (n != null) {
-            n.delete();
-            onDocumentChanged();
-            tree().updateTree();
-            tree().setSelectedNote(null);
+            String s = newDialog()
+                    .setTitleId("Message.warning")
+                    .setContentTextId("Message.askDeleteNote")
+                    .withYesNoButtons()
+                    .build().showDialog();
+
+            if ("yes".equals(s)) {
+                n.delete();
+                onDocumentChanged();
+                tree().updateTree();
+                tree().setSelectedNote(null);
+            }
         }
     }
 
