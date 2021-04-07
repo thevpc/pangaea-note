@@ -104,6 +104,9 @@ public class PangaeaObjectListService implements PangaeaNoteTypeService {
     }
 
     public PangageaNoteObjectDocument getContentAsObject(NutsElement s) {
+        if(s!=null && s.isString()){
+            return service.element().parse(s.asString(), PangageaNoteObjectDocument.class);
+        }
         return service.element().convert(s, PangageaNoteObjectDocument.class);
     }
 

@@ -145,7 +145,7 @@ class PangaeaNoteFieldDescriptorPanel {
             this.field.setValue(getStringValue());
         }
         if (objectTracker != null) {
-            objectTracker.onListValuesChanged();
+            objectTracker.onFieldValueChanged();
         }
     }
 

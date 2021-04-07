@@ -307,7 +307,13 @@ public class PangaeaNoteGuiApp {
         tree = new PangaeaNoteDocumentTree(this);
         PangaeaNoteEditor content = new PangaeaNoteEditor(this, false);
         PangaeaSplashScreen.get().tic();
-        tree.addNoteSelectionListener(n -> content.setNote(n));
+        tree.addNoteSelectionListener(n -> {
+            try {
+                content.setNote(n);
+            } catch (Exception ex) {
+                app().errors().add(ex);
+            }
+        });
         content.addListener(n -> tree.setSelectedNote(n));
         searchResultsTool = new SearchResultPanel(this);
 
@@ -664,6 +670,7 @@ public class PangaeaNoteGuiApp {
 
             @Override
             public boolean reTypePasswordOnError() {
+                openWallet.clear();
                 return "yes".equals(newDialog()
                         .setTitleId("Message.invalidPassword.askRetype")
                         .setContentTextId("Message.invalidPassword.askRetype")

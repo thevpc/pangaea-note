@@ -162,9 +162,8 @@ public class PangaeaNoteService {
     }
 
     public String stringifyAny(Object value) {
-        return context.getWorkspace().formats().element().setValue(value)
+        return element().setValue(value)
                 .setContentType(NutsContentType.JSON)
-                .setSession(context.getSession())
                 .setCompact(true)
                 .format();
     }
@@ -174,8 +173,7 @@ public class PangaeaNoteService {
             return null;
         }
         try {
-            return context.getWorkspace().formats().element()
-                    .setSession(context.getSession())
+            return element()
                     .setContentType(NutsContentType.JSON)
                     .parse(s, cls);
         } catch (Exception ex) {
@@ -532,7 +530,7 @@ public class PangaeaNoteService {
         PangaeaNote n = new PangaeaNote();
         n.setName("pangaea-note-document");
         n.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
-        n.setContent(path == null ? null : context.getWorkspace().formats().element().forPrimitive().buildString(path));
+        n.setContent(path == null ? null : element().forPrimitive().buildString(path));
         return n;
     }
 
