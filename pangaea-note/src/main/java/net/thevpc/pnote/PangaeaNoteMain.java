@@ -2,7 +2,6 @@ package net.thevpc.pnote;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import net.thevpc.nuts.NutsAddOptions;
 import net.thevpc.nuts.NutsApplication;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsArgument;
@@ -10,7 +9,6 @@ import net.thevpc.nuts.NutsCommandAliasConfig;
 import net.thevpc.nuts.NutsCommandLine;
 import net.thevpc.nuts.NutsConfirmationMode;
 import net.thevpc.nuts.NutsId;
-import net.thevpc.nuts.NutsRemoveOptions;
 import net.thevpc.nuts.NutsSession;
 import net.thevpc.nuts.NutsWorkspace;
 import net.thevpc.nuts.NutsWorkspaceCommandAlias;
@@ -94,9 +92,8 @@ public class PangaeaNoteMain extends NutsApplication {
 
     private NutsWorkspaceCommandAlias findDefaultAlias(NutsApplicationContext applicationContext) {
         NutsWorkspace ws = applicationContext.getWorkspace();
-        NutsSession session = applicationContext.getSession();
         NutsId appId = applicationContext.getAppId();
-        return ws.aliases().find(PREFERRED_ALIAS, appId, appId, session);
+        return ws.aliases().find(PREFERRED_ALIAS, appId, appId);
     }
 
     @Override
@@ -105,7 +102,7 @@ public class PangaeaNoteMain extends NutsApplication {
         NutsSession session = applicationContext.getSession();
         NutsWorkspaceCommandAlias a = findDefaultAlias(applicationContext);
         if (a != null) {
-            ws.aliases().remove(PREFERRED_ALIAS, new NutsRemoveOptions().setSession(session));
+            ws.aliases().remove(PREFERRED_ALIAS);
         }
     }
 
@@ -123,15 +120,17 @@ public class PangaeaNoteMain extends NutsApplication {
         boolean add = false;
         if (a != null) {
             update = true;
-        } else if (ws.aliases().find(PREFERRED_ALIAS, session) == null) {
+        } else if (ws.aliases().find(PREFERRED_ALIAS) == null) {
             add = true;
         }
         if (update || add) {
-            ws.aliases().add(new NutsCommandAliasConfig()
+            ws.aliases()
+                    .setSession(update ? session.copy().setConfirm(NutsConfirmationMode.YES) : session)
+                    .add(new NutsCommandAliasConfig()
                     .setName(PREFERRED_ALIAS)
                     .setOwner(applicationContext.getAppId())
-                    .setCommand(applicationContext.getAppId().getShortName()),
-                    new NutsAddOptions().setSession(update ? session.copy().setConfirm(NutsConfirmationMode.YES) : session));
+                    .setCommand(applicationContext.getAppId().getShortName())
+                    );
         }
     }
 

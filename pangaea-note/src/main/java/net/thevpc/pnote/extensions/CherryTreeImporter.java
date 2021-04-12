@@ -89,7 +89,7 @@ public class CherryTreeImporter {
             try {
                 b = documentFactory.newDocumentBuilder();
             } catch (ParserConfigurationException ex) {
-                throw new NutsIOException(session.getWorkspace(), ex);
+                throw new NutsIOException(session, ex);
             }
 
             b.setErrorHandler(new ErrorHandler() {

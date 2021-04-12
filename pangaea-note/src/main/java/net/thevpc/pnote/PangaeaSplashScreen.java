@@ -35,7 +35,7 @@ public class PangaeaSplashScreen {
         ss.setRainbowColor(Color.WHITE);
         ss.setRainbowColor2(new Color(7, 64, 61));
         ss.animateText();
-        ss.openSplash();
+        //ss.openSplash();
     }
 
     public void tic() {
