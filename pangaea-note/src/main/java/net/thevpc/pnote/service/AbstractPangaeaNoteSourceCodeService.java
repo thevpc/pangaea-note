@@ -75,20 +75,7 @@ public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNot
         if (content == null) {
             return true;
         }
-        switch (content.type()) {
-            case ARRAY: {
-                return content.asArray().isEmpty();
-            }
-            case OBJECT: {
-                return content.asObject().isEmpty();
-            }
-            case STRING: {
-                return content.asString().trim().isEmpty();
-            }
-            default: {
-                return content.asString().trim().isEmpty();
-            }
-        }
+        return content.isEmpty();
     }
 
     @Override

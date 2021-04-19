@@ -203,7 +203,7 @@ public class PangaeaNoteService {
     }
 
     public NutsElement stringToElement(String string) {
-        return string == null ? element().forPrimitive().buildNull() : element().forPrimitive().buildString(string);
+        return element().forString(string);
     }
 
     public String elementToString(NutsElement string) {
@@ -223,23 +223,7 @@ public class PangaeaNoteService {
         if (content == null) {
             return true;
         }
-        switch (content.type()) {
-            case NULL: {
-                return true;
-            }
-            case ARRAY: {
-                return content.asArray().isEmpty();
-            }
-            case OBJECT: {
-                return content.asObject().isEmpty();
-            }
-            case STRING: {
-                return content.asString().trim().isEmpty();
-            }
-            default: {
-                return content.asString().trim().isEmpty();
-            }
-        }
+        return content.isEmpty();
     }
 
     public String getDocumentPath(PangaeaNoteExt selectedNote) {
@@ -530,7 +514,7 @@ public class PangaeaNoteService {
         PangaeaNote n = new PangaeaNote();
         n.setName("pangaea-note-document");
         n.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
-        n.setContent(path == null ? null : element().forPrimitive().buildString(path));
+        n.setContent(path == null ? null : element().forString(path));
         return n;
     }
 

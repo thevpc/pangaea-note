@@ -85,7 +85,7 @@ public class PangaeaNoteEmbeddedService implements PangaeaNoteTypeService {
 
     @Override
     public NutsElement createDefaultContent() {
-        return service.element().convert(service.newDocument(), NutsElement.class);
+        return service.element().convertToElement(service.newDocument());
     }
 
     public NutsElement getContentValueAsElement(String contentString) {
