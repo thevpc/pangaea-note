@@ -100,7 +100,7 @@ public class PangaeaObjectListService implements PangaeaNoteTypeService {
     }
 
     public NutsElement getContentAsElement(PangageaNoteObjectDocument dynamicDocument) {
-        return service.element().convertToElement(dynamicDocument);
+        return service.element().toElement(dynamicDocument);
     }
 
     public PangageaNoteObjectDocument getContentAsObject(NutsElement s) {

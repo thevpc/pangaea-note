@@ -98,7 +98,7 @@ public class PangaeaNoteListService implements PangaeaNoteTypeService {
     }
 
     public NutsElement stringifyNoteListInfo(PangageaNoteListModel value) {
-        return service.element().convertToElement(value);
+        return service.element().toElement(value);
     }
 
     public PangageaNoteListModel parseNoteListModel(NutsElement s) {

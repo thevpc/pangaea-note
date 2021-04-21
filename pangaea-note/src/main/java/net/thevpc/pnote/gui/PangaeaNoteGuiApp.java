@@ -220,7 +220,7 @@ public class PangaeaNoteGuiApp {
         config = service.loadConfig(() -> {
             //default config...
             PangaeaNoteConfig c = new PangaeaNoteConfig();
-            c.setIconSet("feather-black");
+            c.setIconSet("svgrepo-color");
             c.setPlaf("FlatLight");
             return c;
         });
@@ -268,6 +268,7 @@ public class PangaeaNoteGuiApp {
         app.i18n().bundles().add("net.thevpc.pnote.messages.pnote-locale-independent");
         app.i18n().bundles().add("net.thevpc.pnote.messages.pnote-messages");
         app.iconSets().add(new NoIconSet("no-icon"));
+        app.iconSets().add(new DefaultIconSet("svgrepo-color", "/net/thevpc/pnote/iconsets/svgrepo-color", getClass().getClassLoader(), null));
         app.iconSets().add(new DefaultIconSet("feather-black", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), null));
         app.iconSets().add(new DefaultIconSet("feather-white", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, Color.white)));
         app.iconSets().add(new DefaultIconSet("feather-blue", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(22, 60, 90))));
