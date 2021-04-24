@@ -6,7 +6,7 @@
 package net.thevpc.pnote.gui.tree;
 
 import javax.swing.AbstractAction;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 
 /**
@@ -23,7 +23,7 @@ public abstract class TreeAction extends AbstractAction {
         this.outer = outer;
         this.id = id;
         outer.actions.add(this);
-        SwingApplicationsHelper.registerAction(this, "Action." + id, "$Action." + id + ".icon", outer.app);
+        SwingApplicationsUtils.registerAction(this, "Action." + id, "$Action." + id + ".icon", outer.app);
         //            onLocaleChanged();
     }
 

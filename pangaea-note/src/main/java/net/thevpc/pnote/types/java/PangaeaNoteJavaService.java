@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.types.java;
 
+import javax.swing.text.EditorKit;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
@@ -17,6 +18,17 @@ public class PangaeaNoteJavaService extends AbstractPangaeaNoteSourceCodeService
     public static final String JAVA = "text/java";
 
     public PangaeaNoteJavaService() {
-        super(PangaeaNoteContentType.of(JAVA),"file-java");
+        super(PangaeaNoteContentType.of(JAVA), "file-java");
     }
+
+    @Override
+    public EditorKit getSourceEditorKit() {
+        return new JavaJSyntaxKit();
+    }
+
+    @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        return (extension.equals("java")) ? 10 : -1;
+    }
+
 }

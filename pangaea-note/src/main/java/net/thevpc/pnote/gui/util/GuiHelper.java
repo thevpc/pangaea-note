@@ -82,14 +82,24 @@ public class GuiHelper {
         return "#" + OtherUtils.toHex(s.getRed(), 4) + OtherUtils.toHex(s.getGreen(), 4) + OtherUtils.toHex(s.getBlue(), 4);
     }
 
-    public static void installUndoRedoManager(JTextComponent c) {
+    public static UndoManager getUndoRedoManager(JTextComponent c) {
         Document d = c.getDocument();
         if (d instanceof JSyntaxDocument) {
             UndoManager v = ((JSyntaxDocument) d).getUndoManager();
-            UndoRedoHelper.installUndoRedoManager(c, v);
+            return v;
         } else {
-            UndoRedoHelper.installUndoRedoManager(c, new UndoManager());
+            UndoManager um = (UndoManager) c.getClientProperty("undo-manager");
+            if (um == null) {
+                um = new UndoManager();
+                c.putClientProperty("undo-manager", um);
+            }
+            return um;
         }
     }
-    
+
+    public static void installUndoRedoManager(JTextComponent c) {
+        UndoManager v = getUndoRedoManager(c);
+        UndoRedoHelper.installUndoRedoManager(c, v);
+    }
+
 }

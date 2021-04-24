@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.swing.JPanel;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteField;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteObject;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteObjectDescriptor;
@@ -32,7 +32,7 @@ public class PangaeaNoteObjectComponent extends JPanel {
     private PangaeaNoteObjectExt currentValue;
     private List<PangaeaNoteFieldDescriptorPanel> components = new ArrayList<>();
     private PangaeaNoteObjectTracker objectTracker;
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     private PangaeaNoteObjectTracker dynamicObjectTrackerAdapter = new PangaeaNoteObjectTracker() {
         @Override
         public void onStructureChanged() {
@@ -57,7 +57,7 @@ public class PangaeaNoteObjectComponent extends JPanel {
 
     };
 
-    public PangaeaNoteObjectComponent(PangaeaNoteObjectTracker objectTracker, PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteObjectComponent(PangaeaNoteObjectTracker objectTracker, PangaeaNoteWindow sapp) {
         super(new GridBagLayout());
         this.objectTracker = objectTracker;
         this.sapp = sapp;

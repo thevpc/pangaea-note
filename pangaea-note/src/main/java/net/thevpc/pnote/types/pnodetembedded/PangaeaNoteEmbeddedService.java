@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.model.PangaeaNoteExt;
@@ -17,7 +17,7 @@ import net.thevpc.pnote.service.ContentTypeSelector;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.PangaeaNoteTypeService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
-import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
+import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.types.pnodetembedded.editor.PangaeaNoteDocumentEditorTypeComponent;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
@@ -64,13 +64,12 @@ public class PangaeaNoteEmbeddedService implements PangaeaNoteTypeService {
 
     @Override
     public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
-        return Arrays.asList(
-                new TextStringToPatternHandler("content", note, "content", getContentValueAsPath(note.getContent())).iterator()
+        return Arrays.asList(new StringDocumentTextNavigator("content", note, "content", getContentValueAsPath(note.getContent())).iterator()
         );
     }
 
     @Override
-    public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow sapp) {
         switch (name) {
             case PangaeaNoteTypes.EDITOR_PANGAEA_NOTE_DOCUMENT:
                 return new PangaeaNoteDocumentEditorTypeComponent(compactMode, sapp);

@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.thevpc.common.swing.ColorChooserButton;
 import net.thevpc.common.swing.GridBagLayoutSupport;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.gui.util.PangaeaNoteIconsCombobox;
 import net.thevpc.pnote.gui.util.PangaeaNoteTypesCombobox;
@@ -48,7 +48,7 @@ public class EditNoteDialog extends OkCancelDialog {
     private PangaeaNote note;
     private PangaeaNoteExt vn;
 
-    public EditNoteDialog(PangaeaNoteGuiApp sapp, PangaeaNoteExt vn) {
+    public EditNoteDialog(PangaeaNoteWindow sapp, PangaeaNoteExt vn) {
         super(sapp, "Message.editNote");
         this.vn = vn;
         this.note = vn.toNote();
@@ -128,6 +128,7 @@ public class EditNoteDialog extends OkCancelDialog {
         note.setTitleUnderlined(underlinedEditor.isSelected());
         note.setTitleStriked(strikedEditor.isSelected());
         note.setContentType(typeEditor.getSelectedContentTypeId());
+        sapp.service().addRecentNoteType(note.getContentType());
         return note;
     }
 

@@ -1,9 +1,10 @@
 [^<- strut(v,5) ::]
 [^<-label      ::]
 [<=-textEditor       ::]
-[<=-case       ::]
+[<=-matchCase       ][<=-wholeWord:]
+[<=-literalStrategy  ][<=-simpleStrategy][<=-regexpStrategy]
 [<$=-glue(v)       ::]
 ;
 insets(2,5)
-insets(case,10,5,2,5)
+insets(matchCase,10,5,2,5)
 

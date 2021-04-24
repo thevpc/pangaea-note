@@ -5,8 +5,10 @@
  */
 package net.thevpc.pnote.types.javascript;
 
+import javax.swing.text.EditorKit;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
+import net.thevpc.pnote.types.java.JavaJSyntaxKit;
 
 /**
  *
@@ -19,5 +21,15 @@ public class PangaeaNoteJavascriptService extends AbstractPangaeaNoteSourceCodeS
     public PangaeaNoteJavascriptService() {
         super(PangaeaNoteContentType.of(JAVASCRIPT), "file-javascript");
     }
-    
+
+    @Override
+    public EditorKit getSourceEditorKit() {
+        return new JavaJSyntaxKit();
+    }
+
+        @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        return (extension.equals("js")) ? 10 : -1;
+    }
+
 }

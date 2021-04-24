@@ -13,19 +13,19 @@ import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
  */
 public interface PangaeaNoteAppExtension {
 
-    default public void onLoad(PangaeaNoteGuiApp sapp) {
+    default public void onLoad(PangaeaNoteWindow sapp) {
     }
 
-    default public void onDisable(PangaeaNoteGuiApp sapp) {
+    default public void onDisable(PangaeaNoteWindow sapp) {
     }
 
-    default public void onEnable(PangaeaNoteGuiApp sapp) {
+    default public void onEnable(PangaeaNoteWindow sapp) {
     }
 
-    default void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteGuiApp sapp) {
+    default void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow sapp) {
         
     }
-    default void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteGuiApp sapp) {
+    default void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow sapp) {
         
     }
 }

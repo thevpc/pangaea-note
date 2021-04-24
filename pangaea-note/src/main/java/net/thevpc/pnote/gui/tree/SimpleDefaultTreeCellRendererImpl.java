@@ -13,7 +13,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import net.thevpc.echo.Application;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import sun.swing.DefaultLookup;
@@ -24,7 +24,7 @@ import sun.swing.DefaultLookup;
  */
 class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
 
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     private Application app;
     Font _font;
     Color _foreground;
@@ -35,7 +35,7 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
     Color _backgroundSelectionColor;
     Color _backgroundNonSelectionColor;
 
-    public SimpleDefaultTreeCellRendererImpl(PangaeaNoteGuiApp sapp) {
+    public SimpleDefaultTreeCellRendererImpl(PangaeaNoteWindow sapp) {
         this.sapp = sapp;
         this.app = sapp.app();
         _background = getBackground();

@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.types.cpp;
 
+import javax.swing.text.EditorKit;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
@@ -18,6 +19,16 @@ public class PangaeaNoteCppService extends AbstractPangaeaNoteSourceCodeService 
 
     public PangaeaNoteCppService() {
         super(PangaeaNoteContentType.of(CPP), "file-cpp");
+    }
+
+     @Override
+    public EditorKit getSourceEditorKit() {
+        return new CppLangJSyntaxKit(true);
+    }
+    
+        @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        return (extension.equals("cpp") || extension.equals("hpp")) ? 10: -1;
     }
 
 }

@@ -20,7 +20,7 @@ public class DefaultVNoteSearchFilter implements VNoteSearchFilter {
 
     private StringQuerySearch p;
 
-    public DefaultVNoteSearchFilter(String query) {
+    public DefaultVNoteSearchFilter(SearchQuery query) {
         p = new StringQuerySearch(query);
     }
 

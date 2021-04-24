@@ -6,7 +6,6 @@
 package net.thevpc.pnote.gui;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 

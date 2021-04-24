@@ -1,7 +1,5 @@
 package net.thevpc.pnote;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
 import net.thevpc.nuts.NutsApplication;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsArgument;
@@ -12,24 +10,24 @@ import net.thevpc.nuts.NutsId;
 import net.thevpc.nuts.NutsSession;
 import net.thevpc.nuts.NutsWorkspace;
 import net.thevpc.nuts.NutsWorkspaceCommandAlias;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 public class PangaeaNoteMain extends NutsApplication {
     String PREFERRED_ALIAS = "pnote";
 
     public static void main(String[] args) {
         PangaeaSplashScreen.get();
-        java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+//        java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+////        rootLogger.setLevel(Level.FINEST);
+//        for (Handler handler : rootLogger.getHandlers()) {
+//            handler.setLevel(Level.FINEST);
+//        }
+//        rootLogger = java.util.logging.Logger.getLogger("net.thevpc");
 //        rootLogger.setLevel(Level.FINEST);
-        for (Handler handler : rootLogger.getHandlers()) {
-            handler.setLevel(Level.FINEST);
-        }
-        rootLogger = java.util.logging.Logger.getLogger("net.thevpc");
-        rootLogger.setLevel(Level.FINEST);
-        for (Handler handler : rootLogger.getHandlers()) {
-            handler.setLevel(Level.FINEST);
-        }
-        PangaeaSplashScreen.get().tic();
+//        for (Handler handler : rootLogger.getHandlers()) {
+//            handler.setLevel(Level.FINEST);
+//        }
+//        PangaeaSplashScreen.get().tic();
         new PangaeaNoteMain().runAndExit(args);
     }
 
@@ -79,7 +77,7 @@ public class PangaeaNoteMain extends NutsApplication {
     }
 
     private void runGui(NutsApplicationContext appContext) {
-        new PangaeaNoteGuiApp(appContext).run();
+        new PangaeaNoteApp(appContext).run();
     }
 
     private void runInteractiveConsole(NutsApplicationContext appContext) {
@@ -133,5 +131,5 @@ public class PangaeaNoteMain extends NutsApplication {
                     );
         }
     }
-
+    
 }

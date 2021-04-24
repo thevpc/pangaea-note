@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.common.swing.util.CancelException;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
@@ -29,7 +29,7 @@ public class EnterPasswordDialog extends OkCancelDialog {
     private boolean ok = false;
     private String path;
 
-    public EnterPasswordDialog(PangaeaNoteGuiApp sapp, String path, PasswordHandler ph) throws HeadlessException {
+    public EnterPasswordDialog(PangaeaNoteWindow sapp, String path, PasswordHandler ph) throws HeadlessException {
         super(sapp, "Message.password");
         this.ph = ph;
         passwordComponent = new PasswordComponent(sapp);

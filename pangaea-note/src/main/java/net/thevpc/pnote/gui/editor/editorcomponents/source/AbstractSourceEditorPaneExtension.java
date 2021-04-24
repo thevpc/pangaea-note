@@ -21,8 +21,8 @@ import javax.swing.JToolBar;
 import javax.swing.text.EditorKit;
 import net.thevpc.common.swing.JDropDownButton;
 import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
@@ -32,7 +32,7 @@ import net.thevpc.pnote.model.PangaeaNoteContentType;
  */
 public abstract class AbstractSourceEditorPaneExtension implements SourceEditorPaneExtension {
 
-    public Action al(ActionListener a) {
+    public static Action al(ActionListener a) {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,11 +83,15 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
 
     }
 
-    public void addActionList(String id, ActionInfo[] sub, JToolBar bar, JPopupMenu popup, Context context) {
+    public static void addActionList(String id, ActionInfo[] sub, JToolBar bar, JPopupMenu popup, Context context) {
+        Application app = context.app();
+        addActionList(id, sub, bar, popup, app);
+    }
+    public static void addActionList(String id, ActionInfo[] sub, JToolBar bar, JPopupMenu popup, Application app) {
         if (bar != null) {
             JDropDownButton insertMenu = new JDropDownButton("");
             insertMenu.setHideActionText(true);
-            SwingApplicationsHelper.registerButton(insertMenu, null, "$Action." + id+".icon", context.sapp.app());
+            SwingApplicationsUtils.registerButton(insertMenu, null, "$Action." + id+".icon", app);
             insertMenu.setQuickActionDelay(0);
             for (ActionInfo actionInfo : sub) {
                 if (actionInfo == null) {
@@ -112,14 +116,14 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
                         iconId = null;
                         a.putValue(AbstractAction.SMALL_ICON, actionInfo.constIcon);
                     }
-                    insertMenu.add(SwingApplicationsHelper.registerAction(a, messageId, iconId, context.app()));
+                    insertMenu.add(SwingApplicationsUtils.registerAction(a, messageId, iconId, app));
                 }
             }
             bar.add(insertMenu);
         }
         if (popup != null) {
             JMenu insertMenu = new JMenu("");
-            SwingApplicationsHelper.registerButton(insertMenu, "Action."+id, "$Action."+id+".icon", context.sapp.app());
+            SwingApplicationsUtils.registerButton(insertMenu, "Action."+id, "$Action."+id+".icon", app);
             for (ActionInfo actionInfo : sub) {
                 if (actionInfo == null) {
                     insertMenu.addSeparator();
@@ -143,7 +147,7 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
                         iconId = null;
                         a.putValue(AbstractAction.SMALL_ICON, actionInfo.constIcon);
                     }
-                    insertMenu.add(SwingApplicationsHelper.registerAction(a, messageId, iconId, context.app()));
+                    insertMenu.add(SwingApplicationsUtils.registerAction(a, messageId, iconId, app));
                 }
             }
             popup.add(insertMenu);
@@ -174,7 +178,15 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
         }
     }
 
-    public void addSeparator(JToolBar bar, JPopupMenu popup, Context context) {
+    public static void addSeparator(JToolBar bar, JPopupMenu popup, Context context) {
+        if (bar != null) {
+            bar.addSeparator();
+        }
+        if (popup != null) {
+            popup.addSeparator();
+        }
+    }
+    public static void addSeparator(JToolBar bar, JPopupMenu popup, Application context) {
         if (bar != null) {
             bar.addSeparator();
         }
@@ -184,12 +196,12 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
     }
 
     public Action uninstallAction(Action a, Context context) {
-        SwingApplicationsHelper.unregisterAction(a, context.app());
+        SwingApplicationsUtils.unregisterAction(a, context.app());
         return a;
     }
 
     public Action prepareAction(String id, Action a, Context context) {
-        SwingApplicationsHelper.registerAction(a, "Action." + id, "$Action." + id + ".icon", context.app());
+        SwingApplicationsUtils.registerAction(a, "Action." + id, "$Action." + id + ".icon", context.app());
         context.add(a);
         return a;
     }
@@ -218,11 +230,11 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
     public static class Context {
 
         private List<Action> actions = new ArrayList<>();
-        private PangaeaNoteGuiApp sapp;
+        private PangaeaNoteWindow sapp;
         private Application app;
         private JEditorPane pane;
 
-        public Context(PangaeaNoteGuiApp sapp, JEditorPane pane) {
+        public Context(PangaeaNoteWindow sapp, JEditorPane pane) {
             this.sapp = sapp;
             this.app = sapp.app();
             this.pane = pane;

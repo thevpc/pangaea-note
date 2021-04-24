@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.types.markdown;
 
+import javax.swing.text.EditorKit;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
@@ -18,6 +19,16 @@ public class PangaeaNoteMarkdownService extends AbstractPangaeaNoteSourceCodeSer
 
     public PangaeaNoteMarkdownService() {
         super(MARKDOWN, "file-markdown");
+    }
+
+    @Override
+    public EditorKit getSourceEditorKit() {
+        return new MarkdownJSyntaxKit();
+    }
+
+    @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        return (extension.equals("md")) ? 10 : -1;
     }
 
 }

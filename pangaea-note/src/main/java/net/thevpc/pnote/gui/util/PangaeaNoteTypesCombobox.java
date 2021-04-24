@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
 import net.thevpc.common.swing.NamedValue;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.service.ContentTypeSelector;
 import net.thevpc.pnote.service.PangaeaNoteTemplate;
 import net.thevpc.pnote.service.PangaeaNoteTypeService;
@@ -24,9 +24,9 @@ import net.thevpc.pnote.util.OtherUtils;
  */
 public class PangaeaNoteTypesCombobox extends JComboBox {
 
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
 
-    public PangaeaNoteTypesCombobox(PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteTypesCombobox(PangaeaNoteWindow sapp) {
         this.sapp = sapp;
         List<NamedValue> availableTypes = new ArrayList<>();
         List<String> rct = sapp.config().getRecentContentTypes();

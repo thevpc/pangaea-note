@@ -10,11 +10,13 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
 import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
  *
@@ -25,7 +27,7 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
     private PasswordComponent text;
     private PangaeaNoteExt currentNote;
 
-    public PasswordEditorTypeComponent(PangaeaNoteGuiApp sapp) {
+    public PasswordEditorTypeComponent(PangaeaNoteWindow sapp) {
         setLayout(new BorderLayout());
         text = new PasswordComponent(sapp);
         add(text, BorderLayout.NORTH);
@@ -57,7 +59,7 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
         this.currentNote = note;
         if (note == null) {
             text.setContentString("");
@@ -80,4 +82,5 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
         return text.isEditable();
     }
 
+    
 }

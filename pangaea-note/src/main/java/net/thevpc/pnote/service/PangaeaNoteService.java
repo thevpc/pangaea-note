@@ -37,6 +37,7 @@ import net.thevpc.nuts.NutsElementFormat;
 import net.thevpc.nuts.NutsStoreLocation;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
+import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.model.PangaeaNoteConfig;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteExt;
@@ -61,7 +62,8 @@ import net.thevpc.pnote.types.objectlist.PangaeaObjectListService;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.types.sh.PangaeaNoteShService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
-import net.thevpc.pnote.types.html.PangaeaNoteHtmlWysiwygService;
+import net.thevpc.pnote.types.rich.PangaeaNoteHtmlWysiwygService;
+import net.thevpc.pnote.util.OtherUtils;
 
 public class PangaeaNoteService {
 
@@ -73,6 +75,7 @@ public class PangaeaNoteService {
     private List<PangaeaContentTypeReplacer> typeReplacers = new ArrayList<>();
     private LinkedHashMap<PangaeaNoteContentType, PangaeaNoteTemplate> extra = new LinkedHashMap<>();
     private Map<PangaeaNoteContentType, PangaeaNoteTypeService> typeServices = new LinkedHashMap<>();
+    private PangaeaNoteConfig config;
 
     public PangaeaNoteService(NutsApplicationContext context, I18n i18n) {
         this.context = context;
@@ -153,6 +156,27 @@ public class PangaeaNoteService {
         return n;
     }
 
+    public String getValidLastOpenPath() {
+        String p = config.getLastOpenPath();
+        if (!OtherUtils.isBlank(p)) {
+            File f = new File(p);
+            if (f.isDirectory()) {
+                return f.getPath();
+            }
+            if (f.isFile()) {
+                File parentFile = f.getParentFile();
+                if (parentFile != null) {
+                    return parentFile.getPath();
+                }
+            }
+        }
+        return getDefaultDocumentsFolder().getPath();
+    }
+
+    public PangaeaNoteConfig config() {
+        return config;
+    }
+
     public File getDefaultDocumentsFolder() {
         return new File(getContext().getWorkspace().locations().getStoreLocation(NutsStoreLocation.VAR));
     }
@@ -230,9 +254,42 @@ public class PangaeaNoteService {
         return ((PangaeaNoteEmbeddedService) getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
                 .getContentValueAsPath(selectedNote.getContent());
     }
+
     public String getDocumentPath(PangaeaNote selectedNote) {
         return ((PangaeaNoteEmbeddedService) getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
                 .getContentValueAsPath(selectedNote.getContent());
+    }
+
+    public void addRecentNoteType(String selectedContentTypeId) {
+        if (selectedContentTypeId == null || selectedContentTypeId.length() == 0) {
+            return;
+        }
+        List<String> recentContentTypes = new ArrayList<>();
+        recentContentTypes.add(0, selectedContentTypeId);
+        List<String> recentContentTypes1 = config.getRecentContentTypes();
+        if (recentContentTypes1 != null) {
+            for (String r : recentContentTypes1) {
+                if (isValidContentTypeExt(r)) {
+                    recentContentTypes.add(r);
+                }
+            }
+        }
+        recentContentTypes = new ArrayList<>(new LinkedHashSet<String>(recentContentTypes));
+        int maxRecentContentTypes = 12;
+        while (recentContentTypes.size() > maxRecentContentTypes) {
+            recentContentTypes.remove(recentContentTypes.size() - 1);
+        }
+        config.setRecentContentTypes(recentContentTypes);
+        saveConfig();
+    }
+
+    public void addRecentFile(String newPath) {
+        config.addRecentFile(newPath);
+        saveConfig();
+    }
+
+    public void setI18n(I18n i18n) {
+        this.i18n=i18n;
     }
 
     public static class SaveError {
@@ -378,6 +435,20 @@ public class PangaeaNoteService {
         return null;
     }
 
+    public void loadConfig() {
+        config = loadConfig(() -> {
+            //default config...
+            PangaeaNoteConfig c = new PangaeaNoteConfig();
+            c.setIconSet("svgrepo-color");
+            c.setPlaf("FlatLight");
+            return c;
+        });
+    }
+
+    public void saveConfig() {
+        saveConfig(config);
+    }
+
     public void saveConfig(PangaeaNoteConfig c) {
         if (c == null) {
             c = new PangaeaNoteConfig();
@@ -391,10 +462,6 @@ public class PangaeaNoteService {
                 .setContentType(NutsContentType.JSON)
                 .setValue(c)
                 .println(configFilePath);
-    }
-
-    public PangaeaNoteConfig loadConfig() {
-        return loadConfig(() -> new PangaeaNoteConfig());
     }
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
@@ -518,7 +585,7 @@ public class PangaeaNoteService {
         return n;
     }
 
-    public PangaeaNoteExtSearchResult search(PangaeaNoteExt n, String query, SearchProgressMonitor monitor) {
+    public PangaeaNoteExtSearchResult search(PangaeaNoteExt n, SearchQuery query, SearchProgressMonitor monitor) {
         monitor.startSearch();
         PangaeaNoteExtSearchResult a = search(n, new DefaultVNoteSearchFilter(query), monitor);
         monitor.completeSearch();
@@ -551,6 +618,10 @@ public class PangaeaNoteService {
                 return true;
             }
             return false;
+        }
+        if (oldContentType.equals(PangaeaContentTypes.UNSUPPORTED)) {
+            toUpdate.setContentType(newContentType.toString());
+            return true;
         }
         PangaeaContentTypeReplacer best = null;
         int bestLevel = -1;
@@ -718,7 +789,7 @@ public class PangaeaNoteService {
 
     public PangaeaNoteContentType normalizeContentType(PangaeaNoteContentType t) {
         if (t == null) {
-            return PangaeaNoteContentType.of(PangaeaNotePlainTextService.PLAIN);
+            return PangaeaNotePlainTextService.PLAIN;
         }
         return t;
     }
@@ -729,11 +800,11 @@ public class PangaeaNoteService {
         }
         ct = ct.trim().toLowerCase();
         if (ct.isEmpty()) {
-            ct = PangaeaNotePlainTextService.PLAIN;
+            return PangaeaNotePlainTextService.PLAIN;
         }
         PangaeaNoteContentType ct0 = PangaeaNoteContentType.of(ct);
         if (ct0 == null) {
-            ct0 = PangaeaNoteContentType.of(PangaeaNotePlainTextService.PLAIN);
+            ct0 = PangaeaNotePlainTextService.PLAIN;
         }
         Set<PangaeaNoteContentType> allct = getAllContentTypes();
         if (allct.contains(ct0)) {
@@ -771,7 +842,52 @@ public class PangaeaNoteService {
         return PangaeaNoteTypes.ALL_USER_ICONS.contains(icon);
     }
 
+    public PangaeaNoteTypeService getContentTypeServiceByFileName(String fileName, String probedContentType) {
+        String name=fileName.replace('\\', '/');
+        int x=name.lastIndexOf('/');
+        if(x>=0){
+            name=name.substring(x+1);
+        }
+        x=name.lastIndexOf('.');
+        String suffix="";
+        if(x>=0){
+            suffix=name.substring(x+1);
+        }
+        PangaeaNoteTypeService best=null;
+        int bestSup=-1;
+        if(probedContentType==null){
+            probedContentType="";
+        }
+        for (PangaeaNoteTypeService contentTypeService : getContentTypeServices()) {
+            int i = contentTypeService.getFileNameSupport(fileName, suffix, probedContentType);
+            if(i>bestSup){
+                bestSup=i;
+                best=contentTypeService;
+            }
+        }
+        return best;
+    }
+    
     public List<PangaeaNoteTypeService> getContentTypeServices() {
         return new ArrayList<PangaeaNoteTypeService>(typeServices.values());
+    }
+
+    public void setLastOpenPath(String path) {
+        if (path != null) {
+            File f = new File(path);
+            if (f.isDirectory()) {
+                config.setLastOpenPath(f.getPath());
+                saveConfig();
+            } else {
+                File p = f.getParentFile();
+                if (p != null) {
+                    config.setLastOpenPath(p.getPath());
+                    saveConfig();
+                }
+            }
+        } else {
+            config.setLastOpenPath(null);
+            saveConfig();
+        }
     }
 }

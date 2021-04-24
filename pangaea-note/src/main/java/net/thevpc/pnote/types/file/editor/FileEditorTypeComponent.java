@@ -10,7 +10,7 @@ import java.util.Objects;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.URLViewer;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.components.FileComponent;
@@ -27,40 +27,40 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
     private URLViewer fileViewer;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow win;
 
-    public FileEditorTypeComponent(PangaeaNoteGuiApp sapp) {
+    public FileEditorTypeComponent(PangaeaNoteWindow win) {
         super(new BorderLayout());
-        this.sapp = sapp;
+        this.win = win;
         error = new JLabel();
-        comp = new FileComponent(sapp).setReloadButtonVisible(true);
+        comp = new FileComponent(win).setReloadButtonVisible(true);
         comp.addFileChangeListener(new FileComponent.FileChangeListener() {
             @Override
             public void onFilePathChanged(String path) {
                 if (currentNote != null) {
                     String t = comp.getTextField().getText();
                     if (!Objects.equals(t, currentNote.getContent())) {
-                        currentNote.setContent(sapp.service().stringToElement(t));
-                        sapp.onDocumentChanged();
+                        currentNote.setContent(win.service().stringToElement(t));
+                        win.onDocumentChanged();
                     }
                 }
                 updateURL(path);
             }
 
             @Override
-            public void onFilePathRelading(String path) {
+            public void onFilePathReloading(String path) {
                 if (currentNote != null) {
                     String t = comp.getTextField().getText();
                     if (!Objects.equals(t, currentNote.getContent())) {
-                        currentNote.setContent(sapp.service().stringToElement(t));
-                        sapp.onDocumentChanged();
+                        currentNote.setContent(win.service().stringToElement(t));
+                        win.onDocumentChanged();
                     }
 
                 }
                 updateURL(path);
             }
         });
-        fileViewer = new URLViewer();
+        fileViewer = new URLViewer(win);
         add(comp, BorderLayout.NORTH);
         add(fileViewer, BorderLayout.CENTER);
         add(error, BorderLayout.SOUTH);
@@ -87,6 +87,7 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
         });
     }
 
+
     @Override
     public boolean isCompactMode() {
         return true;
@@ -107,9 +108,10 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
         this.currentNote = note;
         String c = sapp.service().elementToString(note.getContent());
+        comp.setContentString(c);
         fileViewer.load(c);
     }
 
@@ -126,5 +128,4 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
     public boolean isEditable() {
         return editable && comp.isEditable();
     }
-
 }

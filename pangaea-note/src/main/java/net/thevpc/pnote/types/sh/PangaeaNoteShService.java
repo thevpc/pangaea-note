@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.types.sh;
 
+import javax.swing.text.EditorKit;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
@@ -19,6 +20,20 @@ public class PangaeaNoteShService extends AbstractPangaeaNoteSourceCodeService {
     public PangaeaNoteShService() {
         super(PangaeaNoteContentType.of(SH), "file-sh");
     }
-    
+
+    @Override
+    public EditorKit getSourceEditorKit() {
+        return new ShellLangJSyntaxKit(true);
+    }
+
+    @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        for (String a : new String[]{"sh", "zsh", "tsh"}) {
+            if (extension.equals(a)) {
+                return 10;
+            }
+        }
+        return -1;
+    }
 
 }

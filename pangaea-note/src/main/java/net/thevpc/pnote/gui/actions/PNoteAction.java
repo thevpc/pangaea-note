@@ -6,7 +6,7 @@
 package net.thevpc.pnote.gui.actions;
 
 import javax.swing.AbstractAction;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 
 /**
  *
@@ -14,9 +14,9 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
  */
 public abstract class PNoteAction extends AbstractAction {
 
-    private PangaeaNoteGuiApp napp;
+    private PangaeaNoteWindow napp;
 
-    public PNoteAction(String id, PangaeaNoteGuiApp napp) {
+    public PNoteAction(String id, PangaeaNoteWindow napp) {
         this.napp = napp;
     }
 }

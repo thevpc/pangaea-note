@@ -15,7 +15,7 @@ import net.thevpc.common.swing.JBreadCrumb;
 import net.thevpc.common.swing.ObjectListModel;
 import net.thevpc.common.swing.ObjectListModelListener;
 import net.thevpc.common.swing.SwingUtilities3;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.DefaultObjectListModel;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.model.ObservableNoteSelectionListener;
@@ -26,7 +26,7 @@ import net.thevpc.pnote.model.ObservableNoteSelectionListener;
  */
 public class PangaeaNodeBreadcrumb extends JScrollPane {
 
-    public PangaeaNodeBreadcrumb(PangaeaNoteGuiApp sapp) {
+    public PangaeaNodeBreadcrumb(PangaeaNoteWindow sapp) {
         JBreadCrumb b = new JBreadCrumb();
         b.setOpaque(false);
         b.setBorder(null);

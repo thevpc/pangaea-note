@@ -7,26 +7,21 @@ package net.thevpc.pnote.gui.editor;
 
 import net.thevpc.pnote.gui.editor.editorcomponents.empty.EmpyNNodtEditorTypeComponent;
 import net.thevpc.pnote.gui.editor.editorcomponents.unsupported.UnsupportedEditorTypeComponent;
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.Box;
 import javax.swing.JPanel;
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.Application;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.DefaultObjectListModel;
-import net.thevpc.common.swing.JTabbedButtons;
 import net.thevpc.common.swing.ObjectListModel;
 import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.common.swing.ObjectListModelListener;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtensionHandler;
 import net.thevpc.pnote.service.PangaeaNoteExtEditorListener;
 import net.thevpc.pnote.service.PangaeaNoteTypeService;
@@ -45,12 +40,12 @@ public class PangaeaNoteEditor extends JPanel {
     private String editorTypeI18nPrefix = "EditorType";
     private List<PangaeaNoteExtEditorListener> listeners = new ArrayList<>();
     private EditorOnLocalChangePropertyListenerImpl editorOnLocalChangePropertyListenerImpl = new EditorOnLocalChangePropertyListenerImpl();
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     private Application app;
     private boolean compactMode;
     private boolean editable;
 
-    public PangaeaNoteEditor(PangaeaNoteGuiApp sapp, boolean compactMode) {
+    public PangaeaNoteEditor(PangaeaNoteWindow sapp, boolean compactMode) {
         super(new CardLayout());
         this.compactMode = compactMode;
         this.sapp = sapp;
@@ -124,6 +119,11 @@ public class PangaeaNoteEditor extends JPanel {
         this.currentEditor = getEditor(okName);
         ((CardLayout) container.getLayout()).show(container, okName);
     }
+
+    public PangaeaNoteEditorTypeComponent editorComponent() {
+        return currentEditor;
+    }
+    
 
     public ObjectListModel createEditorTypeModel(PangaeaNoteContentType contentType) {
         contentType = sapp.service().normalizeContentType(contentType);

@@ -12,14 +12,17 @@ import java.util.Iterator;
  *
  * @author vpc
  */
-public class TextStringToPatternHandler<T> implements DocumentTextNavigator<T> {
+public class StringDocumentTextNavigator<T> implements DocumentTextNavigator<T> {
 
     private String key;
     private String text;
     private T object;
     private Object part;
 
-    public TextStringToPatternHandler(String key, T object, Object part, String text) {
+    public static StringDocumentTextNavigator of(String text) {
+        return new StringDocumentTextNavigator(null, null, null, text);
+    }
+    public StringDocumentTextNavigator(String key, T object, Object part, String text) {
         this.key = key;
         this.object = object;
         this.part = part;

@@ -18,17 +18,19 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import net.thevpc.common.swing.ComponentBasedBorder;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import net.thevpc.common.swing.list.JComponentList;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.common.swing.list.JComponentListItem;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.pnote.model.HighlightType;
 import net.thevpc.pnote.gui.dialogs.EditNoteDialog;
 import net.thevpc.pnote.gui.util.GuiHelper;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.types.notelist.model.PangageaNoteListModel;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import net.thevpc.pnote.types.notelist.PangaeaNoteListService;
 import net.thevpc.pnote.types.plain.PangaeaNotePlainTextService;
 
@@ -41,11 +43,11 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
     private JComponentList<PangaeaNoteExt> componentList;
     private PangaeaNoteExt currentNote;
     private PangageaNoteListModel noteListModel;
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     private boolean editable = true;
     private boolean compactMode = true;
 
-    public PangaeaNoteListEditorTypeComponent(boolean compactMode, PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteListEditorTypeComponent(boolean compactMode, PangaeaNoteWindow sapp) {
         super(new BorderLayout());
         this.sapp = sapp;
         this.compactMode = compactMode;
@@ -96,7 +98,7 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
         this.currentNote = note;
         PangaeaNoteListService s = (PangaeaNoteListService) sapp.service().getContentTypeService(PangaeaNoteListService.C_NOTE_LIST);
         this.noteListModel = s.parseNoteListModel(note.getContent());
@@ -135,7 +137,7 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
                 PangaeaNoteExt p = currentNote.getChildren().get(pos);
                 currentNote.addChild(pos, PangaeaNoteExt.of(new PangaeaNote().setContentType(p.getContentType())));
             } else {
-                currentNote.addChild(pos, PangaeaNoteExt.of(new PangaeaNote().setContentType(PangaeaNotePlainTextService.PLAIN)));
+                currentNote.addChild(pos, PangaeaNoteExt.of(new PangaeaNote().setContentType(PangaeaNotePlainTextService.PLAIN.toString())));
             }
             componentList.setAllObjects(currentNote.getChildren());
             sapp.tree().fireNoteChanged(currentNote);
@@ -218,16 +220,16 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
     private class Item extends PangaeaNoteEditor {
 
         private JCheckBox check;
-        private SwingApplicationsHelper.Tracker stracker;
+        private SwingApplicationsUtils.Tracker stracker;
         private int pos;
         private Font _font;
         private Color _foreground;
         private Color _background;
         private ComponentBasedBorder border;
 
-        public Item(PangaeaNoteGuiApp sapp) {
+        public Item(PangaeaNoteWindow sapp) {
             super(sapp, true);
-            stracker = new SwingApplicationsHelper.Tracker(sapp.app());
+            stracker = new SwingApplicationsUtils.Tracker(sapp.app());
             ComponentBasedBorder.ComponentBasedBorderBuilder b = ComponentBasedBorder.of(this).withCheckbox();
             border = b.install();
             check = (JCheckBox) border.getBorderComponent();
@@ -301,5 +303,4 @@ public class PangaeaNoteListEditorTypeComponent extends JPanel implements Pangae
         }
 
     }
-
 }

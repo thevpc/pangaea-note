@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 import net.thevpc.common.swing.NamedValue;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 
 /**
@@ -18,9 +18,9 @@ import net.thevpc.pnote.gui.PangaeaNoteTypes;
  */
 public class PangaeaNoteIconsCombobox extends JComboBox {
 
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
 
-    public PangaeaNoteIconsCombobox(PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteIconsCombobox(PangaeaNoteWindow sapp) {
         this.sapp = sapp;
         List<NamedValue> list = new ArrayList<>();
         list.add(new NamedValue(false, "", sapp.app().i18n().getString("Icon.none"), null,0));

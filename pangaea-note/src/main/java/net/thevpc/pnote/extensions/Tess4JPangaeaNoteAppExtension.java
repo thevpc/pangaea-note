@@ -12,9 +12,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JToolBar;
 import net.sourceforge.tess4j.Tesseract;
 import net.thevpc.common.swing.SwingUtilities3;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.gui.editor.editorcomponents.source.SourceEditorPanePanel;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtension;
@@ -26,11 +26,11 @@ import net.thevpc.pnote.gui.PangaeaNoteAppExtension;
 public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
 
     @Override
-    public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteGuiApp sapp) {
+    public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow sapp) {
         if (component instanceof SourceEditorPanePanel) {
             SourceEditorPanePanel s = (SourceEditorPanePanel) component;
             JEditorPaneBuilder editorBuilder = s.getEditorBuilder();
-            SwingApplicationsHelper.Tracker tracker = (SwingApplicationsHelper.Tracker) editorBuilder.editor().getClientProperty("Tess4JPangaeaNoteAppExtension.Tracker");
+            SwingApplicationsUtils.Tracker tracker = (SwingApplicationsUtils.Tracker) editorBuilder.editor().getClientProperty("Tess4JPangaeaNoteAppExtension.Tracker");
             if(tracker!=null){
                 tracker.unregisterAll();
             }
@@ -38,11 +38,11 @@ public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
     }
 
     @Override
-    public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteGuiApp sapp) {
+    public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow sapp) {
         if (component instanceof SourceEditorPanePanel) {
             SourceEditorPanePanel s = (SourceEditorPanePanel) component;
             if (!component.isCompactMode()) {
-                SwingApplicationsHelper.Tracker tracker = new SwingApplicationsHelper.Tracker(sapp.app());
+                SwingApplicationsUtils.Tracker tracker = new SwingApplicationsUtils.Tracker(sapp.app());
                 JEditorPaneBuilder editorBuilder = s.getEditorBuilder();
                 editorBuilder.editor().putClientProperty("Tess4JPangaeaNoteAppExtension.Tracker", tracker);
                 JToolBar bar = new JToolBar();
@@ -91,7 +91,7 @@ public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
                             }
 
                         };
-                        SwingApplicationsHelper.registerStandardAction(a, "ocr", sapp.app());
+                        SwingApplicationsUtils.registerStandardAction(a, "ocr", sapp.app());
                         bar.add(a);
                         tracker.add(a);
                         editorBuilder.editor().getComponentPopupMenu().add(a);

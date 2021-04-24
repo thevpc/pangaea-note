@@ -8,9 +8,11 @@ package net.thevpc.pnote.gui.editor.editorcomponents.unsupported;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
  *
@@ -37,7 +39,7 @@ public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNot
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note,PangaeaNoteGuiApp sapp) {
+    public void setNote(PangaeaNoteExt note,PangaeaNoteWindow sapp) {
     
     }
 
@@ -49,7 +51,4 @@ public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNot
     public boolean isEditable() {
         return false;
     }
-    
-    
-    
 }

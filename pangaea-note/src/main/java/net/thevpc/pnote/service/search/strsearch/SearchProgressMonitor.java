@@ -10,7 +10,18 @@ package net.thevpc.pnote.service.search.strsearch;
  * @author vpc
  */
 public interface SearchProgressMonitor {
-    void startSearch();
-    void searchProgress(Object current);
-    void completeSearch();
+
+    SearchProgressMonitor NONE = new SearchProgressMonitor() {
+    };
+
+    default void startSearch() {
+    }
+
+    ;
+    default void searchProgress(Object current) {
+    }
+
+    ;
+    default void completeSearch() {
+    }
 }

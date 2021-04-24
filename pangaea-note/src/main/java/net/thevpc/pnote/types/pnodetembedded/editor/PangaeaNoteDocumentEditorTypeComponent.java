@@ -9,10 +9,12 @@ import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
 /**
@@ -25,10 +27,10 @@ public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements Pa
     private JLabel error;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     private boolean compactMode;
 
-    public PangaeaNoteDocumentEditorTypeComponent(boolean compactMode,PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteDocumentEditorTypeComponent(boolean compactMode,PangaeaNoteWindow sapp) {
         super(new BorderLayout());
         this.sapp=sapp;
         this.compactMode=compactMode;
@@ -52,7 +54,7 @@ public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements Pa
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
         try {
             this.currentNote = note;
             String path = PangaeaNoteEmbeddedService.of(sapp.service()).getContentValueAsPath(note.getContent());

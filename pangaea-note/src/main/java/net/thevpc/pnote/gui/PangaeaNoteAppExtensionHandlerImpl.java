@@ -8,7 +8,7 @@ package net.thevpc.pnote.gui;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.function.Supplier;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 
 /**
  *
@@ -16,7 +16,7 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
  */
 public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensionHandler {
 
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
 
     private Supplier<PangaeaNoteAppExtension> extensionLoader;
     private PangaeaNoteAppExtension extension;
@@ -26,7 +26,7 @@ public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensi
     private boolean loaded;
     private PropertyChangeSupport pcs;
 
-    public PangaeaNoteAppExtensionHandlerImpl(PangaeaNoteGuiApp sapp, Supplier<PangaeaNoteAppExtension> extensionSupplier) {
+    public PangaeaNoteAppExtensionHandlerImpl(PangaeaNoteWindow sapp, Supplier<PangaeaNoteAppExtension> extensionSupplier) {
         this.sapp = sapp;
         this.extensionLoader = extensionSupplier;
         pcs = new PropertyChangeSupport(this);

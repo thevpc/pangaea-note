@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.service.search;
 
-import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
+import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,8 +32,8 @@ public class PangaeaNoteExtDocumentTextNavigator implements DocumentTextNavigato
     @Override
     public Iterator<DocumentTextPart<PangaeaNoteExt>> iterator() {
         List<Iterator<DocumentTextPart<PangaeaNoteExt>>> parts = new ArrayList<>();
-        parts.add(new TextStringToPatternHandler("name", note, "name", note.getName()).iterator());
-        parts.add(new TextStringToPatternHandler("tags", note, "tags", String.join(" ", note.getTags())).iterator());
+        parts.add(new StringDocumentTextNavigator("name", note, "name", note.getName()).iterator());
+        parts.add(new StringDocumentTextNavigator("tags", note, "tags", String.join(" ", note.getTags())).iterator());
         PangaeaNoteContentType ct = service.normalizeContentType(note.getContentType());
         List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> i = service.getContentTypeService(ct)
                 .resolveTextNavigators(note);

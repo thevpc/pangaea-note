@@ -5,8 +5,6 @@
  */
 package net.thevpc.pnote.model;
 
-import net.thevpc.pnote.model.PangaeaNoteExt;
-
 /**
  *
  * @author vpc

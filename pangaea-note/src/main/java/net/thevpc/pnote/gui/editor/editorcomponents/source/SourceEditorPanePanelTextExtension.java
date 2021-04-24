@@ -5,19 +5,13 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JFileChooser;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.text.StyledEditorKit;
-import net.sourceforge.tess4j.Tesseract;
-import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.Application;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
@@ -29,7 +23,7 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
     AbstractSourceEditorPaneExtension.Context context;
 
     @Override
-    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteGuiApp sapp) {
+    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteWindow sapp) {
         if (context != null) {
             for (Action action : context.getActions()) {
                 uninstallAction(action, context);
@@ -37,7 +31,7 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
         }
     }
 
-    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteGuiApp sapp) {
+    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteWindow sapp) {
         JToolBar bar = compactMode ? null : new JToolBar();
         Application app = sapp.app();
         JPopupMenu popup = editorBuilder.editor().getComponentPopupMenu();

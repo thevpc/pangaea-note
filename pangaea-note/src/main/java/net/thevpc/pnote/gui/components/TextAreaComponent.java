@@ -19,8 +19,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
 import net.thevpc.pnote.gui.util.GuiHelper;
 
@@ -32,11 +32,11 @@ public class TextAreaComponent extends JPanel implements FormComponent {
 
     private JTextArea textArea = new JTextArea();
     private AnyDocumentListener listener;
-    private SwingApplicationsHelper.Tracker tracker;
+    private SwingApplicationsUtils.Tracker tracker;
 
-    public TextAreaComponent(PangaeaNoteGuiApp sapp) {
+    public TextAreaComponent(PangaeaNoteWindow sapp) {
         super(new BorderLayout());
-        tracker = new SwingApplicationsHelper.Tracker(sapp.app());
+        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
         add(new JScrollPane(textArea));
         setPreferredSize(new Dimension(200, 100));
         setMinimumSize(new Dimension(100, 100));

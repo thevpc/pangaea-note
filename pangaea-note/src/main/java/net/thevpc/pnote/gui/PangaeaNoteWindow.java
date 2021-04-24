@@ -8,13 +8,13 @@ package net.thevpc.pnote.gui;
 import java.awt.Color;
 import net.thevpc.pnote.service.security.OpenWallet;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import net.thevpc.pnote.gui.tree.PangaeaNoteDocumentTree;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,9 +30,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import net.thevpc.common.iconset.ColorIconTransform;
-import net.thevpc.common.iconset.DefaultIconSet;
-import net.thevpc.common.iconset.NoIconSet;
+import net.thevpc.common.props.Props;
+import net.thevpc.common.props.WritableValue;
 import net.thevpc.common.swing.DateTimeLabel;
 import net.thevpc.common.swing.DefaultRecentFilesModel;
 import net.thevpc.common.swing.ExtensionFileChooserFilter;
@@ -42,7 +41,6 @@ import net.thevpc.common.swing.JSplashScreen;
 import net.thevpc.common.swing.MemoryUseIconTray;
 import net.thevpc.common.swing.RecentFilesMenu;
 import net.thevpc.common.swing.SwingUtilities3;
-import net.thevpc.common.swing.anim.Animators;
 import net.thevpc.echo.AppDockingWorkspace;
 import net.thevpc.echo.AppToolAction;
 import net.thevpc.echo.AppToolWindow;
@@ -54,7 +52,6 @@ import net.thevpc.echo.swing.SwingApplications;
 import net.thevpc.echo.swing.mydoggy.MyDoggyAppDockingWorkspace;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.pnote.PangaeaSplashScreen;
-import net.thevpc.pnote.gui.actions.PNoteAction;
 import net.thevpc.pnote.gui.breadcrumb.PangaeaNodeBreadcrumb;
 import net.thevpc.pnote.gui.dialogs.EnterNewPasswordDialog;
 import net.thevpc.pnote.gui.dialogs.EnterPasswordDialog;
@@ -63,10 +60,8 @@ import net.thevpc.pnote.gui.tree.PangaeaNotSupportedFileFormatsFileFilter;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.model.PangaeaNoteConfig;
 import net.thevpc.pnote.service.security.PasswordHandler;
-import net.thevpc.pnote.util.OtherUtils;
 import net.thevpc.swing.plaf.UIPlaf;
 import net.thevpc.swing.plaf.UIPlafManager;
-import net.thevpc.common.swing.anim.AnimPoint;
 import net.thevpc.common.swing.util.CancelException;
 import net.thevpc.echo.AppDialogBuilder;
 import net.thevpc.pnote.extensions.Tess4JPangaeaNoteAppExtension;
@@ -80,21 +75,33 @@ import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.model.ReturnType;
 import net.thevpc.swing.plaf.UIPlafListener;
 import net.thevpc.echo.AppDialogResult;
+import net.thevpc.echo.AppState;
+import net.thevpc.echo.AppTool;
+import net.thevpc.echo.AppWindow;
+import net.thevpc.echo.swing.core.SwingApplication;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.jeep.editor.ColorResource;
+import net.thevpc.pnote.model.HighlightType;
 import net.thevpc.pnote.extensions.CherryTreeImporter;
+import net.thevpc.pnote.gui.util.UIPropsTool;
+import net.thevpc.pnote.service.search.SearchQuery;
+import net.thevpc.pnote.service.search.PangaeaNoteExtSearchResult;
+import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteGuiApp {
+public class PangaeaNoteWindow {
 
+    private boolean splash;
+    private PangaeaNoteApp papp;
+    private SwingApplication app;
     private NutsApplicationContext appContext;
-    private PangaeaNoteService service;
-    private PangaeaNoteConfig config;
-    private Application app;
     private RecentFilesMenu recentFilesMenu;
     private PangaeaNoteDocumentTree tree;
+    private PangaeaNoteEditor noteEditor;
     private JSplashScreen jSplashScreen;
     private SearchResultPanel searchResultsTool;
     private AppToolWindow documentTool;
@@ -105,10 +112,18 @@ public class PangaeaNoteGuiApp {
     private OpenWallet openWallet = new OpenWallet();
     private long modificationsCount;
     private PangaeaNote lastSavedDocument;
+    private WritableValue<SelectableElement> selectableElement = Props.of("selectableElement").valueOf(SelectableElement.class, null);
+    private WritableValue<Boolean> mainWindow = Props.of("mainWindow").valueOf(Boolean.class, false);
 
-    public PangaeaNoteGuiApp(NutsApplicationContext appContext) {
+    public PangaeaNoteWindow(NutsApplicationContext appContext, PangaeaNoteApp papp, boolean splash) {
         this.appContext = appContext;
+        this.splash = splash;
+        this.papp = papp;
+        app = (SwingApplication) SwingApplications.Apps.Default();
         addExtension(() -> new Tess4JPangaeaNoteAppExtension());
+        mainWindow.listeners().add(x -> {
+            onChangeTitle();
+        });
     }
 
     public PangaeaNoteDocumentTree tree() {
@@ -120,7 +135,7 @@ public class PangaeaNoteGuiApp {
     }
 
     public PangaeaNoteService service() {
-        return service;
+        return papp.service();
     }
 
     public void resetModifications() {
@@ -128,57 +143,37 @@ public class PangaeaNoteGuiApp {
         onChangePath(currentFilePath);
     }
 
-    public void setLastOpenPath(String path) {
-        if (path != null) {
-            File f = new File(path);
-            if (f.isDirectory()) {
-                config.setLastOpenPath(f.getPath());
-                saveConfig();
-            } else {
-                File p = f.getParentFile();
-                if (p != null) {
-                    config.setLastOpenPath(p.getPath());
-                    saveConfig();
-                }
-            }
-        } else {
-            config.setLastOpenPath(null);
-            saveConfig();
-        }
-    }
-
     public void onChangePath(String newPath) {
-        String modSuffix = modificationsCount > 0 ? " (*)" : "";
         if (newPath == null || newPath.length() == 0) {
             this.currentFilePath = null;
-            app.mainWindow().get().title().set("Pangaea-Note: " + "<" + app.i18n().getString("Message.noName") + ">" + modSuffix);
         } else {
             recentFilesMenu.addFile(newPath);
-            config.addRecentFile(newPath);
+            service().addRecentFile(newPath);
             this.currentFilePath = newPath;
-            app.mainWindow().get().title().set("Pangaea-Note: " + newPath + modSuffix);
-            setLastOpenPath(newPath);
+            service().setLastOpenPath(newPath);
+        }
+        onChangeTitle();
+    }
+
+    public void onChangeTitle() {
+        if (app.state().get() == AppState.NONE || app.state().get() == AppState.INIT) {
+            return;
+        }
+        String modPrefix = mainWindow().get() ? "(!!) " : "";
+        String modSuffix = modificationsCount > 0 ? " (*)" : "";
+        if (currentFilePath == null || currentFilePath.length() == 0) {
+            appWindow().title().set(modPrefix + "Pangaea-Note: " + "<" + app.i18n().getString("Message.noName") + ">" + modSuffix);
+        } else {
+            appWindow().title().set(modPrefix + "Pangaea-Note: " + currentFilePath + modSuffix);
         }
     }
 
-    public String getValidLastOpenPath() {
-        String p = config.getLastOpenPath();
-        if (!OtherUtils.isBlank(p)) {
-            File f = new File(p);
-            if (f.isDirectory()) {
-                return f.getPath();
-            }
-            if (f.isFile()) {
-                File parentFile = f.getParentFile();
-                if (parentFile != null) {
-                    return parentFile.getPath();
-                }
-            }
-        }
-        return service().getDefaultDocumentsFolder().getPath();
+    protected AppWindow appWindow() {
+        return app.mainWindow().get();
     }
 
     public void bindConfig() {
+        PangaeaNoteConfig config = service().config();
         app.iconSets().listeners().add(x -> {
             config.setIconSet(app.iconSets().id().get());
             config.setIconSetSize(app.iconSets().config().get().getWidth());
@@ -188,20 +183,16 @@ public class PangaeaNoteGuiApp {
             config.setLocale(((Locale) x.getNewValue()).toString());
             saveConfig();
         });
-        app.mainWindow().get().displayMode().listeners().add(x -> {
+        appWindow().displayMode().listeners().add(x -> {
             config.setDisplayMode(((AppWindowDisplayMode) x.getNewValue()));
             saveConfig();
         });
-        app.mainWindow().get().toolBar().get().visible().listeners().add(x -> {
+        appWindow().toolBar().get().visible().listeners().add(x -> {
             config.setDisplayToolBar(((Boolean) x.getNewValue()));
             saveConfig();
         });
-        app.mainWindow().get().statusBar().get().visible().listeners().add(x -> {
+        appWindow().statusBar().get().visible().listeners().add(x -> {
             config.setDisplayStatusBar(((Boolean) x.getNewValue()));
-            saveConfig();
-        });
-        UIPlafManager.getCurrentManager().addListener(x -> {
-            config.setPlaf(((UIPlaf) x).getId());
             saveConfig();
         });
         recentFilesMenu.addFileSelectedListener(new FileSelectedListener() {
@@ -213,20 +204,11 @@ public class PangaeaNoteGuiApp {
     }
 
     public void saveConfig() {
-        service.saveConfig(config);
-    }
-
-    public void loadConfig() {
-        config = service.loadConfig(() -> {
-            //default config...
-            PangaeaNoteConfig c = new PangaeaNoteConfig();
-            c.setIconSet("svgrepo-color");
-            c.setPlaf("FlatLight");
-            return c;
-        });
+        service().saveConfig();
     }
 
     public void applyConfigToUI() {
+        PangaeaNoteConfig config = service().config();
         if (app.iconSets().containsKey(config.getIconSet())) {
             app.iconSets().id().set(config.getIconSet());
         }
@@ -239,16 +221,16 @@ public class PangaeaNoteGuiApp {
             app.i18n().locale().set(new Locale(config.getLocale()));
         }
         if (config.getPlaf() != null && config.getPlaf().length() > 0) {
-            SwingUtilities.invokeLater(() -> UIPlafManager.INSTANCE.apply(config.getPlaf()));
+            SwingUtilities.invokeLater(() -> app.plaf().set(config.getPlaf()));
         }
         if (config.getDisplayMode() != null) {
-            app.mainWindow().get().displayMode().set(config.getDisplayMode());
+            appWindow().displayMode().set(config.getDisplayMode());
         }
         if (config.getDisplayToolBar() != null) {
-            app.mainWindow().get().toolBar().get().visible().set(config.getDisplayToolBar());
+            appWindow().toolBar().get().visible().set(config.getDisplayToolBar());
         }
         if (config.getDisplayStatusBar() != null) {
-            app.mainWindow().get().statusBar().get().visible().set(config.getDisplayStatusBar());
+            appWindow().statusBar().get().visible().set(config.getDisplayStatusBar());
         }
         recentFilesMenu.getRecentFilesModel().setFiles(
                 (config.getRecentFiles() == null ? Collections.EMPTY_LIST : config.getRecentFiles())
@@ -257,31 +239,15 @@ public class PangaeaNoteGuiApp {
 
     public void run() {
 //        AppEditorThemes editorThemes = new AppEditorThemes();
-        app = SwingApplications.Apps.Default();
         AppTools tools = app.tools();
         tools.config().configurableLargeIcon().set(false);
         tools.config().configurableTooltip().set(false);
-        PangaeaSplashScreen.get().tic();
         app.builder().mainWindowBuilder().get().workspaceFactory().set(MyDoggyAppDockingWorkspace.factory());
-        app.i18n().bundles().add("net.thevpc.echo.swing.app-locale-independent");
-        app.i18n().bundles().add("net.thevpc.echo.swing.app");
-        app.i18n().bundles().add("net.thevpc.pnote.messages.pnote-locale-independent");
-        app.i18n().bundles().add("net.thevpc.pnote.messages.pnote-messages");
-        app.iconSets().add(new NoIconSet("no-icon"));
-        app.iconSets().add(new DefaultIconSet("svgrepo-color", "/net/thevpc/pnote/iconsets/svgrepo-color", getClass().getClassLoader(), null));
-        app.iconSets().add(new DefaultIconSet("feather-black", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), null));
-        app.iconSets().add(new DefaultIconSet("feather-white", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, Color.white)));
-        app.iconSets().add(new DefaultIconSet("feather-blue", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(22, 60, 90))));
-        app.iconSets().add(new DefaultIconSet("feather-cyan", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(32, 99, 155))));
-        app.iconSets().add(new DefaultIconSet("feather-green", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(60, 174, 163))));
-        app.iconSets().add(new DefaultIconSet("feather-yellow", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(246, 213, 92))));
-        app.iconSets().add(new DefaultIconSet("feather-red", "/net/thevpc/pnote/iconsets/feather", getClass().getClassLoader(), new ColorIconTransform(Color.BLACK, new Color(237, 85, 59))));
+        ticSplash();
+        papp.prepareApp(app);
 
-        PangaeaSplashScreen.get().tic();
-        service = new PangaeaNoteService(appContext, app.i18n());
-        System.out.println("loading config: " + service.getConfigFilePath());
-
-        loadConfig();
+        ticSplash();
+        PangaeaNoteConfig config = service().config();
         //initialize UI from config before loading the window...
         if (app.iconSets().containsKey(config.getIconSet())) {
             app.iconSets().id().set(config.getIconSet());
@@ -295,114 +261,107 @@ public class PangaeaNoteGuiApp {
             UIPlafManager.getCurrentManager().apply(config.getPlaf());
         }
 
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         app.start();
-        app.mainWindow().get().centerOnDefaultMonitor();
-        PangaeaSplashScreen.get().tic();
-        app.mainWindow().get().title().set("Pangaea-Note");
-        app.mainWindow().get().icon().set(new ImageIcon(getClass().getResource("/net/thevpc/pnote/icon.png")));
+        appWindow().centerOnDefaultMonitor();
+        ticSplash();
+        onChangeTitle();
+        appWindow().icon().set(new ImageIcon(getClass().getResource("/net/thevpc/pnote/icon.png")));
 
-        AppDockingWorkspace ws = (AppDockingWorkspace) app.mainWindow().get().workspace().get();
-        PangaeaSplashScreen.get().tic();
+        AppDockingWorkspace ws = (AppDockingWorkspace) appWindow().workspace().get();
+        ticSplash();
 
         tree = new PangaeaNoteDocumentTree(this);
-        PangaeaNoteEditor content = new PangaeaNoteEditor(this, false);
-        PangaeaSplashScreen.get().tic();
+        noteEditor = new PangaeaNoteEditor(this, false);
+        ticSplash();
         tree.addNoteSelectionListener(n -> {
             try {
-                content.setNote(n);
+                noteEditor.setNote(n);
             } catch (Exception ex) {
+                ex.printStackTrace();
                 app().errors().add(ex);
             }
         });
-        content.addListener(n -> tree.setSelectedNote(n));
+        noteEditor.addListener(n -> tree.setSelectedNote(n));
         searchResultsTool = new SearchResultPanel(this);
 
 //        PangaeaNoteDocumentTree favourites = new PangaeaNoteDocumentTree(this);
 //        PangaeaNoteDocumentTree openFiles = new PangaeaNoteDocumentTree(app);
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         documentTool = ws.addTool("Tools.Document", tree, AppToolWindowAnchor.LEFT);
+        documentTool = ws.addTool("Tools.UI", new UIPropsTool(), AppToolWindowAnchor.RIGHT);
 //        ws.addTool("Tools.Favorites", favourites, AppToolWindowAnchor.LEFT);
 //        ws.addTool("Open Documents", "", null, favourites, AppToolWindowAnchor.LEFT);
 //        ws.addTool("Recent Documents", "", null, favourites, AppToolWindowAnchor.LEFT);
         AppToolWindow resultPanelTool = ws.addTool("Tools.SearchResults", searchResultsTool, AppToolWindowAnchor.BOTTOM);
         searchResultsTool.setResultPanelTool(resultPanelTool);
 
-        PangaeaSplashScreen.get().tic();
-        ws.addContent("Content", content);
+        ticSplash();
+        ws.addContent("Content", noteEditor);
 
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
+        ticSplash();
+        tools.addHorizontalGlue(windowPath() + "/statusBar/Default/glue");
+        ticSplash();
+        tools.addCustomTool(windowPath() + "/statusBar/Default/calendar", context -> new DateTimeLabel().setDateTimeFormatter("yyy-MM-dd HH:mm:ss"));
+        ticSplash();
+        tools.addHorizontalSeparator(windowPath() + "/statusBar/Default/glue");
+        tools.addCustomTool(windowPath() + "/statusBar/Default/memory", context -> new MemoryUseIconTray(true));
+        ticSplash();
 
-        PangaeaSplashScreen.get().tic();
-        tools.addHorizontalGlue("/mainWindow/statusBar/Default/glue");
-        PangaeaSplashScreen.get().tic();
-        tools.addCustomTool("/mainWindow/statusBar/Default/calendar", context -> new DateTimeLabel().setDateTimeFormatter("yyy-MM-dd HH:mm:ss"));
-        PangaeaSplashScreen.get().tic();
-        tools.addHorizontalSeparator("/mainWindow/statusBar/Default/glue");
-        tools.addCustomTool("/mainWindow/statusBar/Default/memory", context -> new MemoryUseIconTray(true));
-        PangaeaSplashScreen.get().tic();
+        tools.addFolder(windowPath() + "/menuBar/File");
 
-        tools.addFolder("/mainWindow/menuBar/File");
-
-        AppToolAction newfileAction = tools.addAction(new PNoteAction("NewFile", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openNewDocument(false);
-            }
-        }, "/mainWindow/menuBar/File/NewFile", "/mainWindow/toolBar/Default/NewFile");
+        AppToolAction newfileAction = tools.addAction().bind(() -> openNewDocument(false))
+                .path(windowPath() + "/menuBar/File/NewFile", windowPath() + "/toolBar/Default/NewFile")
+                .tool();
 //        newfileAction.mnemonic().set(KeyEvent.VK_N);
 //        newfileAction.accelerator().set("control N");
 
-        PangaeaSplashScreen.get().tic();
-
-        AppToolAction reopenAction = tools.addAction(new PNoteAction("OpenLastFile", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openLastDocument(false);
-            }
-        }, "/mainWindow/menuBar/File/OpenLastFile");
+        ticSplash();
+        AppTool f = tools.getToolByPath(windowPath() + "/menuBar/File");
+        f.mnemonic().set(KeyEvent.VK_F);
+        AppToolAction reopenAction = tools.addAction().bind(() -> openLastDocument(false))
+                .path(windowPath() + "/menuBar/File/OpenLastFile").tool();
         reopenAction.accelerator().set("control shoft O");
 
-        AppToolAction openAction = tools.addAction(new PNoteAction("OpenFile", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openDocument(false);
-            }
-        }, "/mainWindow/menuBar/File/Open", "/mainWindow/toolBar/Default/Open");
+        AppToolAction openAction = tools.addAction().bind(() -> openDocument(false))
+                .path(windowPath() + "/menuBar/File/Open", windowPath() + "/toolBar/Default/Open")
+                .tool();
         openAction.mnemonic().set(KeyEvent.VK_O);
         openAction.accelerator().set("control O");
 
-        AppToolAction reloadAction = tools.addAction(new PNoteAction("ReloadFile", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reloadDocument(false);
-            }
-        }, "/mainWindow/menuBar/File/Reload", "/mainWindow/toolBar/Default/Reload");
+        AppToolAction reloadAction = tools.addAction().bind(() -> reloadDocument(false))
+                .path(windowPath() + "/menuBar/File/Reload", windowPath() + "/toolBar/Default/Reload")
+                .tool();
         reloadAction.mnemonic().set(KeyEvent.VK_R);
         reloadAction.accelerator().set("control R");
 
-        PangaeaSplashScreen.get().tic();
-        AppToolAction saveAction = tools.addAction(new PNoteAction("Save", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveDocument();
-            }
-        }, "/mainWindow/menuBar/File/Save", "/mainWindow/toolBar/Default/Save");
+        ticSplash();
+        recentFilesMenu = new RecentFilesMenu(app.i18n().getString("Action.recentFiles"), new DefaultRecentFilesModel());
+        SwingApplicationsUtils.registerButton(recentFilesMenu, null, "open", app);
+        tools.addCustomTool(windowPath() + "/menuBar/File/LoadRecent", x -> recentFilesMenu);
+
+        ticSplash();
+        tools.addSeparator(windowPath() + "/menuBar/File/Separator1");
+        ticSplash();
+        AppToolAction saveAction = tools.addAction().bind(this::saveDocument)
+                .path(windowPath() + "/menuBar/File/Save", windowPath() + "/toolBar/Default/Save")
+                .tool();
 
 //        tools.addAction(new PNoteAction("Save", this) {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
 //                UIPlafManager.getCurrentManager().resizeRelativeFonts(UIPlafManager.getCurrentManager().getAppFontRelative() + 0.1f);
 //            }
-//        }, "/mainWindow/menuBar/File/Fplus", "/mainWindow/toolBar/Default/Fplus");
+//        }, windowPath()+"/menuBar/File/Fplus", windowPath()+"/toolBar/Default/Fplus");
 //
 //        tools.addAction(new PNoteAction("Save", this) {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
 //                UIPlafManager.getCurrentManager().resizeRelativeFonts(UIPlafManager.getCurrentManager().getAppFontRelative() - 0.1f);
 //            }
-//        }, "/mainWindow/menuBar/File/Fmoins", "/mainWindow/toolBar/Default/Fmoins");
-        PangaeaSplashScreen.get().tic();
+//        }, windowPath()+"/menuBar/File/Fmoins", windowPath()+"/toolBar/Default/Fmoins");
+        ticSplash();
         saveAction.mnemonic().set(KeyEvent.VK_S);
         saveAction.accelerator().set("control S");
 
@@ -411,121 +370,102 @@ public class PangaeaNoteGuiApp {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
 //            }
-//        },"/mainWindow/menuBar/File/SaveAll", "/mainWindow/toolBar/Default/SaveAll");
-        AppToolAction saveAsAction = tools.addAction(new PNoteAction("SaveAs", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveAsDocument();
-            }
-        }, "/mainWindow/menuBar/File/SaveAs"/*, "/mainWindow/toolBar/Default/SaveAs"*/);
+//        },windowPath()+"/menuBar/File/SaveAll", windowPath()+"/toolBar/Default/SaveAll");
+        AppToolAction saveAsAction = tools.addAction().bind(this::saveAsDocument)
+                .path(windowPath() + "/menuBar/File/SaveAs"/*, windowPath()+"/toolBar/Default/SaveAs"*/)
+                .tool();
 
-        tools.addAction(new PNoteAction("CloseDocument", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openNewDocument(false); // close is same as new!!
-            }
-        }, "/mainWindow/menuBar/File/CloseDocument");
-        PangaeaSplashScreen.get().tic();
-        tools.addSeparator("/mainWindow/menuBar/File/Separator1");
-
-        PangaeaSplashScreen.get().tic();
-        recentFilesMenu = new RecentFilesMenu(app.i18n().getString("Action.recentFiles"), new DefaultRecentFilesModel());
-
-        PangaeaSplashScreen.get().tic();
-        tools.addCustomTool("/mainWindow/menuBar/File/LoadRecent", x -> recentFilesMenu);
 //
-//        tools.addSeparator("/mainWindow/menuBar/File/LoadRecent/Separator1");
+//        tools.addSeparator(windowPath()+"/menuBar/File/LoadRecent/Separator1");
 //        tools.addAction(new PNoteAction("ClearRecentFiles", this) {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
 //
 //            }
-//        }, "/mainWindow/menuBar/File/LoadRecent/Clear");
-        PangaeaSplashScreen.get().tic();
-        tools.addSeparator("/mainWindow/menuBar/File/Separator2");
-//        tools.addAction("/mainWindow/menuBar/File/Settings", "/mainWindow/toolBar/Default/Settings");
-//        tools.addSeparator("/mainWindow/menuBar/File/Separator3");
-        PangaeaSplashScreen.get().tic();
+//        }, windowPath()+"/menuBar/File/LoadRecent/Clear");
+        ticSplash();
+        tools.addSeparator(windowPath() + "/menuBar/File/Separator2");
+//        tools.addAction(windowPath()+"/menuBar/File/Settings", windowPath()+"/toolBar/Default/Settings");
+//        tools.addSeparator(windowPath()+"/menuBar/File/Separator3");
+        ticSplash();
 
-        AppToolAction exitAction = tools.addAction(new PNoteAction("Exit", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isModifiedDocument()) {
-                    saveDocument();
-                }
-                app.shutdown();
+        AppToolAction newWindowAction = tools.addAction().bind(() -> papp.newWindow())
+                .path(windowPath() + "/menuBar/File/NewWindow")
+                .tool();
+
+        tools.addSeparator(windowPath() + "/menuBar/File/Separator3");
+
+        tools.addAction().bind(() -> openNewDocument(false))
+                .path(windowPath() + "/menuBar/File/CloseDocument")
+                .tool();
+        AppToolAction closeWindowAction = tools.addAction().bind(() -> close())
+                .path(windowPath() + "/menuBar/File/CloseWindow")
+                .tool();
+
+        AppToolAction exitAction = tools.addAction().bind(() -> {
+            if (isModifiedDocument()) {
+                saveDocument();
             }
-        },
-                "/mainWindow/menuBar/File/Exit");
+            app.shutdown();
+        }
+        ).path(windowPath() + "/menuBar/File/Exit").tool();
         exitAction.mnemonic().set(KeyEvent.VK_X);
         exitAction.accelerator().set("control X");
 
-        tools.addFolder("/mainWindow/menuBar/Edit");
-        AppToolAction a = tools.addAction(new PNoteAction("Search", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addNote();
-            }
-        }, "/mainWindow/menuBar/Edit/AddNote"/*, "/mainWindow/toolBar/Default/SaveAs"*/);
+        tools.addFolder(windowPath() + "/menuBar/Edit");
+        tools.addSeparator(windowPath() + "/toolBar/Default/Separator1");
+        AppToolAction a = tools.addAction().bind(() -> addNote())
+                .path(windowPath() + "/menuBar/Edit/AddNote", windowPath() + "/toolBar/Default/AddNote")
+                .tool();
         a.mnemonic().set(KeyEvent.VK_N);
         a.accelerator().set("control N");
-        tools.addSeparator("/mainWindow/menuBar/Edit/Separator1");
-        a = tools.addAction(new PNoteAction("Search", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchNote();
-            }
-        }, "/mainWindow/menuBar/Edit/Search"/*, "/mainWindow/toolBar/Default/SaveAs"*/);
+        tools.addSeparator(windowPath() + "/menuBar/Edit/Separator1");
+        a = tools.addAction().bind(() -> searchNote())
+                .path(windowPath() + "/menuBar/Edit/Search", windowPath() + "/toolBar/Default/Search")
+                .tool();
         a.mnemonic().set(KeyEvent.VK_F);
         a.accelerator().set("control shift F");
 
-//        tools.addSeparator("/mainWindow/toolBar/Default/Separator1");
-//        tools.addAction("/mainWindow/menuBar/Edit/Copy", "/mainWindow/toolBar/Default/Copy");
-//        tools.addAction("/mainWindow/menuBar/Edit/Cut", "/mainWindow/toolBar/Default/Cut");
-//        tools.addAction("/mainWindow/menuBar/Edit/Paste", "/mainWindow/toolBar/Default/Paste");
-//        tools.addAction("/mainWindow/menuBar/Edit/Undo", "/mainWindow/toolBar/Default/Undo");
-//        tools.addAction("/mainWindow/menuBar/Edit/Redo", "/mainWindow/toolBar/Default/Redo");
-        PangaeaSplashScreen.get().tic();
+//        tools.addSeparator(windowPath()+"/toolBar/Default/Separator1");
+//        tools.addAction(windowPath()+"/menuBar/Edit/Copy", windowPath()+"/toolBar/Default/Copy");
+//        tools.addAction(windowPath()+"/menuBar/Edit/Cut", windowPath()+"/toolBar/Default/Cut");
+//        tools.addAction(windowPath()+"/menuBar/Edit/Paste", windowPath()+"/toolBar/Default/Paste");
+//        tools.addAction(windowPath()+"/menuBar/Edit/Undo", windowPath()+"/toolBar/Default/Undo");
+//        tools.addAction(windowPath()+"/menuBar/Edit/Redo", windowPath()+"/toolBar/Default/Redo");
+        ticSplash();
         SwingApplications.Helper.addViewToolActions(app);
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         SwingApplications.Helper.addViewPlafActions(app);
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
 //        SwingApplications.Helper.addViewFontSizeActions(app);
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         SwingApplications.Helper.addViewLocaleActions(app, new Locale[]{Locale.ENGLISH, Locale.FRENCH});
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
 
         SwingApplications.Helper.addViewIconActions(app);
-        SwingApplications.Helper.addViewIconSizeActions(app);
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         SwingApplications.Helper.addViewAppearanceActions(app);
-        PangaeaSplashScreen.get().tic();
-        tools.addFolder("/mainWindow/menuBar/Help");
-        tools.addAction(new PNoteAction("About", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showAbout();
-            }
-        },
-                "/mainWindow/menuBar/Help/About");
+        ticSplash();
+        tools.addFolder(windowPath() + "/menuBar/Help");
+        tools.addAction().bind(() -> papp.showAbout()).path(windowPath() + "/menuBar/Help/About").tool();
 
-        tools.addHorizontalGlue("/mainWindow/toolBar/Default/Glue");
+        tools.addHorizontalGlue(windowPath() + "/toolBar/Default/Glue");
 
-        tools.addCustomTool("/mainWindow/toolBar/Default/Glue", (c) -> new PangaeaNodeBreadcrumb(PangaeaNoteGuiApp.this));
+        tools.addCustomTool(windowPath() + "/toolBar/Default/Glue", (c) -> new PangaeaNodeBreadcrumb(PangaeaNoteWindow.this));
 
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         documentTool.active().set(true);
         applyConfigToUI();
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         bindConfig();
-        PangaeaSplashScreen.get().tic();
+        ticSplash();
         openNewDocument(false);
 //        folders.openDocument(service().createSampleDocumentNote());
-        PangaeaSplashScreen.get().tic();
-        PangaeaSplashScreen.get().closeSplash();
+        ticSplash();
+        closeSplash();
 //        frame().getRootPane().registerKeyboardAction(
 //                (e) -> {
-//                    AppWindow w = app.mainWindow().get();
+//                    AppWindow w = appWindow().get();
 //                    AppWindowDisplayMode dm = w.displayMode().get();
 //                    if (dm == null) {
 //                        dm = AppWindowDisplayMode.NORMAL;
@@ -586,7 +526,17 @@ public class PangaeaNoteGuiApp {
             }
         });
 
-        app.waitFor();
+//        app.waitFor();
+    }
+
+    protected void ticSplash() {
+        if (splash) {
+            PangaeaSplashScreen.get().tic();
+        }
+    }
+
+    public PangaeaNoteEditor noteEditor() {
+        return noteEditor;
     }
 
     public AppToolWindow documentTool() {
@@ -598,32 +548,7 @@ public class PangaeaNoteGuiApp {
     }
 
     public JFrame frame() {
-        return (JFrame) app.mainWindow().get().component();
-    }
-
-    public void showAbout() {
-        JSplashScreen ss = new JSplashScreen(new ImageIcon(PangaeaSplashScreen.class.getResource("/net/thevpc/pnote/splash-screen.png")), null);
-        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, "https://github.com/thevpc/pangaea-note",
-                Animators.linear(
-                        AnimPoint.of(-100, 200),
-                        AnimPoint.of(90, 200),
-                        200
-                )
-        ));
-        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, "version 1.0.0",
-                Animators.linear(AnimPoint.of(-100, 220),
-                        AnimPoint.of(165, 220), 200
-                )
-        ));
-//        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, ""));
-        ss.setTextHeightExact(16);
-        ss.setTextYmax(300);
-        ss.setShowProgress(false);
-        ss.setTextY(220);
-        ss.setHideOnClick(true);
-        ss.setTimeout(30000);
-        ss.animateText();
-        ss.openSplash();
+        return (JFrame) appWindow().component();
     }
 
     public void showError(Exception e) {
@@ -651,7 +576,7 @@ public class PangaeaNoteGuiApp {
                 if (enteredPassword != null) {
                     return enteredPassword;
                 }
-                EnterNewPasswordDialog d = new EnterNewPasswordDialog(PangaeaNoteGuiApp.this, path, this);
+                EnterNewPasswordDialog d = new EnterNewPasswordDialog(PangaeaNoteWindow.this, path, this);
                 enteredPassword = d.showDialog();
                 openWallet.store(root, path, enteredPassword);
                 return enteredPassword;
@@ -663,7 +588,7 @@ public class PangaeaNoteGuiApp {
                 if (enteredPassword != null) {
                     return enteredPassword;
                 }
-                EnterPasswordDialog d = new EnterPasswordDialog(PangaeaNoteGuiApp.this, path, this);
+                EnterPasswordDialog d = new EnterPasswordDialog(PangaeaNoteWindow.this, path, this);
                 enteredPassword = d.showDialog();
                 openWallet.store(root, path, enteredPassword);
                 return enteredPassword;
@@ -682,7 +607,7 @@ public class PangaeaNoteGuiApp {
     }
 
     public PangaeaNoteConfig config() {
-        return config;
+        return service().config();
     }
 
     public List<String> getRecentSearchQueries() {
@@ -839,7 +764,7 @@ public class PangaeaNoteGuiApp {
 
     public ReturnType importFileInto(PangaeaNoteExt current, String... preferred) {
         JFileChooser jfc = new JFileChooser();
-        jfc.setCurrentDirectory(new File(getValidLastOpenPath()));
+        jfc.setCurrentDirectory(new File(service().getValidLastOpenPath()));
         if (preferred.length == 0) {
             jfc.addChoosableFileFilter(createPangaeaDocumentSupportedFileFilter());
         }
@@ -853,7 +778,7 @@ public class PangaeaNoteGuiApp {
         jfc.setAcceptAllFileFilterUsed(!preferredSet.isEmpty());
         if (jfc.showOpenDialog(frame()) == JFileChooser.APPROVE_OPTION) {
             File file = jfc.getSelectedFile();
-            setLastOpenPath(file.getPath());
+            service().setLastOpenPath(file.getPath());
             if (file.getName().endsWith("." + PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION)) {
                 PangaeaNote n = service().loadDocument(file, wallet());
                 for (PangaeaNote c : n.getChildren()) {
@@ -913,7 +838,7 @@ public class PangaeaNoteGuiApp {
             }
         }
         JFileChooser jfc = new JFileChooser();
-        jfc.setCurrentDirectory(new File(getValidLastOpenPath()));
+        jfc.setCurrentDirectory(new File(service().getValidLastOpenPath()));
         jfc.addChoosableFileFilter(createPangaeaDocumentFileFilter());
         jfc.setAcceptAllFileFilterUsed(false);
         if (jfc.showOpenDialog(frame()) == JFileChooser.APPROVE_OPTION) {
@@ -925,7 +850,7 @@ public class PangaeaNoteGuiApp {
 
     public ReturnType saveAsDocument() {
         SecureJFileChooserImpl jfc = new SecureJFileChooserImpl();
-        jfc.setCurrentDirectory(new File(getValidLastOpenPath()));
+        jfc.setCurrentDirectory(new File(service().getValidLastOpenPath()));
         jfc.addChoosableFileFilter(createPangaeaDocumentFileFilter());
         jfc.setAcceptAllFileFilterUsed(false);
         boolean doSecureDocument = false;
@@ -941,7 +866,7 @@ public class PangaeaNoteGuiApp {
             doSecureDocument = false;
         }
         if (jfc.showSaveDialog(frame()) == JFileChooser.APPROVE_OPTION) {
-            setLastOpenPath(jfc.getSelectedFile().getPath());
+            service().setLastOpenPath(jfc.getSelectedFile().getPath());
             if (doSecureDocument && jfc.getSecureCheckbox().isSelected()) {
                 getDocument().setCypherInfo(new CypherInfo(PangaeaNoteService.SECURE_ALGO, ""));
             }
@@ -987,8 +912,35 @@ public class PangaeaNoteGuiApp {
     }
 
     public void searchNote() {
+        PangaeaNoteExt n = getSelectedNoteOrDocument();
         SearchDialog dialog = new SearchDialog(this);
-        dialog.showDialogAndSearch(getSelectedNoteOrDocument());
+        SelectableElement se = selectableElement().get();
+        String searchText = null;
+        if (se != null) {
+            searchText = se.getSelectedText();
+        }
+        dialog.setSearchText(searchText);
+        if (n.getParent() == null) {
+
+            dialog.setTitle(app.i18n().getString("Message.search.searchEverywhere"));
+        } else {
+            StringBuilder sb = new StringBuilder();
+            PangaeaNoteExt p = n;
+            while (p.getParent() != null) {
+                if (sb.length() > 0) {
+                    sb.insert(0, "/");
+                }
+                sb.insert(0, p.getName());
+                p = p.getParent();
+            }
+            dialog.setTitle(
+                    MessageFormat.format(app.i18n().getString("Message.search.searchInNode"), sb)
+            );
+        }
+        SearchQuery s = dialog.showDialog();
+        if (s != null) {
+            searchInNodes(s, n);
+        }
     }
 
     public void editNote() {
@@ -1103,6 +1055,82 @@ public class PangaeaNoteGuiApp {
     public void onDocumentChanged() {
         modificationsCount++;
         onChangePath(currentFilePath);
+    }
+
+    public void searchInNodes(SearchQuery s, PangaeaNoteExt note) {
+        if (s == null || note == null) {
+            return;
+        }
+        new Thread(() -> {
+            SearchResultPanel.SearchResultPanelItem resultPanel = searchResultsTool().createNewPanel();
+            searchResultsTool().showResults();
+            resultPanel.resetResults();
+            resultPanel.setSearching(true);
+            addRecentSearchQuery(s.getText());
+            PangaeaNoteExtSearchResult e = service().search(note, s, new SearchProgressMonitor() {
+                @Override
+                public void startSearch() {
+                    resultPanel.setSearchProgress(0, "searching...");
+//                        System.out.println("start search");
+                }
+
+                @Override
+                public void searchProgress(Object current) {
+                    if (current instanceof PangaeaNoteExt) {
+                        resultPanel.setSearchProgress(0, "searching in " + ((PangaeaNoteExt) current).getName());
+                    }
+//                        System.out.println("search in: "+current);
+                }
+
+                @Override
+                public void completeSearch() {
+//                        System.out.println("complete search");
+                }
+            });
+            e.stream().forEach(x -> {
+                resultPanel.appendResult(x);
+            });
+            resultPanel.setSearching(false);
+            searchResultsTool().showResults();
+        }).start();
+    }
+
+    public Color colorForHighlightType(HighlightType t) {
+        switch (t) {
+            case SEARCH: {
+                return ColorResource.of("Objects.Yellow;OptionPane.warningDialog.titlePane.background;Component.warning.focusedBorderColor;FlameGraph.nativeBackground;ToolWindowScrollBarUI.arrow.background.end;Table.dropLineShortColor;#yellow").get();
+            }
+            case SEARCH_MAIN: {
+                return ColorResource.of("Objects.YellowDark;OptionPane.warningDialog.titlePane.shadow;Component.warning.focusedBorderColor;Desktop.background;Table[Enabled+Selected].textBackground;ToggleButton.onBackground;#orange").get();
+            }
+            case CARET: {
+                return ColorResource.of(
+                        "Button.default.focusColor;OptionPane.questionDialog.titlePane.background;OptionPane.questionDialog.titlePane.background;#green").get();
+            }
+        }
+        return Color.CYAN;
+    }
+
+    public WritableValue<SelectableElement> selectableElement() {
+        return selectableElement;
+    }
+
+    public void close() {
+        app().shutdown();
+    }
+
+    public String windowPath() {
+        return "/mainWindow";
+    }
+
+    private void closeSplash() {
+        if (splash) {
+            PangaeaSplashScreen.get().closeSplash();
+        }
+    }
+
+    public WritableValue<Boolean> mainWindow() {
+        return mainWindow;
     }
 
 }

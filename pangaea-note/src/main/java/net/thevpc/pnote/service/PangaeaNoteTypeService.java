@@ -7,8 +7,9 @@ package net.thevpc.pnote.service;
 
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.text.EditorKit;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.model.PangaeaNoteExt;
@@ -34,11 +35,19 @@ public interface PangaeaNoteTypeService extends PangaeaNoteTypeServiceBase {
 
     public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note);
 
-    default PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteGuiApp sapp) {
+    default PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow sapp) {
         return null;
     }
 
     NutsElement createDefaultContent();
 
     public boolean isEmptyContent(NutsElement content);
+
+    default EditorKit getSourceEditorKit(){
+        return null;
+    }
+    
+    default int getFileNameSupport(String fileName, String extension, String probedContentType){
+        return -1;
+    }
 }

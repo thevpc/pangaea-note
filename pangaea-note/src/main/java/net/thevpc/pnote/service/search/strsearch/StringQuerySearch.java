@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.thevpc.pnote.service.search.SearchQuery;
 
 /**
  *
@@ -24,42 +25,69 @@ import java.util.stream.Stream;
 public class StringQuerySearch<T> {
 
     private List<Pattern> all = new ArrayList<>();
-
-    public StringQuerySearch(String query) {
-        try {
-            StreamTokenizer st = new StreamTokenizer(new StringReader(query == null ? "" : query));
-            st.resetSyntax();
-            st.wordChars('a', 'z');
-            st.wordChars('A', 'Z');
-            st.wordChars('0', '9');
-            st.wordChars('-', '-');
-            st.wordChars('_', '_');
-            st.wordChars('+', '+');
-            st.wordChars('/', '/');
-            st.wordChars('*', '*');
-            st.wordChars('\'', '\'');
-            st.wordChars(128 + 32, 255);
-            st.whitespaceChars(0, ' ');
-            st.quoteChar('"');
-            while (st.nextToken() != StreamTokenizer.TT_EOF) {
-                switch (st.ttype) {
-                    case StreamTokenizer.TT_WORD: {
-                        if (st.sval.length() > 0) {
-                            all.add(build(st.sval));
+    private SearchQuery squery;
+    public StringQuerySearch(SearchQuery squery) {
+        this.squery=squery;
+        if (squery != null) {
+            switch (squery.getStrategy()) {
+                case LITERAL: {
+                    all.add(compitePattern(Pattern.quote(squery.getText().trim())));
+                    break;
+                }
+                case SIMPLE: {
+                    String query = squery == null ? null : squery.getText();
+                    try {
+                        StreamTokenizer st = new StreamTokenizer(new StringReader(query == null ? "" : query));
+                        st.resetSyntax();
+                        st.wordChars('a', 'z');
+                        st.wordChars('A', 'Z');
+                        st.wordChars('0', '9');
+                        st.wordChars('-', '-');
+                        st.wordChars('_', '_');
+                        st.wordChars('+', '+');
+                        st.wordChars('/', '/');
+                        st.wordChars('*', '*');
+                        st.wordChars('\'', '\'');
+                        st.wordChars(128 + 32, 255);
+                        st.whitespaceChars(0, ' ');
+                        st.quoteChar('"');
+                        while (st.nextToken() != StreamTokenizer.TT_EOF) {
+                            switch (st.ttype) {
+                                case StreamTokenizer.TT_WORD: {
+                                    if (st.sval.length() > 0) {
+                                        all.add(build(st.sval));
+                                    }
+                                    break;
+                                }
+                                case '"': {
+                                    if (st.sval.length() > 0) {
+                                        all.add(build(st.sval));
+                                    }
+                                    break;
+                                }
+                            }
                         }
-                        break;
+                    } catch (IOException ex) {
+                        throw new UncheckedIOException(ex);
                     }
-                    case '"': {
-                        if (st.sval.length() > 0) {
-                            all.add(build(st.sval));
-                        }
-                        break;
-                    }
+                    break;
+                }
+                case REGEXP: {
+                    all.add(compitePattern(squery.getText()));
+                    break;
+                }
+                default:{
+                    throw new IllegalArgumentException("unsupported");
                 }
             }
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
+
         }
+    }
+    private Pattern compitePattern(String s){
+        if(squery.isWholeWord()){
+            s="\\b"+s+"\\b";
+        }
+        return Pattern.compile(s, 0 | (squery.isMatchCase() ? 0 : Pattern.CASE_INSENSITIVE));
     }
 
     public Stream<StringSearchResult<T>> search(DocumentTextNavigator<T> doc, SearchProgressMonitor monitor) {
@@ -120,6 +148,6 @@ public class StringQuerySearch<T> {
                 }
             }
         }
-        return Pattern.compile(sb.toString());
+        return compitePattern(sb.toString());
     }
 }

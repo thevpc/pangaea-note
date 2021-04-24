@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.model.PangaeaNoteExt;
@@ -83,7 +83,7 @@ public class PangaeaObjectListService implements PangaeaNoteTypeService {
     }
 
     @Override
-    public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow sapp) {
         switch (name) {
             case PangaeaNoteTypes.EDITOR_OBJECT_LIST:
                 return new PangaeaNoteObjectDocumentComponent(compactMode, sapp);

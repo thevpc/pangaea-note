@@ -16,7 +16,7 @@ public class StringSearchResult<T> {
     private Object part;
     private String description;
     private String value;
-    private int index;
+    private int start;
     private int row;
     private int column;
     private String lineString;
@@ -26,7 +26,7 @@ public class StringSearchResult<T> {
         this.key = key;
         this.part = part;
         this.description = description;
-        this.index = index;
+        this.start = index;
         this.row = row;
         this.column = column;
         this.value = value;
@@ -57,8 +57,12 @@ public class StringSearchResult<T> {
         return row;
     }
 
-    public int getIndex() {
-        return index;
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return start + (value == null ? 0 : value.length());
     }
 
     public int getLine() {

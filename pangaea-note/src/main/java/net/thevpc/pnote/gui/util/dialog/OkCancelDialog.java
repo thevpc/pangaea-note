@@ -15,7 +15,7 @@ import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.common.swing.JDialog2;
 import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.Application;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 
 /**
  *
@@ -24,9 +24,9 @@ import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
 public class OkCancelDialog extends JDialog2 {
 
     private OkCancelFooter footer;
-    protected PangaeaNoteGuiApp sapp;
+    protected PangaeaNoteWindow sapp;
 
-    public OkCancelDialog(PangaeaNoteGuiApp sapp, String titleId) {
+    public OkCancelDialog(PangaeaNoteWindow sapp, String titleId) {
         super((JFrame) sapp.app().mainWindow().get().component(),
                 sapp.app().i18n().getString(titleId), true
         );

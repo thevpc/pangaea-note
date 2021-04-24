@@ -24,9 +24,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import net.thevpc.common.swing.tree.TreeTransferHandler;
 import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.model.ObservableNoteTreeModel;
@@ -42,12 +42,12 @@ public class PangaeaNoteDocumentTree extends JPanel {
     JTree tree;
     private JPopupMenu treePopupMenu;
     private List<ObservableNoteSelectionListener> listeners = new ArrayList<>();
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     Application app;
     private ObservableNoteTreeModel model;
     List<TreeAction> actions = new ArrayList<>();
 
-    public PangaeaNoteDocumentTree(PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteDocumentTree(PangaeaNoteWindow sapp) {
         super(new BorderLayout());
         this.sapp = sapp;
         this.app = sapp.app();
@@ -161,7 +161,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
             }
         });
 //        JMenu addCustomMenu = new JMenu();
-//        SwingApplicationsHelper.registerButton(addCustomMenu, "Action.AddCustom", "$Action.AddCustom", app);
+//        SwingApplicationsUtils.registerButton(addCustomMenu, "Action.AddCustom", "$Action.AddCustom", app);
 //        treePopupMenu.add(addCustomMenu);
 //        addCustomMenu.add(new TreeAction("AddTodayNote") {
 //            @Override
@@ -200,7 +200,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         });
         treePopupMenu.addSeparator();
         JMenu importCustomMenu = new JMenu();
-        SwingApplicationsHelper.registerButton(importCustomMenu, "Action.Import", "$Action.Import.icon", app);
+        SwingApplicationsUtils.registerButton(importCustomMenu, "Action.Import", "$Action.Import.icon", app);
         treePopupMenu.add(importCustomMenu);
         importCustomMenu.add(new TreeAction("ImportAny", this) {
             @Override
@@ -222,7 +222,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
 
         });
 //        JMenu exportMenu = new JMenu();
-//        SwingApplicationsHelper.registerButton(exportMenu, "Action.Export", "$Action.Export.icon", app);
+//        SwingApplicationsUtils.registerButton(exportMenu, "Action.Export", "$Action.Export.icon", app);
 //        treePopupMenu.add(exportMenu);
 //        exportMenu.add(new TreeAction("ExportPangaeaNote", this) {
 //            @Override
@@ -263,7 +263,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         });
 //        treePopupMenu.addSeparator();
 //        JMenu moveMenu = new JMenu();
-//        SwingApplicationsHelper.registerButton(moveMenu, "Action.Move", "$Action.Move.icon", app);
+//        SwingApplicationsUtils.registerButton(moveMenu, "Action.Move", "$Action.Move.icon", app);
 //        treePopupMenu.add(moveMenu);
 //        moveMenu.add(new TreeAction("MoveUp", this) {
 //            @Override

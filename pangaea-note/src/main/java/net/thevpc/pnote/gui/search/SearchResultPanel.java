@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -17,8 +19,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.AppToolWindow;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.service.PangaeaNoteTypeService;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
@@ -27,11 +32,11 @@ import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
  */
 public class SearchResultPanel extends JPanel {
 
-    private PangaeaNoteGuiApp sapp;
+    private PangaeaNoteWindow sapp;
     private AppToolWindow resultPanelTool;
     private SearchResultPanelItem item;
 
-    public SearchResultPanel(PangaeaNoteGuiApp sapp) {
+    public SearchResultPanel(PangaeaNoteWindow sapp) {
         super(new BorderLayout());
         this.sapp = sapp;
         item = new SearchResultPanelItemImpl(sapp);
@@ -71,7 +76,7 @@ public class SearchResultPanel extends JPanel {
     public static class SearchResultPanelItemImpl extends JPanel implements SearchResultPanelItem {
 
         private boolean searching;
-        private PangaeaNoteGuiApp sapp;
+        private PangaeaNoteWindow sapp;
         private JTable table = new JTable();
         private JProgressBar bar = new JProgressBar();
         private DefaultTableModel model = new DefaultTableModel() {
@@ -81,7 +86,7 @@ public class SearchResultPanel extends JPanel {
             }
         };
 
-        public SearchResultPanelItemImpl(PangaeaNoteGuiApp sapp) {
+        public SearchResultPanelItemImpl(PangaeaNoteWindow sapp) {
             super(new BorderLayout());
             this.sapp = sapp;
             model.setColumnIdentifiers(new Object[]{
@@ -102,14 +107,28 @@ public class SearchResultPanel extends JPanel {
                     if (e.getClickCount() == 2) {
                         int r = table.rowAtPoint(e.getPoint());
                         if (r >= 0) {
-                            StringSearchResult<PangaeaNoteExt> a = (StringSearchResult<PangaeaNoteExt>) table.getModel().getValueAt(r, 2);
-                            sapp.tree().setSelectedNote(a.getObject());
+                            StringSearchResult<PangaeaNoteExt> searchResult = (StringSearchResult<PangaeaNoteExt>) table.getModel().getValueAt(r, 2);
+                            PangaeaNoteExt n = searchResult.getObject();
+                            sapp.tree().setSelectedNote(n);
+                            PangaeaNoteEditorTypeComponent comp = sapp.noteEditor().editorComponent();
+                            comp.removeHighlights(HighlightType.SEARCH_MAIN);
+                            comp.removeHighlights(HighlightType.SEARCH);
+                            for (StringSearchResult<PangaeaNoteExt> rr : findResults(n)) {
+                                if (rr == searchResult) {
+                                    comp.highlight(rr.getStart(), rr.getEnd(), HighlightType.SEARCH_MAIN);
+                                    comp.moveTo(rr.getStart());
+                                } else {
+                                    comp.highlight(rr.getStart(), rr.getEnd(), HighlightType.SEARCH);
+                                }
+                            }
                         }
                     } else {
                     }
 
                 }
             });
+            table.getColumnModel().getColumn(0).setPreferredWidth(27);
+            table.getColumnModel().getColumn(1).setPreferredWidth(120);
             JScrollPane scroll = new JScrollPane(table);
             scroll.setPreferredSize(new Dimension(50, 50));
             add(scroll);
@@ -117,6 +136,17 @@ public class SearchResultPanel extends JPanel {
             bar.setMinimum(0);
             bar.setMaximum(100);
             bar.setValue(0);
+        }
+
+        public List<StringSearchResult<PangaeaNoteExt>> findResults(PangaeaNoteExt n) {
+            List<StringSearchResult<PangaeaNoteExt>> ok = new ArrayList<>();
+            for (int i = 0; i < model.getRowCount(); i++) {
+                StringSearchResult<PangaeaNoteExt> r = (StringSearchResult<PangaeaNoteExt>) model.getValueAt(i, 2);
+                if (r.getObject() == n) {
+                    ok.add(r);
+                }
+            }
+            return ok;
         }
 
         public void resetResults() {

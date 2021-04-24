@@ -12,7 +12,7 @@ import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
-import net.thevpc.pnote.service.search.strsearch.TextStringToPatternHandler;
+import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
 
 /**
@@ -57,8 +57,7 @@ public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNot
 
     @Override
     public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
-        return Arrays.asList(
-                new TextStringToPatternHandler("content", note, "content", getContentAsString(note.getContent())).iterator()
+        return Arrays.asList(new StringDocumentTextNavigator("content", note, "content", getContentAsString(note.getContent())).iterator()
         );
     }
 
@@ -83,4 +82,8 @@ public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNot
         return service.stringToElement("");
     }
 
+    public PangaeaNoteService getService() {
+        return service;
+    }
+    
 }

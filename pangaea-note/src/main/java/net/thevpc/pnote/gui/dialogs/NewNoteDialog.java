@@ -28,7 +28,7 @@ import net.thevpc.common.swing.ExtensionFileChooserFilter;
 import net.thevpc.common.swing.GridBagLayoutSupport;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
 import net.thevpc.pnote.util.OtherUtils;
 import net.thevpc.pnote.gui.components.FileComponent;
@@ -55,7 +55,7 @@ public class NewNoteDialog extends OkCancelDialog {
 
     private boolean ok = false;
 
-    public NewNoteDialog(PangaeaNoteGuiApp sapp) {
+    public NewNoteDialog(PangaeaNoteWindow sapp) {
         super(sapp, "Message.addNewNote");
 
         this.valueLabel = new JLabel(sapp.app().i18n().getString("Message.valueLabel"));
@@ -126,23 +126,7 @@ public class NewNoteDialog extends OkCancelDialog {
                 n.setContent(dv);
             }
         }
-        List<String> recentContentTypes = new ArrayList<>();
-        recentContentTypes.add(0, selectedContentTypeId);
-        List<String> recentContentTypes1 = sapp.config().getRecentContentTypes();
-        if (recentContentTypes1 != null) {
-            for (String r : recentContentTypes1) {
-                if (sapp.service().isValidContentTypeExt(r)) {
-                    recentContentTypes.add(r);
-                }
-            }
-        }
-        recentContentTypes = new ArrayList<>(new LinkedHashSet<String>(recentContentTypes));
-        int maxRecentContentTypes = 12;
-        while (recentContentTypes.size() > maxRecentContentTypes) {
-            recentContentTypes.remove(recentContentTypes.size() - 1);
-        }
-        sapp.config().setRecentContentTypes(recentContentTypes);
-        sapp.saveConfig();
+        sapp.service().addRecentNoteType(selectedContentTypeId);
         return n;
     }
 

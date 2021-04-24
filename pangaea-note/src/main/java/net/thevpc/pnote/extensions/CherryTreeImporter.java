@@ -27,7 +27,7 @@ import net.thevpc.pnote.model.PangaeaNote;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.types.c.PangaeaNoteCService;
 import net.thevpc.pnote.types.cpp.PangaeaNoteCppService;
-import net.thevpc.pnote.types.html.PangaeaNoteHtmlWysiwygService;
+import net.thevpc.pnote.types.rich.PangaeaNoteHtmlWysiwygService;
 import net.thevpc.pnote.types.java.PangaeaNoteJavaService;
 import net.thevpc.pnote.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.util.OtherUtils;
@@ -308,7 +308,7 @@ public class CherryTreeImporter {
                                                 break;
                                             }
                                             default: {
-                                                nn.setContentType(PangaeaNotePlainTextService.PLAIN);
+                                                nn.setContentType(PangaeaNotePlainTextService.PLAIN.toString());
                                                 break;
                                             }
                                         }

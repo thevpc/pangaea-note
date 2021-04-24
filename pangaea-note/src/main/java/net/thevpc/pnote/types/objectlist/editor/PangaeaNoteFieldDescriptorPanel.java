@@ -25,8 +25,8 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import net.thevpc.common.swing.SwingUtilities3;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.components.CheckboxesComponent;
 import net.thevpc.pnote.gui.components.ComboboxComponent;
 import net.thevpc.pnote.gui.components.FormComponent;
@@ -56,19 +56,19 @@ class PangaeaNoteFieldDescriptorPanel {
     private JComponent component;
 
     private PangaeaNoteObjectTracker objectTracker;
-    private PangaeaNoteGuiApp sapp;
-    private SwingApplicationsHelper.Tracker tracker;
+    private PangaeaNoteWindow sapp;
+    private SwingApplicationsUtils.Tracker tracker;
     private List<AbstractButton> buttons = new ArrayList<>();
 
     private JMenu changeTypeMenu;
     private boolean editable = true;
 
     //        ButtonGroup bg;
-    public PangaeaNoteFieldDescriptorPanel(PangaeaNoteGuiApp sapp, PangaeaNoteFieldDescriptor descr, PangaeaNoteObjectTracker objectTracker) {
+    public PangaeaNoteFieldDescriptorPanel(PangaeaNoteWindow sapp, PangaeaNoteFieldDescriptor descr, PangaeaNoteObjectTracker objectTracker) {
         this.objectTracker = objectTracker;
         this.descr = descr.copy();
         this.sapp = sapp;
-        tracker = new SwingApplicationsHelper.Tracker(sapp.app());
+        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
         if (descr.getType() == null) {
             descr.setType(PangaeaNoteFieldType.TEXT);
         }

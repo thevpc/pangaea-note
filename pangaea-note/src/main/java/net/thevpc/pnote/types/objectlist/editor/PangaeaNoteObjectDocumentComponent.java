@@ -16,15 +16,17 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.util.OtherUtils;
 import net.thevpc.common.swing.list.JComponentList;
 import net.thevpc.pnote.types.objectlist.model.PangageaNoteObjectDocument;
 import net.thevpc.pnote.types.objectlist.model.PangaeaNoteObject;
 import net.thevpc.pnote.model.PangaeaNoteExt;
 import net.thevpc.common.swing.list.JComponentListItem;
+import net.thevpc.pnote.model.HighlightType;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import net.thevpc.pnote.types.objectlist.PangaeaObjectListService;
 
 /**
@@ -54,17 +56,17 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
 
     };
     private JToolBar bar = new JToolBar();
-    private PangaeaNoteGuiApp sapp;
-    private SwingApplicationsHelper.Tracker gtracker;
+    private PangaeaNoteWindow sapp;
+    private SwingApplicationsUtils.Tracker gtracker;
     private boolean editable = true;
     private JButton addToObjectList;
     private boolean compactMode;
 
-    public PangaeaNoteObjectDocumentComponent(boolean compactMode, PangaeaNoteGuiApp sapp) {
+    public PangaeaNoteObjectDocumentComponent(boolean compactMode, PangaeaNoteWindow sapp) {
         super(new BorderLayout());
         this.sapp = sapp;
         this.compactMode = compactMode;
-        this.gtracker = new SwingApplicationsHelper.Tracker(sapp.app());
+        this.gtracker = new SwingApplicationsUtils.Tracker(sapp.app());
         componentList = new JComponentList<PangaeaNoteObjectExt>(new JComponentListItem<PangaeaNoteObjectExt>() {
             @Override
             public JComponent createComponent(int pos, int size) {
@@ -130,7 +132,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteGuiApp sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
         PangaeaObjectListService s = (PangaeaObjectListService) sapp.service().getContentTypeService(PangaeaObjectListService.OBJECT_LIST);
         this.currentNote = note;
         this.dynamicDocument = s.getContentAsObject(note.getContent());
@@ -278,11 +280,11 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
         private JToolBar bar = new JToolBar();
         private int pos;
         private JButton global1;
-        private SwingApplicationsHelper.Tracker stracker;
+        private SwingApplicationsUtils.Tracker stracker;
 
-        public Item(PangaeaNoteGuiApp sapp, PangaeaNoteObjectTracker tracker) {
+        public Item(PangaeaNoteWindow sapp, PangaeaNoteObjectTracker tracker) {
             super(new BorderLayout());
-            stracker = new SwingApplicationsHelper.Tracker(sapp.app());
+            stracker = new SwingApplicationsUtils.Tracker(sapp.app());
             e = new PangaeaNoteObjectComponent(tracker, sapp);
             Box hb = Box.createHorizontalBox();
             hb.add(Box.createHorizontalGlue());

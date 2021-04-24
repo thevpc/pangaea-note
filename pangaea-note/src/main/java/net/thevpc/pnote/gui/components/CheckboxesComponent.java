@@ -24,8 +24,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsHelper;
-import net.thevpc.pnote.gui.PangaeaNoteGuiApp;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
+import net.thevpc.pnote.gui.PangaeaNoteWindow;
 
 /**
  *
@@ -38,11 +38,11 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
     private Box box;
     private ItemListener itemListener;
     private boolean editable = true;
-    private SwingApplicationsHelper.Tracker tracker;
+    private SwingApplicationsUtils.Tracker tracker;
 
-    public CheckboxesComponent(PangaeaNoteGuiApp sapp) {
+    public CheckboxesComponent(PangaeaNoteWindow sapp) {
         super(new BorderLayout());
-        tracker = new SwingApplicationsHelper.Tracker(sapp.app());
+        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
         box = Box.createHorizontalBox();
         add(box);
         itemListener = new ItemListener() {

@@ -9,7 +9,7 @@ import net.thevpc.pnote.types.html.PangaeaNoteHtmlService;
 import net.thevpc.pnote.types.markdown.PangaeaNoteMarkdownService;
 import net.thevpc.pnote.types.ntf.PangaeaNoteNTFService;
 import net.thevpc.pnote.model.PangaeaNoteContentType;
-import net.thevpc.pnote.types.html.PangaeaNoteHtmlWysiwygService;
+import net.thevpc.pnote.types.rich.PangaeaNoteHtmlWysiwygService;
 
 /**
  *
