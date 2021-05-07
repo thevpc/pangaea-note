@@ -1,10 +1,12 @@
 [^<- strut(v,5) ::]
 [^<-label      ::]
-[<=-textEditor       ::]
-[<=-matchCase       ][<=-wholeWord:]
-[<=-literalStrategy  ][<=-simpleStrategy][<=-regexpStrategy]
+[<=-textEditor       :::]
+[<=-matchCase       ][<=-wholeWord][<=-matchModeLabel][<=-matchMode]
 [<$=-glue(v)       ::]
 ;
 insets(2,5)
 insets(matchCase,10,5,2,5)
+insets(wholeWord,10,5,2,5)
+insets(matchModeLabel,10,5,2,5)
+insets(matchMode,10,5,2,5)
 

@@ -2,9 +2,6 @@
 [<=-nameEditor      ::]
 [<=-readOnlyEditor      ::]
 [<-typeLabel      ][<=-typeEditor       :=-]
-[<-iconLabel      ][<=-iconEditor       :=-]
-[<-forgroundLabel      ][<=-|forgroundEditor       :=-]
-[<-backgroundLabel      ][<=-|backgroundEditor       :=-]
-[<=-modifiersEditor ::]
+[<+|=tabs::      ]
 ;
 insets(2,5)

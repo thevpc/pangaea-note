@@ -5,22 +5,16 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.string;
 
-import java.awt.Color;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
-import javax.swing.text.BadLocationException;
-import net.thevpc.common.swing.GridBagLayoutSupport;
-import net.thevpc.pnote.model.HighlightType;
+
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.types.rich.editor.RichEditor;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 
 /**
  *
@@ -30,10 +24,10 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
 
     private JTextField text = new JTextField();
     private PangaeaNoteExt currentNote;
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteWindow win;
 
-    public StringEditorTypeComponent(PangaeaNoteWindow sapp) {
-        this.sapp = sapp;
+    public StringEditorTypeComponent(PangaeaNoteWindow win) {
+        this.win = win;
         GridBagLayoutSupport.of("[^$-==item]")
                 .bind("item", text)
                 .apply(this);
@@ -41,8 +35,8 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
             @Override
             public void anyChange(DocumentEvent e) {
                 if (currentNote != null) {
-                    sapp.onDocumentChanged();
-                    currentNote.setContent(sapp.service().stringToElement(text.getText()));
+                    win.onDocumentChanged();
+                    currentNote.setContent(win.service().stringToElement(text.getText()));
                 }
             }
         });
@@ -64,12 +58,12 @@ public class StringEditorTypeComponent extends JPanel implements PangaeaNoteEdit
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
         this.currentNote = note;
         if (note == null) {
             text.setText("");
         } else {
-            text.setText(sapp.service().elementToString(note.getContent()));
+            text.setText(win.service().elementToString(note.getContent()));
         }
         text.setEditable(!note.isReadOnly());
 

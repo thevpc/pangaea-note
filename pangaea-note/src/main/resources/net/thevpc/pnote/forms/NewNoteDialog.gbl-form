@@ -1,9 +1,6 @@
 [<-nameLabel      ::]
 [<=-nameText      ::]
-[<-typeLabel      ][<=-typeList       :=-]
-[<-iconLabel      ][<=-iconList       :=-]
-[<=-valueLabel::]
-[<=-typeFileValue::]
-[<+===$$$description::]
+[<=-typeLabel::]
+[<+|===$$$typeList  ::]
 ;
 insets(2,5)

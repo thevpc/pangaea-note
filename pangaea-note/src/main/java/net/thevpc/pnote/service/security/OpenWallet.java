@@ -30,6 +30,10 @@ public class OpenWallet {
         this.rootPath = s;
     }
 
+    public void clear(String path) {
+        passwords.remove(path);
+    }
+    
     public String get(String root, String path) {
         if (root == null || root.length() == 0 || path == null || path.length() == 0) {
             return null;

@@ -34,9 +34,9 @@ public class TextAreaComponent extends JPanel implements FormComponent {
     private AnyDocumentListener listener;
     private SwingApplicationsUtils.Tracker tracker;
 
-    public TextAreaComponent(PangaeaNoteWindow sapp) {
+    public TextAreaComponent(PangaeaNoteWindow win) {
         super(new BorderLayout());
-        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
+        tracker = new SwingApplicationsUtils.Tracker(win.app());
         add(new JScrollPane(textArea));
         setPreferredSize(new Dimension(200, 100));
         setMinimumSize(new Dimension(100, 100));

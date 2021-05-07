@@ -8,9 +8,7 @@ package net.thevpc.pnote.gui.components;
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -40,9 +38,9 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
     private boolean editable = true;
     private SwingApplicationsUtils.Tracker tracker;
 
-    public CheckboxesComponent(PangaeaNoteWindow sapp) {
+    public CheckboxesComponent(PangaeaNoteWindow win) {
         super(new BorderLayout());
-        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
+        tracker = new SwingApplicationsUtils.Tracker(win.app());
         box = Box.createHorizontalBox();
         add(box);
         itemListener = new ItemListener() {

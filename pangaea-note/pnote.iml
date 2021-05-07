@@ -11,6 +11,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="iconset-svgrepo-color" />
+    <orderEntry type="module" module-name="iconset-svgrepo-color" />
+    <orderEntry type="module" module-name="iconset-svgrepo-color" />
     <orderEntry type="library" name="Maven: net.sourceforge.tess4j:tess4j:4.3.0" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.jai-imageio:jai-imageio-core:1.4.0" level="project" />
@@ -32,56 +35,34 @@
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.1.4.GA" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jul-to-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:log4j-over-slf4j:1.7.25" level="project" />
-    <orderEntry type="module" module-name="nuts" />
+    <orderEntry type="library" name="Maven: net.thevpc.nuts:nuts:0.8.1" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.more.shef:shef-core:0.4" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jtidy:jtidy:r938" level="project" />
     <orderEntry type="module" module-name="iconset-feather" />
     <orderEntry type="module" module-name="iconset-svgrepo-color" />
-    <orderEntry type="module" module-name="echo-swing" />
-    <orderEntry type="module" module-name="echo-api" />
-    <orderEntry type="module" module-name="thevpc-common-i18n" />
-    <orderEntry type="module" module-name="thevpc-common-iconset" />
-    <orderEntry type="library" name="Maven: batik:batik-rasterizer:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-transcoder:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-bridge:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-gvt:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-awt-util:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-util:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-gui-util:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-ext:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: xml-apis:xmlParserAPIs:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-script:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: rhino:js:1.5R4.1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-svg-dom:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-dom:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-css:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-xml:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-parser:1.6-1" level="project" />
-    <orderEntry type="library" name="Maven: fop:fop:0.20.5" level="project" />
-    <orderEntry type="library" name="Maven: batik:batik-1.5-fop:0.20-5" level="project" />
-    <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.0.b2" level="project" />
-    <orderEntry type="library" name="Maven: xalan:xalan:2.4.1" level="project" />
-    <orderEntry type="library" name="Maven: xerces:xercesImpl:2.2.1" level="project" />
-    <orderEntry type="library" name="Maven: avalon-framework:avalon-framework:4.0" level="project" />
-    <orderEntry type="module" module-name="thevpc-common-props" />
-    <orderEntry type="module" module-name="thevpc-common-msg" />
-    <orderEntry type="module" module-name="thevpc-common-swing" />
-    <orderEntry type="module" module-name="thevpc-common-plaf" />
+    <orderEntry type="library" name="Maven: net.thevpc.echo:echo-swing:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.echo:echo-api:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-i18n:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-iconset:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.kitfox.svg:svg-salamander:1.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-props:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-msg:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-swing:2.3.9" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-plaf:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.formdev:flatlaf:1.1.2" level="project" />
-    <orderEntry type="module" module-name="echo-swing-mydoggy" />
+    <orderEntry type="library" name="Maven: net.thevpc.echo:echo-swing-mydoggy:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.more.mydoggy:mydoggy-api:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.more.mydoggy:mydoggy-plaf:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: tablelayout:TableLayout:20050920" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.more.mydoggy:mydoggy-res:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.jeep:jeep-editor-swing:1.2.7" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.jeep:jeep:1.2.7" level="project" />
-    <orderEntry type="module" module-name="thevpc-common-text-source" />
-    <orderEntry type="module" module-name="thevpc-common-text-source-log" />
-    <orderEntry type="module" module-name="thevpc-common-classpath" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-text-source:1.3.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-text-source-log:1.3.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-classpath:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.hl.ide:hl4swing:0.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.hl:hadra-build-tool:0.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:8.0.1" level="project" />
@@ -90,9 +71,34 @@
     <orderEntry type="library" name="Maven: org.ow2.asm:asm-analysis:8.0.1" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.tson:tson:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.hl:hadra-lang:0.1.0" level="project" />
+    <orderEntry type="library" name="Maven: net.thevpc.echo:echo-swing-swingx:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jopendocument:jOpenDocument:1.3" level="project" />
+    <orderEntry type="library" name="Maven: org.jodconverter:jodconverter-local:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jodconverter:jodconverter-core:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.6" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
+    <orderEntry type="library" name="Maven: org.libreoffice:juh:5.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.libreoffice:jurt:5.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.libreoffice:ridl:5.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.libreoffice:unoil:5.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.5.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.icepdf.os:icepdf-core:6.2.2" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.54" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-ext-jdk15on:1.54" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.54" level="project" />
+    <orderEntry type="library" name="Maven: org.icepdf.os:icepdf-viewer:6.2.2" level="project" />
+    <orderEntry type="library" name="Maven: batik:batik-awt-util:1.6" level="project" />
+    <orderEntry type="library" name="Maven: batik:batik-dom:1.6" level="project" />
+    <orderEntry type="library" name="Maven: batik:batik-svg-dom:1.6" level="project" />
+    <orderEntry type="library" name="Maven: batik:batik-svggen:1.6" level="project" />
+    <orderEntry type="library" name="Maven: batik:batik-util:1.6" level="project" />
+    <orderEntry type="library" name="Maven: batik:batik-xml:1.6" level="project" />
   </component>
 </module>

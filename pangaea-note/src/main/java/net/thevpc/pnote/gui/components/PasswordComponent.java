@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.event.DocumentEvent;
-import net.thevpc.common.swing.GridBagLayoutSupport;
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
@@ -32,8 +32,8 @@ public class PasswordComponent extends JPanel implements FormComponent {
     private AnyDocumentListener listener;
     private SwingApplicationsUtils.Tracker tracker;
 
-    public PasswordComponent(PangaeaNoteWindow sapp) {
-        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
+    public PasswordComponent(PangaeaNoteWindow win) {
+        tracker = new SwingApplicationsUtils.Tracker(win.app());
         showPassword = new JCheckBox("Message.showPassword");
         showPassword.addActionListener((e)
                 -> pf.setEchoChar(showPassword.isSelected() ? '\0' : '*')

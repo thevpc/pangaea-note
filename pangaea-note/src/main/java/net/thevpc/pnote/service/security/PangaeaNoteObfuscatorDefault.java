@@ -5,7 +5,9 @@
  */
 package net.thevpc.pnote.service.security;
 
-import net.thevpc.pnote.model.CypherInfo;
+import net.thevpc.pnote.api.InvalidSecretException;
+import net.thevpc.pnote.api.PangaeaNoteObfuscator;
+import net.thevpc.pnote.api.model.CypherInfo;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 import net.thevpc.common.swing.util.CancelException;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsContentType;
-import net.thevpc.pnote.model.PangaeaNote;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *

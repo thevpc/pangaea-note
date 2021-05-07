@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.gui.util;
 
-import net.thevpc.common.swing.ObjectListModel;
+import net.thevpc.common.swing.list.ObjectListModel;
 import java.util.List;
 import java.util.function.Function;
 

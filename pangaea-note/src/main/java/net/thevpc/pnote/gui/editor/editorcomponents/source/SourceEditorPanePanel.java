@@ -40,21 +40,21 @@ import net.thevpc.common.swing.SwingComponentUtils;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
 import net.thevpc.jeep.editor.JSyntaxStyleManager;
-import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.SelectableElement;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
-import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.util.GuiHelper;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.gui.search.SearchDialog;
-import net.thevpc.pnote.service.PangaeaNoteTypeService;
+import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.types.rich.editor.RichEditor;
+import net.thevpc.pnote.core.types.rich.editor.RichEditor;
 
 /**
  *
@@ -67,14 +67,13 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
     private boolean source;
     private boolean compactMode;
     private boolean editable = true;
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteWindow win;
     private SourceEditorPaneExtension textExtension = new SourceEditorPanePanelTextExtension();
     DocumentListener documentListener = new AnyDocumentListener() {
         public void anyChange(DocumentEvent e) {
             if (currentNote != null) {
-//                System.out.println("update note:" + editorBuilder.editor().getText());
-                sapp.onDocumentChanged();
-                currentNote.setContent(sapp.service().stringToElement(editorBuilder.editor().getText()));
+                win.onDocumentChanged();
+                currentNote.setContent(win.service().stringToElement(editorBuilder.editor().getText()));
             }
         }
     };
@@ -86,13 +85,13 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
         }
     };
 
-    public SourceEditorPanePanel(boolean source, boolean compactMode, PangaeaNoteWindow sapp) {
+    public SourceEditorPanePanel(boolean source, boolean compactMode, PangaeaNoteWindow win) {
         super(new BorderLayout());
         this.compactMode = compactMode;
         boolean lineNumbers = source;
         this.editorBuilder = new JEditorPaneBuilder();
         this.editorBuilder.setEditor(new JTextPane());
-        for (PangaeaNoteTypeService contentTypeService : sapp.service().getContentTypeServices()) {
+        for (PangaeaNoteTypeService contentTypeService : win.service().getContentTypeServices()) {
             EditorKit k=contentTypeService.getSourceEditorKit();
             if(k!=null){
                         editorBuilder.editor().setEditorKitForContentType(
@@ -124,7 +123,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
         //.header().add(new JLabel(title))
 
 //        this.setWheelScrollingEnabled(true);
-        this.sapp = sapp;
+        this.win = win;
         this.source = source;
         this.editorBuilder.editor().getDocument().addDocumentListener(documentListener);
         this.editorBuilder.editor().addPropertyChangeListener("document", e -> {
@@ -142,7 +141,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
             popup = new JPopupMenu();
             editorBuilder.editor().setComponentPopupMenu(popup);
         }
-        textExtension.prepareEditor(editorBuilder, compactMode, sapp);
+        textExtension.prepareEditor(editorBuilder, compactMode, win);
         if (!compactMode) {
             this.editorBuilder.header().addGlue();
         }
@@ -158,8 +157,8 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
                 SwingApplicationsUtils.registerAction(new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        SearchDialog dialog = new SearchDialog(sapp);
-                        dialog.setTitle(sapp.app().i18n().getString("Message.search.searchInDocument"));
+                        SearchDialog dialog = new SearchDialog(win);
+                        dialog.setTitleId("Message.search.searchInDocument");
                         dialog.setSearchText(ed.getSelectedText());
                         SearchQuery query = dialog.showDialog();
                         if (query != null) {
@@ -173,7 +172,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
                         }
                     }
 
-                }, "search", "search", sapp.app())
+                }, "search", "search", win.app())
         );
         ed.getInputMap().put(KeyStroke.getKeyStroke("control D"), "duplicate-text");
         ed.getActionMap().put("duplicate-text",
@@ -200,7 +199,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
                         }
                     }
 
-                }, "search", "search", sapp.app())
+                }, "search", "search", win.app())
         );
         ed.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "reset-highlights");
         ed.getActionMap().put("reset-highlights",
@@ -210,7 +209,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
                         ed.getHighlighter().removeAllHighlights();
                     }
 
-                }, "reset-highlights", "reset-highlights", sapp.app())
+                }, "reset-highlights", "reset-highlights", win.app())
         );
 
         GuiHelper.installUndoRedoManager(editorBuilder.editor());
@@ -269,13 +268,13 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
         ed.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                sapp.selectableElement().set(selectableElement);
+                win.selectableElement().set(selectableElement);
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if(selectableElement==sapp.selectableElement().get()){
-                    sapp.selectableElement().set(null);
+                if(selectableElement==win.selectableElement().get()){
+                    win.selectableElement().set(null);
                 }
             }
         });
@@ -287,13 +286,13 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
 //    }
     @Override
     public void uninstall() {
-        textExtension.uninstall(editorBuilder, sapp);
+        textExtension.uninstall(editorBuilder, win);
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
         this.currentNote = note;
-        String c = sapp.service().elementToString(note.getContent());
+        String c = win.service().elementToString(note.getContent());
         String type = note.getContentType();
         if (type == null) {
             type = "";
@@ -308,7 +307,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
     private Action prepareAction(AbstractAction a) {
         //align-justify.png
         String s = (String) a.getValue(AbstractAction.NAME);
-        SwingApplicationsUtils.registerAction(a, null, s, sapp.app());
+        SwingApplicationsUtils.registerAction(a, null, s, win.app());
         return a;
     }
 
@@ -352,7 +351,7 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
     @Override
     public void highlight(int from, int to, HighlightType hightlightType) {
         try {
-            Color c = sapp.colorForHighlightType(hightlightType);
+            Color c = win.colorForHighlightType(hightlightType);
             javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter
                     = new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(c);
             editorBuilder.editor().getHighlighter().addHighlight(from, to, highlightPainter);

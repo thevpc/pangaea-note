@@ -7,7 +7,7 @@ package net.thevpc.pnote;
 
 import java.awt.Color;
 import javax.swing.ImageIcon;
-import net.thevpc.common.swing.JSplashScreen;
+import net.thevpc.common.swing.splash.JSplashScreen;
 
 /**
  *

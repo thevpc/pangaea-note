@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
-import net.thevpc.common.swing.GridBagLayoutSupport;
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
@@ -31,8 +31,8 @@ public class TextFieldComponent extends JPanel implements FormComponent {
     private AnyDocumentListener listener;
     private SwingApplicationsUtils.Tracker tracker;
 
-    public TextFieldComponent(PangaeaNoteWindow sapp) {
-        tracker = new SwingApplicationsUtils.Tracker(sapp.app());
+    public TextFieldComponent(PangaeaNoteWindow win) {
+        tracker = new SwingApplicationsUtils.Tracker(win.app());
         new GridBagLayoutSupport("[txt-===]; insets(2)")
                 .bind("txt", textField)
                 .apply(this);

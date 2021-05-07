@@ -19,12 +19,12 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.text.EditorKit;
-import net.thevpc.common.swing.JDropDownButton;
+import net.thevpc.common.swing.button.JDropDownButton;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.service.PangaeaNoteService;
-import net.thevpc.pnote.model.PangaeaNoteContentType;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
@@ -224,19 +224,19 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
 
     public static interface ContentTypeChangeListener {
 
-        void onContentTypeChanged(PangaeaNoteContentType contentType, Context context);
+        void onContentTypeChanged(PangaeaNoteMimeType contentType, Context context);
     }
 
     public static class Context {
 
         private List<Action> actions = new ArrayList<>();
-        private PangaeaNoteWindow sapp;
+        private PangaeaNoteWindow win;
         private Application app;
         private JEditorPane pane;
 
-        public Context(PangaeaNoteWindow sapp, JEditorPane pane) {
-            this.sapp = sapp;
-            this.app = sapp.app();
+        public Context(PangaeaNoteWindow win, JEditorPane pane) {
+            this.win = win;
+            this.app = win.app();
             this.pane = pane;
         }
 
@@ -249,7 +249,7 @@ public abstract class AbstractSourceEditorPaneExtension implements SourceEditorP
         }
 
         public PangaeaNoteService service() {
-            return sapp.service();
+            return win.service();
         }
 
         public void setApp(Application app) {

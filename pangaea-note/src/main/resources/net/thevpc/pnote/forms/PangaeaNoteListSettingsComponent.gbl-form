@@ -1,0 +1,6 @@
+[<-  layoutLabel           ::]
+[<=- layoutComponent       ::]
+[<-  colsRowsLabel         ::]
+[<=- colsRows              ::]
+;
+insets(2,5)

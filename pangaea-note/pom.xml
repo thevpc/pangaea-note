@@ -77,6 +77,12 @@
             <artifactId>nuts</artifactId>
             <version>0.8.1</version>
         </dependency>
+        
+        <dependency>
+            <groupId>net.thevpc.diagram4j</groupId>
+            <artifactId>diagram4j</artifactId>
+            <version>0.1</version>
+        </dependency>
         <dependency>
             <groupId>net.thevpc.more.shef</groupId>
             <artifactId>shef-core</artifactId>
@@ -113,11 +119,48 @@
             <version>0.1.0</version>
         </dependency>
         <dependency>
+            <groupId>net.thevpc.echo</groupId>
+            <artifactId>echo-swing-swingx</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jopendocument</groupId>
+            <artifactId>jOpenDocument</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jodconverter</groupId>
+            <artifactId>jodconverter-local</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.5.0</version>
             <scope>test</scope>
         </dependency>
+        
+        <!--- PDF -->
+        
+        <dependency>
+            <groupId>org.icepdf.os</groupId>
+            <artifactId>icepdf-core</artifactId>
+            <version>6.2.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.media</groupId>
+                    <artifactId>jai_core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.icepdf.os</groupId>
+            <artifactId>icepdf-viewer</artifactId>
+            <version>6.2.2</version>
+        </dependency>
+        
     </dependencies>
     <build>
         <plugins>

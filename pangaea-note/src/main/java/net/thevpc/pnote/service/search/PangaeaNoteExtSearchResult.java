@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 
 /**
  *

@@ -12,11 +12,11 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import net.thevpc.common.swing.color.ColorUtils;
 import net.thevpc.echo.Application;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.GuiHelper;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import sun.swing.DefaultLookup;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 
 /**
  *
@@ -24,7 +24,7 @@ import sun.swing.DefaultLookup;
  */
 class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
 
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteWindow win;
     private Application app;
     Font _font;
     Color _foreground;
@@ -35,9 +35,9 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
     Color _backgroundSelectionColor;
     Color _backgroundNonSelectionColor;
 
-    public SimpleDefaultTreeCellRendererImpl(PangaeaNoteWindow sapp) {
-        this.sapp = sapp;
-        this.app = sapp.app();
+    public SimpleDefaultTreeCellRendererImpl(PangaeaNoteWindow win) {
+        this.win = win;
+        this.app = win.app();
         _background = getBackground();
         _foreground = getForeground();
         _opaque = isOpaque();
@@ -53,10 +53,10 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
     public void updateUI() {
         super.updateUI();
         _font = UIManager.getFont("Label.font");
-        _textSelectionColor = (DefaultLookup.getColor(this, ui, "Tree.selectionForeground"));
-        _textNonSelectionColor = (DefaultLookup.getColor(this, ui, "Tree.textForeground"));
-        _backgroundSelectionColor = (DefaultLookup.getColor(this, ui, "Tree.selectionBackground"));
-        _backgroundNonSelectionColor = (DefaultLookup.getColor(this, ui, "Tree.textBackground"));
+        _textSelectionColor = (UIManager.getColor( "Tree.selectionForeground"));
+        _textNonSelectionColor = (UIManager.getColor( "Tree.textForeground"));
+        _backgroundSelectionColor = (UIManager.getColor( "Tree.selectionBackground"));
+        _backgroundNonSelectionColor = (UIManager.getColor( "Tree.textBackground"));
     }
 
     @Override
@@ -73,7 +73,7 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
             setFont(GuiHelper.deriveFont(_font, n.isTitleBold(), n.isTitleItalic(), n.isTitleUnderlined(), n.isTitleStriked()));
             if (sel) {
             } else {
-                Color b = GuiHelper.parseColor(n.getTitleBackground());
+                Color b = ColorUtils.parseColor(n.getTitleBackground());
                 if (b != null) {
 //                    setOpaque(true);
                     setBackgroundNonSelectionColor(b);
@@ -82,7 +82,7 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
                 }
             }
             {
-                Color b = GuiHelper.parseColor(n.getTitleForeground());
+                Color b = ColorUtils.parseColor(n.getTitleForeground());
                 if (b != null) {
                     setTextNonSelectionColor(b);
                     setTextSelectionColor(b);
@@ -102,7 +102,7 @@ class SimpleDefaultTreeCellRendererImpl extends DefaultTreeCellRenderer {
 
         if (value instanceof PangaeaNoteExt) {
             PangaeaNoteExt n = (PangaeaNoteExt) value;
-            String iconName = sapp.service().getNoteIcon(n.toNote(), n.getChildren().size() > 0, expanded);
+            String iconName = win.service().getNoteIcon(n.toNote(), n.getChildren().size() > 0, expanded);
             Icon icon = app.iconSets().icon(iconName).get();
             setIcon(icon);
         } else {

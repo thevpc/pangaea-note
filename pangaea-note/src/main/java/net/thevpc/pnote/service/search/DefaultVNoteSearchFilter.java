@@ -8,7 +8,7 @@ package net.thevpc.pnote.service.search;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import java.util.stream.Stream;
-import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 

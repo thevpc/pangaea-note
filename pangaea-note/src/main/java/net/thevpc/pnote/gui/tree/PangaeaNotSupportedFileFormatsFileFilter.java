@@ -12,17 +12,16 @@ import java.util.Set;
 import javax.swing.filechooser.FileFilter;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
 
 public class PangaeaNotSupportedFileFormatsFileFilter extends FileFilter {
 
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteWindow win;
     private Set<String> extensions = new HashSet<String>(Arrays.asList(PangaeaContentTypes.PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION, "ctd"));
     private String description;
 
-    public PangaeaNotSupportedFileFormatsFileFilter(PangaeaNoteWindow sapp) {
-        this.sapp = sapp;
-        description = sapp.app().i18n().getString("Message.pnoteSupportedFileFilters");
+    public PangaeaNotSupportedFileFormatsFileFilter(PangaeaNoteWindow win) {
+        this.win = win;
+        description = win.app().i18n().getString("Message.pnoteSupportedFileFilters");
     }
 
     public boolean accept(File f) {

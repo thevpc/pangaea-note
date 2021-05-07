@@ -9,73 +9,78 @@ import net.thevpc.pnote.service.search.SearchQuery;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.util.function.Consumer;
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import net.thevpc.common.swing.GridBagLayoutSupport;
+import net.thevpc.common.swing.NamedValue;
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
-import net.thevpc.pnote.model.PangaeaNoteExt;
 
 /**
  *
  * @author vpc
  */
-public class SearchDialog extends OkCancelDialog {
+public class SearchDialog {
 
-    private PangaeaNoteWindow sapp;
-    private JLabel valueLabel;
+    private JPanel panel;
+    private PangaeaNoteWindow win;
+    private JLabel matchModeLabel;
 
     private JComboBox queryEditor;
     private JCheckBox matchCaseEditor;
     private JCheckBox wholeWordEditor;
-    private JRadioButton literalStrategyEditor;
-    private JRadioButton simpleStrategyEditor;
-    private JRadioButton regexpStrategyEditor;
+    private JComboBox modeEditor;
+//    private JRadioButton literalStrategyEditor;
+//    private JRadioButton simpleStrategyEditor;
+//    private JRadioButton regexpStrategyEditor;
 
     private boolean ok = false;
+    private String titleId = "Message.search";
+    private Object[] params = {};
 
-    public SearchDialog(PangaeaNoteWindow sapp) throws HeadlessException {
-        super(sapp, "Message.search");
+    public SearchDialog(PangaeaNoteWindow win) throws HeadlessException {
+        this.win = win;
+        this.matchCaseEditor = new JCheckBox(win.app().i18n().getString("Message.matchCase"));
+        this.wholeWordEditor = new JCheckBox(win.app().i18n().getString("Message.wholeWord"));
+        this.matchModeLabel = new JLabel(win.app().i18n().getString("Message.match"));
+        DefaultComboBoxModel<Object> cm = new DefaultComboBoxModel<>();
+        cm.addElement(new NamedValue(SearchQuery.Strategy.LITERAL.toString(), win.app().i18n().getString("Message.searchLiteralStrategy")));
+        cm.addElement(new NamedValue(SearchQuery.Strategy.SIMPLE.toString(), win.app().i18n().getString("Message.searchSimpleStrategy")));
+        cm.addElement(new NamedValue(SearchQuery.Strategy.REGEXP.toString(), win.app().i18n().getString("Message.searchRegexpStrategy")));
 
-        this.sapp = sapp;
-        this.valueLabel = new JLabel(sapp.app().i18n().getString("Message.search"));
-        this.matchCaseEditor = new JCheckBox(sapp.app().i18n().getString("Message.matchCase"));
-        this.wholeWordEditor = new JCheckBox(sapp.app().i18n().getString("Message.wholeWord"));
-        this.literalStrategyEditor = new JRadioButton(sapp.app().i18n().getString("Message.searchLiteralStrategy"));
-        this.simpleStrategyEditor = new JRadioButton(sapp.app().i18n().getString("Message.searchSimpleStrategy"));
-        this.regexpStrategyEditor = new JRadioButton(sapp.app().i18n().getString("Message.searchRegexpStrategy"));
-        this.literalStrategyEditor.setSelected(true);
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(literalStrategyEditor);
-        bg.add(simpleStrategyEditor);
-        bg.add(regexpStrategyEditor);
+        modeEditor = new JComboBox<Object>(cm);
+        modeEditor.setSelectedIndex(0);
+//        this.literalStrategyEditor = new JRadioButton(win.app().i18n().getString("Message.searchLiteralStrategy"));
+//        this.simpleStrategyEditor = new JRadioButton(win.app().i18n().getString("Message.searchSimpleStrategy"));
+//        this.regexpStrategyEditor = new JRadioButton(win.app().i18n().getString("Message.searchRegexpStrategy"));
+//        this.literalStrategyEditor.setSelected(true);
+//        ButtonGroup bg = new ButtonGroup();
+//        bg.add(literalStrategyEditor);
+//        bg.add(simpleStrategyEditor);
+//        bg.add(regexpStrategyEditor);
 
-        queryEditor = new JComboBox(new DefaultComboBoxModel(sapp.getRecentSearchQueries().toArray()));
+        queryEditor = new JComboBox(new DefaultComboBoxModel(win.getRecentSearchQueries().toArray()));
         queryEditor.setEditable(true);
         queryEditor.setMinimumSize(new Dimension(50, 30));
         GridBagLayoutSupport gbs = GridBagLayoutSupport.load(SearchDialog.class.getResource(
                 "/net/thevpc/pnote/forms/SearchDialog.gbl-form"
         ));
-        gbs.bind("label", new JLabel(sapp.app().i18n().getString("Message.searchLabel")));
+        gbs.bind("label", new JLabel(win.app().i18n().getString("Message.searchLabel")));
         gbs.bind("textEditor", queryEditor);
         gbs.bind("matchCase", matchCaseEditor);
         gbs.bind("wholeWord", wholeWordEditor);
-        gbs.bind("simpleStrategy", simpleStrategyEditor);
-        gbs.bind("regexpStrategy", regexpStrategyEditor);
-        gbs.bind("literalStrategy", literalStrategyEditor);
+        gbs.bind("matchModeLabel", matchModeLabel);
+        gbs.bind("matchMode", modeEditor);
+        
+        
+//        gbs.bind("simpleStrategy", simpleStrategyEditor);
+//        gbs.bind("regexpStrategy", regexpStrategyEditor);
+//        gbs.bind("literalStrategy", literalStrategyEditor);
 
-        build(gbs.apply(new JPanel()), this::ok, this::cancel);
-        setPreferredSize(new Dimension(400, 250));
-    }
-
-    public void setPreembuleText(String text) {
-        setTitle(text);
+        panel = (gbs.apply(new JPanel()));
+//        setPreferredSize(new Dimension(400, 250));
     }
 
     protected void install() {
@@ -87,27 +92,42 @@ public class SearchDialog extends OkCancelDialog {
     protected void ok() {
         uninstall();
         this.ok = true;
-        setVisible(false);
     }
 
     protected void cancel() {
         uninstall();
         this.ok = false;
-        setVisible(false);
     }
 
-    public void showDialogAndSearch(PangaeaNoteExt note) {
-        sapp.searchInNodes(showDialog(), note);
+    public String getTitleId() {
+        return titleId;
+    }
+
+    public SearchDialog setTitleId(String titleId, Object... params) {
+        this.titleId = titleId;
+        this.params = params;
+        return this;
     }
 
     public SearchQuery showDialog() {
-        Consumer<Exception> exHandler = sapp::showError;
+        Consumer<Exception> exHandler = win::showError;
         while (true) {
             install();
             this.ok = false;
-            pack();
-            setLocationRelativeTo((JFrame) sapp.app().mainWindow().get().component());
-            setVisible(true);
+            win.app().newDialog()
+                    .setTitleId(titleId, params)
+                    .setContent(panel)
+                    .withOkCancelButtons(
+                            (a) -> {
+                                ok();
+                                a.getDialog().closeDialog();
+                            },
+                            (a) -> {
+                                cancel();
+                                a.getDialog().closeDialog();
+                            }
+                    )
+                    .showDialog();
             try {
                 return get();
             } catch (Exception ex) {
@@ -120,14 +140,12 @@ public class SearchDialog extends OkCancelDialog {
         if (ok) {
             String s = (String) queryEditor.getSelectedItem();
             if (s != null && s.length() > 0) {
+                SearchQuery.Strategy mm = SearchQuery.Strategy.valueOf((String) modeEditor.getSelectedItem());
                 SearchQuery q = new SearchQuery(
                         s,
                         matchCaseEditor.isSelected(),
                         wholeWordEditor.isSelected(),
-                        literalStrategyEditor.isSelected() ? SearchQuery.Strategy.LITERAL
-                        : simpleStrategyEditor.isSelected() ? SearchQuery.Strategy.SIMPLE
-                        : regexpStrategyEditor.isSelected() ? SearchQuery.Strategy.REGEXP
-                        : SearchQuery.Strategy.LITERAL
+                        mm
                 );
                 return q;
             }

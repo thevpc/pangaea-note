@@ -19,11 +19,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.AppToolWindow;
-import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.service.PangaeaNoteTypeService;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
@@ -32,14 +31,14 @@ import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
  */
 public class SearchResultPanel extends JPanel {
 
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteWindow win;
     private AppToolWindow resultPanelTool;
     private SearchResultPanelItem item;
 
-    public SearchResultPanel(PangaeaNoteWindow sapp) {
+    public SearchResultPanel(PangaeaNoteWindow win) {
         super(new BorderLayout());
-        this.sapp = sapp;
-        item = new SearchResultPanelItemImpl(sapp);
+        this.win = win;
+        item = new SearchResultPanelItemImpl(win);
         add((JComponent) item);
     }
 
@@ -76,7 +75,7 @@ public class SearchResultPanel extends JPanel {
     public static class SearchResultPanelItemImpl extends JPanel implements SearchResultPanelItem {
 
         private boolean searching;
-        private PangaeaNoteWindow sapp;
+        private PangaeaNoteWindow win;
         private JTable table = new JTable();
         private JProgressBar bar = new JProgressBar();
         private DefaultTableModel model = new DefaultTableModel() {
@@ -86,18 +85,18 @@ public class SearchResultPanel extends JPanel {
             }
         };
 
-        public SearchResultPanelItemImpl(PangaeaNoteWindow sapp) {
+        public SearchResultPanelItemImpl(PangaeaNoteWindow win) {
             super(new BorderLayout());
-            this.sapp = sapp;
+            this.win = win;
             model.setColumnIdentifiers(new Object[]{
-                sapp.app().i18n().getString("Message.search.position"),
-                sapp.app().i18n().getString("Message.search.note"),
-                sapp.app().i18n().getString("Message.search.matchingText"),});
-            sapp.app().i18n().locale().listeners().add((x) -> {
+                win.app().i18n().getString("Message.search.position"),
+                win.app().i18n().getString("Message.search.note"),
+                win.app().i18n().getString("Message.search.matchingText"),});
+            win.app().i18n().locale().listeners().add((x) -> {
                 model.setColumnIdentifiers(new Object[]{
-                    sapp.app().i18n().getString("Message.search.position"),
-                    sapp.app().i18n().getString("Message.search.note"),
-                    sapp.app().i18n().getString("Message.search.matchingText"),});
+                    win.app().i18n().getString("Message.search.position"),
+                    win.app().i18n().getString("Message.search.note"),
+                    win.app().i18n().getString("Message.search.matchingText"),});
             });
             table.setModel(model);
             table.addMouseListener(new MouseAdapter() {
@@ -109,8 +108,8 @@ public class SearchResultPanel extends JPanel {
                         if (r >= 0) {
                             StringSearchResult<PangaeaNoteExt> searchResult = (StringSearchResult<PangaeaNoteExt>) table.getModel().getValueAt(r, 2);
                             PangaeaNoteExt n = searchResult.getObject();
-                            sapp.tree().setSelectedNote(n);
-                            PangaeaNoteEditorTypeComponent comp = sapp.noteEditor().editorComponent();
+                            win.tree().setSelectedNote(n);
+                            PangaeaNoteEditorTypeComponent comp = win.noteEditor().editorComponent();
                             comp.removeHighlights(HighlightType.SEARCH_MAIN);
                             comp.removeHighlights(HighlightType.SEARCH);
                             for (StringSearchResult<PangaeaNoteExt> rr : findResults(n)) {

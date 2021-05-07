@@ -10,12 +10,12 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
-import net.thevpc.pnote.model.HighlightType;
+import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.AnyDocumentListener;
 import net.thevpc.pnote.gui.components.PasswordComponent;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
@@ -27,17 +27,17 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
     private PasswordComponent text;
     private PangaeaNoteExt currentNote;
 
-    public PasswordEditorTypeComponent(PangaeaNoteWindow sapp) {
+    public PasswordEditorTypeComponent(PangaeaNoteWindow win) {
         setLayout(new BorderLayout());
-        text = new PasswordComponent(sapp);
+        text = new PasswordComponent(win);
         add(text, BorderLayout.NORTH);
         add(new JLabel(), BorderLayout.CENTER);
         text.getPasswordField().getDocument().addDocumentListener(new AnyDocumentListener() {
             @Override
             public void anyChange(DocumentEvent e) {
                 if (currentNote != null) {
-                    sapp.onDocumentChanged();
-                    currentNote.setContent(sapp.service().stringToElement(text.getContentString()));
+                    win.onDocumentChanged();
+                    currentNote.setContent(win.service().stringToElement(text.getContentString()));
                 }
             }
         });
@@ -59,12 +59,12 @@ public class PasswordEditorTypeComponent extends JPanel implements PangaeaNoteEd
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow sapp) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
         this.currentNote = note;
         if (note == null) {
             text.setContentString("");
         } else {
-            text.setContentString(sapp.service().elementToString(note.getContent()));
+            text.setContentString(win.service().elementToString(note.getContent()));
         }
         text.setEditable(!note.isReadOnly());
     }

@@ -5,49 +5,30 @@
  */
 package net.thevpc.pnote.service;
 
+import net.thevpc.pnote.api.model.ContentTypeSelector;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
-import net.thevpc.pnote.model.PangaeaNoteContentType;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
  * @author vpc
  */
-public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNoteTypeService {
+public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPangaeaNoteTypeService {
 
-    private PangaeaNoteContentType contentType;
-    private String icon;
-    private PangaeaNoteService service;
-
-    public AbstractPangaeaNoteSourceCodeService(PangaeaNoteContentType contentType, String icon) {
-        this.contentType = contentType;
-        this.icon = icon;
+    public AbstractPangaeaNoteSourceCodeService(PangaeaNoteMimeType contentType, String... mimetypes) {
+        super(contentType, mimetypes);
     }
 
     @Override
     public ContentTypeSelector getContentTypeSelector() {
         return new ContentTypeSelector(getContentType(), "sources", 0);
-    }
-
-    @Override
-    public PangaeaNoteContentType getContentType() {
-        return contentType;
-    }
-
-    @Override
-    public void onInstall(PangaeaNoteService service) {
-        this.service = service;
-    }
-
-    @Override
-    public String getContentTypeIcon(boolean folder, boolean expanded) {
-        return icon;
     }
 
     @Override
@@ -57,33 +38,13 @@ public abstract class AbstractPangaeaNoteSourceCodeService implements PangaeaNot
 
     @Override
     public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
-        return Arrays.asList(new StringDocumentTextNavigator("content", note, "content", getContentAsString(note.getContent())).iterator()
+        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", getContentAsString(note.getContent())).iterator()
         );
-    }
-
-    public NutsElement getContentAsElement(String s) {
-        return service.stringToElement(s);
-    }
-
-    public String getContentAsString(NutsElement s) {
-        return service.elementToString(s);
-    }
-
-    @Override
-    public boolean isEmptyContent(NutsElement content) {
-        if (content == null) {
-            return true;
-        }
-        return content.isEmpty();
     }
 
     @Override
     public NutsElement createDefaultContent() {
-        return service.stringToElement("");
+        return service().stringToElement("");
     }
 
-    public PangaeaNoteService getService() {
-        return service;
-    }
-    
 }

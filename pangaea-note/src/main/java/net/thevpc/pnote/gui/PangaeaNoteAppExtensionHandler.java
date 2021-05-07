@@ -5,6 +5,8 @@
  */
 package net.thevpc.pnote.gui;
 
+import net.thevpc.pnote.api.PangaeaNoteAppExtension;
+
 /**
  *
  * @author vpc

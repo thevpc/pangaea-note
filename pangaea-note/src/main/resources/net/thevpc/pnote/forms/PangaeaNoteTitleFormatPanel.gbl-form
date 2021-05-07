@@ -1,0 +1,5 @@
+[<-foregroundLabel      ][<=-|foregroundEditor       :=-]
+[<-backgroundLabel      ][<=-|backgroundEditor       :=-]
+[<=-modifiersEditor ::]
+;
+insets(2,5)

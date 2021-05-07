@@ -8,7 +8,8 @@ package net.thevpc.pnote.gui;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.function.Supplier;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 
 /**
  *
@@ -16,7 +17,7 @@ import net.thevpc.pnote.gui.PangaeaNoteWindow;
  */
 public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensionHandler {
 
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteApp app;
 
     private Supplier<PangaeaNoteAppExtension> extensionLoader;
     private PangaeaNoteAppExtension extension;
@@ -26,8 +27,8 @@ public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensi
     private boolean loaded;
     private PropertyChangeSupport pcs;
 
-    public PangaeaNoteAppExtensionHandlerImpl(PangaeaNoteWindow sapp, Supplier<PangaeaNoteAppExtension> extensionSupplier) {
-        this.sapp = sapp;
+    public PangaeaNoteAppExtensionHandlerImpl(PangaeaNoteApp app, Supplier<PangaeaNoteAppExtension> extensionSupplier) {
+        this.app = app;
         this.extensionLoader = extensionSupplier;
         pcs = new PropertyChangeSupport(this);
     }
@@ -44,11 +45,11 @@ public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensi
     public void setDisabled(boolean b) {
         if (this.disabled != b) {
             this.disabled = b;
-            if (loaded) {
+            if (this.state == PangaeaNoteAppExtensionStatus.LOADED) {
                 if (disabled) {
-                    extension.onDisable(sapp);
+                    extension.onDisable(app);
                 } else {
-                    extension.onEnable(sapp);
+                    extension.onEnable(app);
                 }
             }
         }
@@ -56,19 +57,25 @@ public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensi
 
     @Override
     public boolean checkLoaded() {
-        if (this.state == state.LOADED) {
+        if (this.state == PangaeaNoteAppExtensionStatus.LOADED) {
             return true;
         }
-        if (this.state == state.UNLOADED) {
+        if(disabled){
+            return false;
+        }
+        if (this.state == PangaeaNoteAppExtensionStatus.UNLOADED) {
             state = PangaeaNoteAppExtensionStatus.LOADING;
-            fireStateChange(state.UNLOADED, PangaeaNoteAppExtensionStatus.LOADING);
+            fireStateChange(PangaeaNoteAppExtensionStatus.UNLOADED, PangaeaNoteAppExtensionStatus.LOADING);
             try {
                 PangaeaNoteAppExtension a = extensionLoader.get();
                 if (a != null) {
                     extension = a;
                     state = PangaeaNoteAppExtensionStatus.LOADED;
-                    a.onLoad(sapp);
+                    a.onLoad(app);
                     fireStateChange(PangaeaNoteAppExtensionStatus.LOADING, PangaeaNoteAppExtensionStatus.LOADED);
+                    if(disabled){
+                        extension.onDisable(app);
+                    }
                     return true;
                 } else {
                     error = new IllegalArgumentException("Null Extension");
@@ -97,7 +104,7 @@ public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensi
                 throw new IllegalStateException("Extension is disabled");
             }
             case ERROR: {
-                throw new IllegalStateException("Extension cloudnt be loaded");
+                throw new IllegalStateException("Extension cloud'nt be loaded");
             }
             case LOADING: {
                 throw new IllegalStateException("Extension is still loading");

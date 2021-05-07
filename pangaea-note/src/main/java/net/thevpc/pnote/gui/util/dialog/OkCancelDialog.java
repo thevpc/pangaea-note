@@ -11,8 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import net.thevpc.common.swing.GridBagLayoutSupport;
-import net.thevpc.common.swing.JDialog2;
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
+import net.thevpc.common.swing.dialog.JDialog2;
 import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.Application;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
@@ -24,18 +24,18 @@ import net.thevpc.pnote.gui.PangaeaNoteWindow;
 public class OkCancelDialog extends JDialog2 {
 
     private OkCancelFooter footer;
-    protected PangaeaNoteWindow sapp;
+    protected PangaeaNoteWindow win;
 
-    public OkCancelDialog(PangaeaNoteWindow sapp, String titleId) {
-        super((JFrame) sapp.app().mainWindow().get().component(),
-                sapp.app().i18n().getString(titleId), true
+    public OkCancelDialog(PangaeaNoteWindow win, String titleId) {
+        super((JFrame) win.app().mainWindow().get().component(),
+                win.app().i18n().getString(titleId), true
         );
-        this.sapp = sapp;
+        this.win = win;
     }
 
     protected void build(JComponent mainComponent, Runnable onOk, Runnable onCancel) {
         getRootPane().setLayout(new BorderLayout());
-        footer = new OkCancelFooter(sapp.app(), onCancel, onOk);
+        footer = new OkCancelFooter(win.app(), onCancel, onOk);
         getRootPane().add(mainComponent, BorderLayout.CENTER);
         getRootPane().add(footer, BorderLayout.SOUTH);
         SwingUtilities3.addEscapeBindings(this);

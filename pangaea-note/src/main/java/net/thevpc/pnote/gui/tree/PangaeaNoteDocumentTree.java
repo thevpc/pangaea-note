@@ -5,7 +5,8 @@
  */
 package net.thevpc.pnote.gui.tree;
 
-import net.thevpc.pnote.model.ObservableNoteSelectionListener;
+import net.thevpc.pnote.api.PangaeaNoteFileImporter;
+import net.thevpc.pnote.api.model.ObservableNoteSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -25,12 +26,10 @@ import javax.swing.tree.TreePath;
 import net.thevpc.common.swing.tree.TreeTransferHandler;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.model.ObservableNoteTreeModel;
-import net.thevpc.pnote.types.pnodetembedded.PangaeaNoteEmbeddedService;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.ObservableNoteTreeModel;
+import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.swing.plaf.UIPlafManager;
 
 /**
@@ -42,16 +41,16 @@ public class PangaeaNoteDocumentTree extends JPanel {
     JTree tree;
     private JPopupMenu treePopupMenu;
     private List<ObservableNoteSelectionListener> listeners = new ArrayList<>();
-    private PangaeaNoteWindow sapp;
+    private PangaeaNoteWindow win;
     Application app;
     private ObservableNoteTreeModel model;
     List<TreeAction> actions = new ArrayList<>();
 
-    public PangaeaNoteDocumentTree(PangaeaNoteWindow sapp) {
+    public PangaeaNoteDocumentTree(PangaeaNoteWindow win) {
         super(new BorderLayout());
-        this.sapp = sapp;
-        this.app = sapp.app();
-        model = new ObservableNoteTreeModel(PangaeaNoteExt.of(this.sapp.service().newDocument()));
+        this.win = win;
+        this.app = win.app();
+        model = new ObservableNoteTreeModel(PangaeaNoteExt.of(this.win.service().newDocument()), this.win.service());
         tree = new JTree(model);
         tree.setRootVisible(false);
         tree.setDragEnabled(true);
@@ -69,15 +68,14 @@ public class PangaeaNoteDocumentTree extends JPanel {
 
             }
         });
-        UIPlafManager.getCurrentManager().addListener((p) -> tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(sapp)));
-        tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(sapp));
+        UIPlafManager.getCurrentManager().addListener((p) -> tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(win)));
+        tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(win));
         tree.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
                     int selRow = tree.getRowForLocation(e.getX(), e.getY());
                     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-//                    System.out.println("right click " + selRow + "  " + selPath);
                     if (selRow != -1) {
                         PangaeaNoteExt selectedNote = ((PangaeaNoteExt) selPath.getLastPathComponent());
                         tree.setSelectionPath(selPath);
@@ -94,7 +92,6 @@ public class PangaeaNoteDocumentTree extends JPanel {
                 } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
                     int selRow = tree.getRowForLocation(e.getX(), e.getY());
                     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-//                    System.out.println("left click " + selRow + "  " + selPath);
                     if (selRow != -1) {
                         PangaeaNoteExt selectedNote = ((PangaeaNoteExt) selPath.getLastPathComponent());
                         tree.setSelectionPath(selPath);
@@ -134,14 +131,14 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("AddChildNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.addNote();
+                win.addNote();
                 //
             }
         });
         treePopupMenu.add(new TreeAction("AddNoteBefore", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.addNoteBefore();
+                win.addNoteBefore();
             }
 
             @Override
@@ -152,7 +149,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("AddNoteAfter", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.addNodeAfter();
+                win.addNodeAfter();
             }
 
             @Override
@@ -166,7 +163,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
 //        addCustomMenu.add(new TreeAction("AddTodayNote") {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
-//                NewNoteDialog a = new NewNoteDialog(sapp);
+//                NewNoteDialog a = new NewNoteDialog(win);
 //                PangaeaNote n = a.showDialog(PangaeaNoteDocumentTree::showError);
 //                if (n != null) {
 //                    //
@@ -177,7 +174,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("DuplicateNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.duplicateNote();
+                win.duplicateNote();
             }
 
             @Override
@@ -189,7 +186,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("RenameNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.renameNote();
+                win.renameNote();
                 //
             }
 
@@ -205,22 +202,23 @@ public class PangaeaNoteDocumentTree extends JPanel {
         importCustomMenu.add(new TreeAction("ImportAny", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.importFileInto();
+                win.importFileInto();
             }
         });
         importCustomMenu.add(new TreeAction("ImportPangaeaNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
+                win.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
             }
         });
-        importCustomMenu.add(new TreeAction("ImportCherryTree", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sapp.importFileInto("ctd");
-            }
-
-        });
+        for (PangaeaNoteFileImporter fileImporter : win.service().getFileImporters()) {
+            importCustomMenu.add(new TreeAction("ImportNote." + fileImporter.getName(), this) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    win.importFileInto(fileImporter.getSupportedFileExtensions());
+                }
+            });
+        }
 //        JMenu exportMenu = new JMenu();
 //        SwingApplicationsUtils.registerButton(exportMenu, "Action.Export", "$Action.Export.icon", app);
 //        treePopupMenu.add(exportMenu);
@@ -252,7 +250,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("DeleteNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.deleteSelectedNote();
+                win.deleteSelectedNote();
             }
 
             @Override
@@ -330,7 +328,11 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("SearchNote", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.searchNote();
+                try {
+                    win.searchNote();
+                } catch (Exception ex) {
+                    win.app().errors().add(ex);
+                }
             }
 
             @Override
@@ -353,12 +355,20 @@ public class PangaeaNoteDocumentTree extends JPanel {
         treePopupMenu.add(new TreeAction("NoteProperties", this) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sapp.editNote();
+                try {
+                    win.editNote();
+                } catch (Exception ex) {
+                    win.app().errors().add(ex);
+                }
             }
 
             @Override
             protected void onSelectedNote(PangaeaNoteExt note) {
-                requireSelectedNote(note);
+                try {
+                    requireSelectedNote(note);
+                } catch (Exception ex) {
+                    win.app().errors().add(ex);
+                }
             }
 
         });
@@ -395,6 +405,7 @@ public class PangaeaNoteDocumentTree extends JPanel {
     }
 
     public void fireOnSelectedNote(PangaeaNoteExt note) {
+        model.nodeChanged(note);
         for (TreeAction action : actions) {
             action.onSelectedNote(note);
         }

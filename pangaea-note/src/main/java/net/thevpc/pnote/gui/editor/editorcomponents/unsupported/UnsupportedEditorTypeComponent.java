@@ -8,20 +8,20 @@ package net.thevpc.pnote.gui.editor.editorcomponents.unsupported;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.thevpc.pnote.model.HighlightType;
+
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 
 /**
  *
  * @author vpc
  */
 public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent{
+    JLabel notSupported = new JLabel("Not supported");
 
     public UnsupportedEditorTypeComponent() {
-        add(new JLabel("Not supported"));
+        add(notSupported);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNot
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note,PangaeaNoteWindow sapp) {
-    
+    public void setNote(PangaeaNoteExt note,PangaeaNoteWindow win) {
+        notSupported.setText("Not supported "+note.getContentType());
     }
 
     @Override

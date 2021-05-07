@@ -34,7 +34,6 @@ public class CutomHTMLAction extends HTMLEditorKit.HTMLTextAction {
                 alternateAddTag, true);
     }
 
-    /* public */
     CutomHTMLAction(String name, String html,
             HTML.Tag parentTag,
             HTML.Tag addTag,
@@ -51,8 +50,16 @@ public class CutomHTMLAction extends HTMLEditorKit.HTMLTextAction {
     }
 
     /**
-     * A cover for HTMLEditorKit.insertHTML. If an exception it thrown it is
+     * A cover for HTMLEditorKit.insertHTML.If an exception it thrown it is
      * wrapped in a RuntimeException and thrown.
+     *
+     * @param editor editor
+     * @param doc doc
+     * @param offset offset
+     * @param html html
+     * @param popDepth popDepth
+     * @param pushDepth pushDepth
+     * @param addTag addTag
      */
     protected void insertHTML(JEditorPane editor, HTMLDocument doc,
             int offset, String html, int popDepth,
@@ -93,6 +100,13 @@ public class CutomHTMLAction extends HTMLEditorKit.HTMLTextAction {
      * invokes insertHTML.
      *
      * @since 1.3
+     * @param editor editor
+     * @param doc doc
+     * @param offset offset
+     * @param html html
+     * @param insertElement insertElement
+     * @param parentTag parentTag
+     * @param addTag addTag
      */
     protected void insertAtBoundary(JEditorPane editor, HTMLDocument doc,
             int offset, Element insertElement,
@@ -209,7 +223,7 @@ public class CutomHTMLAction extends HTMLEditorKit.HTMLTextAction {
             HTMLDocument doc = getHTMLDocument(editor);
             int offset = editor.getSelectionStart();
             int length = doc.getLength();
-            boolean inserted=false;
+            boolean inserted = false;
             // Try first choice
             if (!insertIntoTag(editor, doc, offset, parentTag, addTag)) {
                 // Then alternate.

@@ -12,7 +12,7 @@ import javax.swing.text.StyledEditorKit;
 import net.thevpc.echo.Application;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.model.PangaeaNoteContentType;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
@@ -23,7 +23,7 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
     AbstractSourceEditorPaneExtension.Context context;
 
     @Override
-    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteWindow sapp) {
+    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteWindow win) {
         if (context != null) {
             for (Action action : context.getActions()) {
                 uninstallAction(action, context);
@@ -31,18 +31,18 @@ public class SourceEditorPanePanelTextExtension extends AbstractSourceEditorPane
         }
     }
 
-    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteWindow sapp) {
+    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteWindow win) {
         JToolBar bar = compactMode ? null : new JToolBar();
-        Application app = sapp.app();
+        Application app = win.app();
         JPopupMenu popup = editorBuilder.editor().getComponentPopupMenu();
-        context = new AbstractSourceEditorPaneExtension.Context(sapp, editorBuilder.editor());
+        context = new AbstractSourceEditorPaneExtension.Context(win, editorBuilder.editor());
         addAction("copy", new StyledEditorKit.CopyAction(), bar, popup, context);
         addAction("paste", new StyledEditorKit.PasteAction(), bar, popup, context);
         addAction("cut", new StyledEditorKit.CutAction(), bar, popup, context);
         addSeparator(bar, popup, context);
         addContentTypeChangeListener(context, new ContentTypeChangeListener() {
             @Override
-            public void onContentTypeChanged(PangaeaNoteContentType contentType, Context context) {
+            public void onContentTypeChanged(PangaeaNoteMimeType contentType, Context context) {
                 if (bar != null) {
                     bar.setVisible(true);
                 }

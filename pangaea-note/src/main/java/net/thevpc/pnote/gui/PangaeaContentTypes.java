@@ -5,11 +5,11 @@
  */
 package net.thevpc.pnote.gui;
 
-import net.thevpc.pnote.types.html.PangaeaNoteHtmlService;
-import net.thevpc.pnote.types.markdown.PangaeaNoteMarkdownService;
-import net.thevpc.pnote.types.ntf.PangaeaNoteNTFService;
-import net.thevpc.pnote.model.PangaeaNoteContentType;
-import net.thevpc.pnote.types.rich.PangaeaNoteHtmlWysiwygService;
+import net.thevpc.pnote.core.types.sourcecode.html.PangaeaNoteHtmlService;
+import net.thevpc.pnote.core.types.markdown.PangaeaNoteMarkdownService;
+import net.thevpc.pnote.core.types.ntf.PangaeaNoteNTFService;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.core.types.rich.PangaeaNoteRichService;
 
 /**
  *
@@ -17,23 +17,23 @@ import net.thevpc.pnote.types.rich.PangaeaNoteHtmlWysiwygService;
  */
 public class PangaeaContentTypes {
 
-    public static final PangaeaNoteContentType UNSUPPORTED = PangaeaNoteContentType.of("application/unsupported");
+    public static final PangaeaNoteMimeType UNSUPPORTED = PangaeaNoteMimeType.of("application/unsupported");
     public static final String PANGAEA_NOTE_DOCUMENT_FILENAME_EXTENSION = "pnote";
 
-    public static boolean isFormattedText(PangaeaNoteContentType contentType) {
+    public static boolean isFormattedText(PangaeaNoteMimeType contentType) {
         String c = contentType == null ? "" : contentType.toString();
         return (c.equals(PangaeaNoteHtmlService.HTML.toString())
                 || c.equals(PangaeaNoteNTFService.NUTS_TEXT_FORMAT.toString())
                 || c.equals(PangaeaNoteMarkdownService.MARKDOWN.toString()));
     }
 
-    public static boolean isXmlLike(PangaeaNoteContentType contentType) {
+    public static boolean isXmlLike(PangaeaNoteMimeType contentType) {
         String c = contentType == null ? "" : contentType.toString();
         return (c.equals(PangaeaNoteHtmlService.HTML.toString())
-                || c.equals(PangaeaNoteHtmlWysiwygService.RICH_HTML.toString()));
+                || c.equals(PangaeaNoteRichService.RICH_HTML.toString()));
     }
 
-    public static boolean isSourceCode(PangaeaNoteContentType contentType) {
+    public static boolean isSourceCode(PangaeaNoteMimeType contentType) {
         if (contentType == null) {
             return false;
         }

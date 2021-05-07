@@ -15,9 +15,9 @@ import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.gui.editor.editorcomponents.source.SourceEditorPanePanel;
-import net.thevpc.pnote.gui.PangaeaNoteAppExtension;
+import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 
 /**
  *
@@ -26,7 +26,7 @@ import net.thevpc.pnote.gui.PangaeaNoteAppExtension;
 public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
 
     @Override
-    public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow sapp) {
+    public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
         if (component instanceof SourceEditorPanePanel) {
             SourceEditorPanePanel s = (SourceEditorPanePanel) component;
             JEditorPaneBuilder editorBuilder = s.getEditorBuilder();
@@ -38,11 +38,11 @@ public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
     }
 
     @Override
-    public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow sapp) {
+    public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
         if (component instanceof SourceEditorPanePanel) {
             SourceEditorPanePanel s = (SourceEditorPanePanel) component;
             if (!component.isCompactMode()) {
-                SwingApplicationsUtils.Tracker tracker = new SwingApplicationsUtils.Tracker(sapp.app());
+                SwingApplicationsUtils.Tracker tracker = new SwingApplicationsUtils.Tracker(win.app());
                 JEditorPaneBuilder editorBuilder = s.getEditorBuilder();
                 editorBuilder.editor().putClientProperty("Tess4JPangaeaNoteAppExtension.Tracker", tracker);
                 JToolBar bar = new JToolBar();
@@ -72,15 +72,14 @@ public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
                                                                 try {
                                                                     editorBuilder.editor().getDocument().insertString(editorBuilder.editor().getCaretPosition(), result, null);
                                                                 } catch (Exception ex) {
-                                                                    sapp.showError(ex);
+                                                                    win.showError(ex);
                                                                 } finally {
                                                                     editorBuilder.editor().setEditable(true);
                                                                 }
                                                             }
                                                     );
-                                                    System.out.println(result);
                                                 } catch (Exception ex) {
-                                                    sapp.showError(ex);
+                                                    win.showError(ex);
                                                     editorBuilder.editor().setEditable(true);
 
                                                 }
@@ -91,7 +90,7 @@ public class Tess4JPangaeaNoteAppExtension implements PangaeaNoteAppExtension {
                             }
 
                         };
-                        SwingApplicationsUtils.registerStandardAction(a, "ocr", sapp.app());
+                        SwingApplicationsUtils.registerStandardAction(a, "ocr", win.app());
                         bar.add(a);
                         tracker.add(a);
                         editorBuilder.editor().getComponentPopupMenu().add(a);

@@ -5,8 +5,13 @@
  */
 package net.thevpc.pnote.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import net.thevpc.nuts.NutsElement;
+import net.thevpc.pnote.api.PangaeaNoteTypeService;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
@@ -14,19 +19,56 @@ import java.util.List;
  */
 public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeService {
 
-//    protected ContentTypeSelector[] getDefaultContentTypeSelectors(String group) {
-//        String[] a = normalizeEditorTypes(getContentType());
-//        if (a.length == 1) {
-//            return new ContentTypeSelector[]{
-//                new ContentTypeSelector(getContentType(), getContentType(), a[0], group, 0)
-//            };
-//        }
-//        List<ContentTypeSelector> all = new ArrayList<>();
-//        all.add(new ContentTypeSelector(getContentType(), getContentType(), a[0], group, 0));
-//        for (int i = 1; i < a.length; i++) {
-//            all.add(new ContentTypeSelector(getContentType()+":"+a[i], getContentType(), a[i], group, 0));
-//        }
-//        return all.toArray()
-//    }
+    private Set<String> supportedMimeTypes = new HashSet<String>();
+    private PangaeaNoteMimeType contentType;
+    private PangaeaNoteService service;
+
+    public AbstractPangaeaNoteTypeService(PangaeaNoteMimeType contentType, String... mimetypes) {
+        this.contentType = contentType;
+        this.supportedMimeTypes.add(contentType.toString());
+        this.supportedMimeTypes.addAll(Arrays.asList(mimetypes));
+    }
+
+    @Override
+    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
+        this.service = service;
+    }
+
+    @Override
+    public String getContentTypeIcon(boolean folder, boolean expanded) {
+        return "content-type." + getContentType().toString();
+    }
+
+    @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        return supportedMimeTypes.contains(probedContentType) ? 10 : -1;
+    }
+
+    @Override
+    public PangaeaNoteMimeType getContentType() {
+        return contentType;
+    }
+
+    public NutsElement getContentAsElement(String s) {
+        return service.stringToElement(s);
+    }
+
+    public String getContentAsString(NutsElement s) {
+        return service.elementToString(s);
+    }
+
+    @Override
+    public boolean isEmptyContent(NutsElement content) {
+        if (content == null) {
+            return true;
+        }
+        return content.isEmpty();
+    }
+
+    protected PangaeaNoteService service() {
+        return service;
+    }
+    
+    
 
 }

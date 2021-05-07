@@ -5,109 +5,127 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
-import net.thevpc.common.swing.NamedValue;
-import java.awt.Dimension;
-import java.util.Objects;
+import net.thevpc.pnote.api.EditTypeComponent;
+import java.awt.BorderLayout;
+import java.awt.Window;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.function.Consumer;
-import javax.swing.Box;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import net.thevpc.common.swing.ColorChooserButton;
-import net.thevpc.common.swing.GridBagLayoutSupport;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import net.thevpc.common.i18n.I18n;
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.util.GuiHelper;
-import net.thevpc.pnote.gui.util.PangaeaNoteIconsCombobox;
-import net.thevpc.pnote.gui.util.PangaeaNoteTypesCombobox;
-import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
-import net.thevpc.pnote.model.PangaeaNote;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.api.PangaeaNoteTypeServiceBase;
 
 /**
  *
  * @author vpc
  */
-public class EditNoteDialog extends OkCancelDialog {
+public class EditNoteDialog {
 
+    private JPanel panel;
     private JTextField nameEditor;
-    private JComboBox iconEditor;
-    private ColorChooserButton foregroundEditor;
-    private ColorChooserButton backgroundEditor;
     private JCheckBox readOnlyEditor;
-    private JCheckBox boldEditor;
-    private JCheckBox italicEditor;
-    private JCheckBox underlinedEditor;
-    private JCheckBox strikedEditor;
+    private PangaeaNoteIconsList iconsEditor;
+    private PangaeaNoteTitleFormatPanel titleEditor;
     private PangaeaNoteTypesCombobox typeEditor;
 
     private boolean ok = false;
     private PangaeaNote note;
     private PangaeaNoteExt vn;
+    private PangaeaNoteWindow win;
+    private EditTypeComponent editTypeComponent;
+    private JPanel editTypeComponentPanel;
+    private JTabbedPane jTabbedPane;
 
-    public EditNoteDialog(PangaeaNoteWindow sapp, PangaeaNoteExt vn) {
-        super(sapp, "Message.editNote");
+    public EditNoteDialog(PangaeaNoteWindow win, PangaeaNoteExt vn) {
+        this.win = win;
         this.vn = vn;
         this.note = vn.toNote();
         nameEditor = new JTextField("");
-        typeEditor = new PangaeaNoteTypesCombobox(sapp);
-//        typeEditor.setEnabled(false);
-        typeEditor.setSelectedContentType(sapp.service().normalizeContentType(note.getContentType()), note.getEditorType());
-        iconEditor = new PangaeaNoteIconsCombobox(sapp);
-        foregroundEditor = new ColorChooserButton();
-        backgroundEditor = new ColorChooserButton();
-        readOnlyEditor = new JCheckBox(sapp.app().i18n().getString("Message.readOnly"));
-
-        boldEditor = new JCheckBox(sapp.app().i18n().getString("Message.titleBold"));
-        italicEditor = new JCheckBox(sapp.app().i18n().getString("Message.titleItalic"));
-        underlinedEditor = new JCheckBox(sapp.app().i18n().getString("Message.titleUnderlined"));
-        strikedEditor = new JCheckBox(sapp.app().i18n().getString("Message.titleStriked"));
-
-        Box modifiersEditor = Box.createHorizontalBox();
-        modifiersEditor.add(boldEditor);
-        modifiersEditor.add(italicEditor);
-        modifiersEditor.add(underlinedEditor);
-        modifiersEditor.add(strikedEditor);
+        typeEditor = new PangaeaNoteTypesCombobox(win);
+        titleEditor = new PangaeaNoteTitleFormatPanel(win);
+        typeEditor.setSelectedContentType(win.service().normalizeContentType(note.getContentType()), note.getEditorType());
+        typeEditor.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    onNoteTypeChanged();
+                }
+            }
+        });
+        iconsEditor = new PangaeaNoteIconsList(win);
+        I18n i18n = win.app().i18n();
+        readOnlyEditor = new JCheckBox(i18n.getString("Message.readOnly"));
 
         GridBagLayoutSupport gbs = GridBagLayoutSupport.load(EditNoteDialog.class.getResource(
                 "/net/thevpc/pnote/forms/EditNoteDialog.gbl-form"
         ));
-        gbs.bind("nameLabel", new JLabel(sapp.app().i18n().getString("Message.name")));
+        gbs.bind("nameLabel", new JLabel(i18n.getString("Message.name")));
         gbs.bind("nameEditor", nameEditor);
-        gbs.bind("typeLabel", new JLabel(sapp.app().i18n().getString("Message.noteType")));
+        gbs.bind("typeLabel", new JLabel(i18n.getString("Message.noteType")));
         gbs.bind("typeEditor", typeEditor);
-        gbs.bind("iconLabel", new JLabel(sapp.app().i18n().getString("Message.icon")));
-        gbs.bind("iconEditor", iconEditor);
-        gbs.bind("forgroundLabel", new JLabel(sapp.app().i18n().getString("Message.titleForegroundColor")));
-        gbs.bind("forgroundEditor", foregroundEditor);
-        gbs.bind("backgroundLabel", new JLabel(sapp.app().i18n().getString("Message.titleBackgroundColor")));
-        gbs.bind("backgroundEditor", backgroundEditor);
         gbs.bind("readOnlyEditor", readOnlyEditor);
-        gbs.bind("modifiersEditor", modifiersEditor);
 
+        editTypeComponentPanel = new JPanel(new BorderLayout());
+        jTabbedPane = new JTabbedPane();
+        gbs.bind("tabs", jTabbedPane);
+        jTabbedPane.addTab(i18n.getString("PangaeaNoteListSettingsComponent.titleLabel"), titleEditor);
+        jTabbedPane.addTab(i18n.getString("PangaeaNoteListSettingsComponent.iconsLabel"), iconsEditor);
+        jTabbedPane.addTab(i18n.getString("PangaeaNoteListSettingsComponent.optionsLabel"), editTypeComponentPanel);
+        gbs.bind("tabs", jTabbedPane);
+
+        onNoteTypeChanged();
+        iconsEditor.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                jTabbedPane.setIconAt(1, iconsEditor.getSelectedIcon());
+            }
+        });
         nameEditor.setText(note.getName());
-        for (int i = 0; i < iconEditor.getModel().getSize(); i++) {
-            NamedValue v = (NamedValue) iconEditor.getModel().getElementAt(i);
-            if (v != null && Objects.equals(OtherUtils.trim(v.getId()), OtherUtils.trim(note.getIcon()))) {
-                iconEditor.setSelectedItem(v);
-                break;
+        iconsEditor.setSelectedIcon(note.getIcon());
+        readOnlyEditor.setSelected(note.isReadOnly());
+        titleEditor.loadFromNote(note);
+        editTypeComponent.loadFrom(note);
+
+        panel = (gbs.apply(new JPanel()));
+    }
+
+    private void onNoteTypeChanged() {
+        PangaeaNoteMimeType ct = PangaeaNoteMimeType.of(typeEditor.getSelectedContentTypeId());
+        PangaeaNoteTypeServiceBase s = win.service().findContentTypeService(ct);
+        if (s == null) {
+            s = win.service().getTemplate(ct);
+        }
+        EditTypeComponent c = null;
+        if (s != null) {
+            c = s.createEditPanel(win);
+        }
+        boolean haveOptions=c!=null;
+        if (c == null) {
+            c = new EmptyEditTypeComponent();
+        }
+        editTypeComponent = c;
+        editTypeComponentPanel.removeAll();
+        editTypeComponentPanel.add(editTypeComponent.component());
+        editTypeComponent.loadFrom(note);
+        jTabbedPane.setEnabledAt(2, haveOptions);
+        if (panel != null) {
+            Window p = SwingUtilities.getWindowAncestor(panel);
+            if (p != null) {
+                p.pack();
             }
         }
-        iconEditor.setSelectedItem(note.getIcon());
-        foregroundEditor.setColorValue(GuiHelper.parseColor(note.getTitleForeground()));
-        backgroundEditor.setColorValue(GuiHelper.parseColor(note.getTitleBackground()));
-        foregroundEditor.setPreferredSize(new Dimension(20, 20));
-        backgroundEditor.setPreferredSize(new Dimension(20, 20));
-        boldEditor.setSelected(note.isTitleBold());
-        italicEditor.setSelected(note.isTitleItalic());
-        underlinedEditor.setSelected(note.isTitleUnderlined());
-        strikedEditor.setSelected(note.isTitleStriked());
-        readOnlyEditor.setSelected(note.isReadOnly());
-
-        build(gbs.apply(new JPanel()), this::ok, this::cancel);
     }
 
     protected PangaeaNote getNote() {
@@ -115,20 +133,16 @@ public class EditNoteDialog extends OkCancelDialog {
         if (nameEditor.getText() == null || nameEditor.getText().trim().length() == 0) {
             String ct = note.getContentType();
             nameEditor.setText(ct);
-            note.setName(sapp.app().i18n().getString("PangaeaNoteTypeFamily." + ct));
-            //throw new IllegalArgumentException("missing note name");
+            note.setName(win.app().i18n().getString("content-type." + ct));
         }
-        NamedValue selectedIcon = (NamedValue) iconEditor.getSelectedItem();
-        note.setIcon(selectedIcon != null ? selectedIcon.getId() : null);
+        note.setIcon(iconsEditor.getSelectedIconId());
         note.setReadOnly(readOnlyEditor.isSelected());
-        note.setTitleBackground(GuiHelper.formatColor(backgroundEditor.getColorValue()));
-        note.setTitleForeground(GuiHelper.formatColor(foregroundEditor.getColorValue()));
-        note.setTitleBold(boldEditor.isSelected());
-        note.setTitleItalic(italicEditor.isSelected());
-        note.setTitleUnderlined(underlinedEditor.isSelected());
-        note.setTitleStriked(strikedEditor.isSelected());
+        titleEditor.loadToNote(note);
         note.setContentType(typeEditor.getSelectedContentTypeId());
-        sapp.service().addRecentNoteType(note.getContentType());
+        if (editTypeComponent != null) {
+            editTypeComponent.loadTo(note);
+        }
+        win.service().addRecentNoteType(note.getContentType());
         return note;
     }
 
@@ -141,28 +155,37 @@ public class EditNoteDialog extends OkCancelDialog {
     protected void ok() {
         uninstall();
         this.ok = true;
-        setVisible(false);
     }
 
     protected void cancel() {
         uninstall();
         this.ok = false;
-        setVisible(false);
     }
 
     public PangaeaNote showDialog() {
-        Consumer<Exception> exHandler = sapp::showError;
+        Consumer<Exception> exHandler = win::showError;
         while (true) {
             install();
             this.ok = false;
-            pack();
-            setLocationRelativeTo((JFrame) sapp.app().mainWindow().get().component());
-            setVisible(true);
+            win.app().newDialog()
+                    .setTitleId("Message.editNote")
+                    .setContent(panel)
+                    .withOkCancelButtons(
+                            (a) -> {
+                                ok();
+                                a.getDialog().closeDialog();
+                            },
+                            (a) -> {
+                                cancel();
+                                a.getDialog().closeDialog();
+                            }
+                    )
+                    .showDialog();
             try {
                 PangaeaNote n = get();
                 if (n != null) {
-                    sapp.service().updateNoteProperties(vn, n);
-                    sapp.onDocumentChanged();
+                    win.service().updateNoteProperties(vn, n);
+                    win.onDocumentChanged();
                 }
                 return n;
             } catch (Exception ex) {

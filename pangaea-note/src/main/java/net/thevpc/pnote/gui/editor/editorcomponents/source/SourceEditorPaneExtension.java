@@ -14,8 +14,8 @@ import net.thevpc.pnote.gui.PangaeaNoteWindow;
  */
 public interface SourceEditorPaneExtension {
 
-    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteWindow sapp);
+    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteWindow win);
     
-    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteWindow sapp);
+    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteWindow win);
 
 }

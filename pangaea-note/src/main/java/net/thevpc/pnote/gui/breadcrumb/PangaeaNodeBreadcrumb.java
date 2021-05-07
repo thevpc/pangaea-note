@@ -11,14 +11,14 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import net.thevpc.common.swing.JBreadCrumb;
-import net.thevpc.common.swing.ObjectListModel;
-import net.thevpc.common.swing.ObjectListModelListener;
+import net.thevpc.common.swing.button.JBreadCrumb;
+import net.thevpc.common.swing.list.ObjectListModel;
+import net.thevpc.common.swing.list.ObjectListModelListener;
 import net.thevpc.common.swing.SwingUtilities3;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.gui.util.DefaultObjectListModel;
-import net.thevpc.pnote.model.PangaeaNoteExt;
-import net.thevpc.pnote.model.ObservableNoteSelectionListener;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.ObservableNoteSelectionListener;
 
 /**
  *
@@ -26,12 +26,12 @@ import net.thevpc.pnote.model.ObservableNoteSelectionListener;
  */
 public class PangaeaNodeBreadcrumb extends JScrollPane {
 
-    public PangaeaNodeBreadcrumb(PangaeaNoteWindow sapp) {
+    public PangaeaNodeBreadcrumb(PangaeaNoteWindow win) {
         JBreadCrumb b = new JBreadCrumb();
         b.setOpaque(false);
         b.setBorder(null);
-        //sapp.
-        sapp.tree().addNoteSelectionListener(new ObservableNoteSelectionListener() {
+        //win.
+        win.tree().addNoteSelectionListener(new ObservableNoteSelectionListener() {
             @Override
             public void onSelectionChanged(PangaeaNoteExt note) {
                 SwingUtilities3.invokeLater(() -> {
@@ -69,7 +69,7 @@ public class PangaeaNodeBreadcrumb extends JScrollPane {
             @Override
             public void onSelected(Object component, int index) {
                 PangaeaNoteExt v = (PangaeaNoteExt) component;
-                sapp.tree().setSelectedNote(v);
+                win.tree().setSelectedNote(v);
             }
         });
     }

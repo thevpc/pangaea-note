@@ -5,9 +5,10 @@
  */
 package net.thevpc.pnote.service.refactor;
 
-import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.PangaeaContentTypeReplacer;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
-import net.thevpc.pnote.model.PangaeaNoteContentType;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
@@ -15,14 +16,13 @@ import net.thevpc.pnote.model.PangaeaNoteContentType;
  */
 public class AnythingToPlainContentTypeReplacer implements PangaeaContentTypeReplacer {
 
-    private PangaeaNoteService service;
 
-    public AnythingToPlainContentTypeReplacer(PangaeaNoteService service) {
-        this.service = service;
+    public AnythingToPlainContentTypeReplacer() {
+
     }
 
     @Override
-    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, PangaeaNoteContentType newContentType) {
+    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteService service) {
         if (newContentType.getMajor().endsWith("text")) {
             return 10;
         }
@@ -30,7 +30,7 @@ public class AnythingToPlainContentTypeReplacer implements PangaeaContentTypeRep
     }
 
     @Override
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteContentType oldContentType, net.thevpc.pnote.model.PangaeaNoteContentType newContentType) {
+    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteService service) {
         if (newContentType.getMajor().endsWith("text")) {
             toUpdate.setContentType(newContentType.toString());
             toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));

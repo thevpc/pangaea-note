@@ -9,9 +9,8 @@ import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
@@ -19,9 +18,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
-import net.thevpc.common.swing.GridBagLayoutSupport;
+import net.thevpc.common.swing.layout.GridBagLayoutSupport;
+import net.thevpc.common.swing.text.FilePathTextAutoComplete;
+import net.thevpc.common.swing.text.TextAutoCompleteSupport;
 import net.thevpc.echo.Application;
+import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
 import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.util.OtherUtils;
 
 /**
  *
@@ -37,15 +40,27 @@ public class FileComponent extends JPanel {
     private List<FileFilter> fileFilters = new ArrayList<>();
     private List<FileChangeListener> listeners = new ArrayList<>();
     private String contentString = "";
+    private SelectMode selectMode = SelectMode.FILES_AND_DIRECTORIES;
 
-    public FileComponent(PangaeaNoteWindow sapp) {
-        openFile = new JButton("...");
+    public FileComponent(PangaeaNoteWindow win) {
+        openFile = new JButton();
+        SwingApplicationsUtils.registerButton(
+                openFile,
+                null, "folder",
+                win.app()
+        );
         openFile.addActionListener((e)
                 -> {
             onShowDialog();
         }
         );
-        reloadFile = new JButton("<>");
+
+        reloadFile = new JButton();
+        SwingApplicationsUtils.registerButton(
+                reloadFile,
+                null, "reload",
+                win.app()
+        );
         reloadFile.addActionListener((e)
                 -> {
             doReload();
@@ -70,101 +85,8 @@ public class FileComponent extends JPanel {
                 .bind("check", openFile)
                 .bind("reload", reloadFile)
                 .apply(this);
-        textField.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
 
-            @Override
-            public void keyPressed(KeyEvent evt) {
-//                JTextField jTextField1 = (JTextField) evt.getSource();
-//                if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_CONTROL) {
-//
-//                } else {
-//                    String to_check = jTextField1.getText();
-//                    int to_check_len = to_check.length();
-//
-//                    for (String data : possibilities()) {
-//                        String check_from_data = "";
-//                        for (int i = 0; i < to_check_len; i++) {
-//                            if (to_check_len <= data.length()) {
-//                                check_from_data = check_from_data + data.charAt(i);
-//                            }
-//                        }
-//                        //System.out.print(check_from_data);
-//                        if (check_from_data.equals(to_check)) {
-//                            //System.out.print("Found");
-//                            comp.setValue(data);
-//                            jTextField1.setSelectionStart(to_check_len);
-//                            jTextField1.setSelectionEnd(data.length());
-//                            break;
-//                        }
-//                    }
-//                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent evt) {
-                JTextField jTextField1 = (JTextField) evt.getSource();
-                if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE || evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_CONTROL) {
-
-                } else {
-                    String to_check = jTextField1.getText();
-                    int to_check_len = to_check.length();
-
-                    for (String data : possibilities()) {
-                        String check_from_data = "";
-                        for (int i = 0; i < to_check_len; i++) {
-                            if (to_check_len <= data.length()) {
-                                check_from_data = check_from_data + data.charAt(i);
-                            }
-                        }
-                        //System.out.print(check_from_data);
-                        if (check_from_data.equals(to_check)) {
-                            //System.out.print("Found");
-                            setContentString(data);
-                            jTextField1.select(to_check_len,data.length());
-                            break;
-                        }
-                    }
-                }
-
-            }
-        });
-
-    }
-
-    private List<String> possibilities() {
-        List<String> a = new ArrayList<>();
-        String v = textField.getText();
-        if (v == null || v.isEmpty()) {
-            for (File file : File.listRoots()) {
-                a.add(file.getPath());
-            }
-        } else {
-            boolean isFile = false;
-            for (File listRoot : File.listRoots()) {
-                if (v.startsWith(listRoot.getPath())) {
-                    isFile = true;
-                    break;
-                }
-            }
-            if (isFile) {
-                File z = null;
-                z = new File(v);
-                if (v.endsWith("/") || v.endsWith("\\")) {
-                } else {
-                    z = z.getParentFile();
-                }
-                File[] lf = z.listFiles();
-                if (lf != null) {
-                    for (File file : lf) {
-                        a.add(file.getPath());
-                    }
-                }
-            }
-        }
-        return a;
+        TextAutoCompleteSupport.setup(textField, new FilePathTextAutoComplete());
     }
 
     public boolean isReloadButtonVisible() {
@@ -190,16 +112,28 @@ public class FileComponent extends JPanel {
     }
 
     private void onShowDialog() throws HeadlessException {
-        JFileChooser c = new JFileChooser();
-        for (FileFilter filter : fileFilters) {
-            c.addChoosableFileFilter(filter);
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(
+                getSelectMode() == SelectMode.FILES_ONLY ? JFileChooser.FILES_ONLY
+                        : getSelectMode() == SelectMode.DIRECTORIES_ONLY ? JFileChooser.DIRECTORIES_ONLY
+                                : getSelectMode() == SelectMode.FILES_AND_DIRECTORIES ? JFileChooser.FILES_AND_DIRECTORIES
+                                        : JFileChooser.FILES_AND_DIRECTORIES);
+        File f = OtherUtils.asFile(textField.getText());
+        if (f != null && f.getParentFile() != null) {
+            chooser.setCurrentDirectory(f);
         }
-        c.setAcceptAllFileFilterUsed(acceptAllFileFilterUsed);
-        int v = c.showOpenDialog(
+        if (f != null) {
+            chooser.setSelectedFile(f);
+        }
+        for (FileFilter filter : fileFilters) {
+            chooser.addChoosableFileFilter(filter);
+        }
+        chooser.setAcceptAllFileFilterUsed(acceptAllFileFilterUsed);
+        int v = chooser.showOpenDialog(
                 app == null ? null : (Component) app.mainWindow().get().component()
         );
         if (v == JFileChooser.APPROVE_OPTION) {
-            textField.setText(c.getSelectedFile().getPath());
+            setContentString(chooser.getSelectedFile().getPath());
         }
     }
 
@@ -243,6 +177,20 @@ public class FileComponent extends JPanel {
             }
             doReload();
         }
+    }
+
+    public SelectMode getSelectMode() {
+        return selectMode;
+    }
+
+    public void setSelectMode(SelectMode selectMode) {
+        this.selectMode = selectMode == null ? SelectMode.FILES_AND_DIRECTORIES : selectMode;
+    }
+
+    public static enum SelectMode {
+        FILES_ONLY,
+        DIRECTORIES_ONLY,
+        FILES_AND_DIRECTORIES,
     }
 
     public static interface FileChangeListener {

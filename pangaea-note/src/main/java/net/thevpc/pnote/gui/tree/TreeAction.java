@@ -7,7 +7,7 @@ package net.thevpc.pnote.gui.tree;
 
 import javax.swing.AbstractAction;
 import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
 
 /**
  *
