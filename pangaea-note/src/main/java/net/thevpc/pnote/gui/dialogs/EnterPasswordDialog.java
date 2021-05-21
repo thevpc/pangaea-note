@@ -5,15 +5,15 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
-import net.thevpc.pnote.gui.util.dialog.OkCancelDialog;
-import java.awt.Dimension;
 import java.awt.HeadlessException;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.common.swing.util.CancelException;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.Alert;
+import net.thevpc.echo.Label;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.VerticalPane;
+import net.thevpc.echo.api.CancelException;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
@@ -23,32 +23,41 @@ import net.thevpc.pnote.service.security.PasswordHandler;
  */
 public class EnterPasswordDialog {
 
-    private JPanel panel;
+    private Panel panel;
     private PasswordComponent passwordComponent;
     private PasswordHandler ph;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
 
     private boolean ok = false;
     private String path;
 
-    public EnterPasswordDialog(PangaeaNoteWindow win, String path, PasswordHandler ph) throws HeadlessException {
+    public EnterPasswordDialog(PangaeaNoteFrame frame, String path, PasswordHandler ph) throws HeadlessException {
         this.ph = ph;
-        this.win = win;
-        passwordComponent = new PasswordComponent(win);
-        passwordComponent.install(win.app());
-        passwordComponent.setMinimumSize(new Dimension(50, 30));
-        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(EnterPasswordDialog.class.getResource(
-                "/net/thevpc/pnote/forms/EnterPassword.gbl-form"
-        ));
-        gbs.bind("label", new JLabel(win.app().i18n().getString("Message.enter-password")));
-        gbs.bind("file", new JLabel(path));
-        gbs.bind("pwd", passwordComponent);
+        this.frame = frame;
+        passwordComponent = new PasswordComponent(frame);
+        passwordComponent.install(frame.app());
+        panel=new VerticalPane(frame.app())
+        .with(p->{
+            p.children().addAll(
+                    new Label(Str.i18n("Message.enter-password"),frame.app()),
+                    new Label(Str.of(path),frame.app()),
+                            passwordComponent
 
-        panel = gbs.apply(new JPanel());
+            );
+        });
+//        passwordComponent.setMinimumSize(new Dimension(50, 30));
+//        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(EnterPasswordDialog.class.getResource(
+//                "/net/thevpc/pnote/forms/EnterPassword.gbl-form"
+//        ));
+//        gbs.bind("label", ));
+//        gbs.bind("file", );
+//        gbs.bind("pwd", );
+//
+//        panel = gbs.apply(new JPanel());
     }
 
     protected void install() {
-        passwordComponent.install(win.app());
+        passwordComponent.install(frame.app());
     }
 
     protected void uninstall() {
@@ -69,8 +78,8 @@ public class EnterPasswordDialog {
         while (true) {
             install();
             this.ok = false;
-            win.app().newDialog()
-                    .setTitleId("Message.password")
+            new Alert(frame.app())
+                    .setTitle(Str.i18n("Message.password"))
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {
@@ -82,7 +91,7 @@ public class EnterPasswordDialog {
                                 a.getDialog().closeDialog();
                             }
                     )
-                    .showDialog();
+                    .showDialog(null);
             try {
                 return get();
             } catch (Exception ex) {

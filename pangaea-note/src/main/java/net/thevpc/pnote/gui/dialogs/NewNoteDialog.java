@@ -5,83 +5,68 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.constraints.GrowX;
+import net.thevpc.echo.constraints.GrowY;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.nuts.NutsElement;
+import net.thevpc.pnote.api.PangaeaNoteTemplate;
+import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.util.OtherUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
-import java.util.function.Consumer;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import net.thevpc.common.swing.file.ExtensionFileChooserFilter;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaContentTypes;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.util.OtherUtils;
-import net.thevpc.pnote.gui.components.FileComponent;
-import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.api.PangaeaNoteTemplate;
-import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
-import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
- *
  * @author vpc
  */
 public class NewNoteDialog {
 
-    private JPanel panel;
-    private JTextField nameText;
+    private Panel panel;
+    private TextField nameText;
     private PangaeaNoteTypesList typeList;
-//    private JLabel valueLabel;
-//    private FileComponent typeFileValue;
 
     private boolean ok = false;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
 
-    public NewNoteDialog(PangaeaNoteWindow win) {
-        this.win = win;
-//        this.valueLabel = new JLabel(win.app().i18n().getString("Message.valueLabel"));
-        nameText = new JTextField("");
-        typeList = new PangaeaNoteTypesList(win);
-//        typeFileValue = new FileComponent(win).setReloadButtonVisible(false);
+    public NewNoteDialog(PangaeaNoteFrame frame) {
+        this.frame = frame;
+        panel = new VerticalPane(frame.app())
+                .with(p -> {
+                    p.parentConstraints().addAll(GrowX.ALWAYS, GrowY.NEVER);
+                    p.children().addAll(
+                            new Label(Str.i18n("Message.name"), frame.app()),
+                            nameText = new TextField(Str.empty(), frame.app()),
+                            new Label(Str.i18n("Message.noteType"), frame.app()),
+                            typeList = new PangaeaNoteTypesList(frame)
+                            .with(t->{
+                                t.onChange(e->onNoteTypeChange(typeList.getSelectedContentTypeId()));
+                            })
+                            );
+                })
+        ;
 
-        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(NewNoteDialog.class.getResource(
-                "/net/thevpc/pnote/forms/NewNoteDialog.gbl-form"
-        ));
-//        gbs.bind("valueLabel", new JLabel("valueLabel"));
-        gbs.bind("nameLabel", new JLabel(win.app().i18n().getString("Message.name")));
-        gbs.bind("nameText", nameText);
-        gbs.bind("typeLabel", new JLabel(win.app().i18n().getString("Message.noteType")));
-        gbs.bind("typeList", typeList);
-//        gbs.bind("valueLabel", valueLabel);
-//        gbs.bind("typeFileValue", typeFileValue);
-        onNoteTypeChange(null);
-        typeList.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                onNoteTypeChange(typeList.getSelectedContentTypeId());
-            }
-
-        });
-        onNoteTypeChange(typeList.getSelectedContentTypeId());
-        panel = gbs.apply(new JPanel());
+//        onNoteTypeChange(null);
+//        onNoteTypeChange(typeList.getSelectedContentTypeId());
     }
 
     protected PangaeaNote getNote() {
         PangaeaNote n = new PangaeaNote();
-        n.setName(nameText.getText());
+        n.setName(nameText.text().get().value());
         String selectedContentTypeId = typeList.getSelectedContentTypeId();
         if (selectedContentTypeId == null) {
             throw new IllegalArgumentException("missing content type");
         }
-        if (nameText.getText() == null || nameText.getText().trim().length() == 0) {
+        if (nameText.text().get().value().trim().length() == 0) {
             String id = typeList.getSelectedContentTypeId();
-            String betterName = win.app().i18n().getString("content-type." + id);
-            nameText.setText(betterName);
+            String betterName = frame.app().i18n().getString("content-type." + id);
+            nameText.text().set(Str.of(betterName));
             n.setName(betterName);
             //throw new IllegalArgumentException("missing note name");
         }
@@ -90,16 +75,16 @@ public class NewNoteDialog {
 //        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(selectedContentTypeId)) {
 //            n.setContent(PangaeaNoteEmbeddedService.of(win.service()).getContentValueAsElement(typeFileValue.getContentString()));
 //        } else {
-        PangaeaNoteTemplate z = win.service().getTemplate(ct);
+        PangaeaNoteTemplate z = frame.service().getTemplate(ct);
         if (z != null) {
             n.setIcon(z.getIcon());
-            z.prepare(n, win.service());
+            z.prepare(n, frame.service());
         } else {
-            NutsElement dv = win.service().getContentTypeService(ct).createDefaultContent();
+            NutsElement dv = frame.service().getContentTypeService(ct).createDefaultContent();
             n.setContent(dv);
         }
 //        }
-        win.service().addRecentNoteType(selectedContentTypeId);
+        frame.service().addRecentNoteType(selectedContentTypeId);
         return n;
     }
 
@@ -121,12 +106,12 @@ public class NewNoteDialog {
         this.ok = false;
     }
 
-    public PangaeaNote showDialog(Consumer<Exception> exHandler) {
+    public PangaeaNote showDialog() {
         while (true) {
             install();
             this.ok = false;
-            win.app().newDialog()
-                    .setTitleId("Message.addNewNote")
+            new Alert(frame.app())
+                    .setTitle(Str.i18n("Message.addNewNote"))
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {
@@ -138,11 +123,11 @@ public class NewNoteDialog {
                                 a.getDialog().closeDialog();
                             }
                     )
-                    .showDialog();
+                    .showDialog(null);
             try {
                 return get();
             } catch (Exception ex) {
-                exHandler.accept(ex);
+                frame.app().errors().add(ex);
             }
         }
     }
@@ -161,7 +146,7 @@ public class NewNoteDialog {
         if (id.startsWith("recent-")) {
             id = id.substring("recent-".length());
         }
-        String s = win.app().i18n().getString("content-type." + id + ".help");
+        String s = frame.app().i18n().getString("content-type." + id + ".help");
         if (s.startsWith("resource://")) {
             URL i = getClass().getClassLoader().getResource(s.substring("resource://".length()));
             if (i == null) {

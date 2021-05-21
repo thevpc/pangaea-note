@@ -5,28 +5,26 @@
  */
 package net.thevpc.pnote.core.viewers.folder;
 
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.api.components.AppComponentEvent;
+import net.thevpc.echo.api.components.AppComponentEventListener;
+import net.thevpc.echo.api.components.AppEventType;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.echo.constraints.ParentWrapCount;
 import net.thevpc.pnote.core.viewers.image.ImageViewerComponent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import net.thevpc.common.iconset.IconSetConfig;
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.echo.api.AppImage;
+import net.thevpc.echo.iconset.IconSetConfig;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 import net.thevpc.pnote.util.OtherUtils;
@@ -37,9 +35,9 @@ import net.thevpc.pnote.util.OtherUtils;
  */
 public class FolderViewerComponent implements URLViewerComponent {
 
-    PangaeaNoteWindow win;
-    JPanel component;
-    JPanel component2;
+    PangaeaNoteFrame frame;
+    Panel component;
+    Panel component2;
     private final URLViewer viewer;
     private boolean userEditable = true;
     private String url;
@@ -54,15 +52,19 @@ public class FolderViewerComponent implements URLViewerComponent {
 
     };
 
-    public FolderViewerComponent(PangaeaNoteWindow win, final URLViewer viewer, Runnable onSuccess, Consumer<Exception> onError) {
+    public FolderViewerComponent(PangaeaNoteFrame frame, final URLViewer viewer, Runnable onSuccess, Consumer<Exception> onError) {
         this.onSuccess = onSuccess;
         this.onError = onError;
         this.viewer = viewer;
-        this.win = win;
-        component = new JPanel(new GridLayout(0, 8));
-        component2 = new JPanel(new BorderLayout());
-        component2.add(component, BorderLayout.PAGE_START);
-        win.app().iconSets().id().listeners().add(propertyListener);
+        this.frame = frame;
+        component = new VerticalPane(component.app()).with(p-> {
+                    p.parentConstraints().addAll(new ParentWrapCount(8));
+                    p.anchor().set(Anchor.TOP);
+                }
+        );
+        component2 = new BorderPane( component.app());
+        component2.children().add(component);
+        frame.app().iconSets().id().onChange(propertyListener);
     }
 
     public List<File> listFiles(File f) {
@@ -86,96 +88,100 @@ public class FolderViewerComponent implements URLViewerComponent {
         return all;
     }
 
-    public JComponent asComponent(File file, String otherName) {
-        JPanel compPanel = new JPanel(new BorderLayout());
-        ImageIcon icon = null;
-        JLabel iconLabel = new JLabel("", null, JLabel.CENTER);
+    public AppComponent asComponent(File file, String otherName) {
+        Panel compPanel = new BorderPane( frame.app());
+        AppImage icon = null;
+        //JLabel.CENTER
+        Label iconLabel = new Label(Str.of(""), frame.app());
+        iconLabel.textStyle().align().set(Anchor.CENTER);
         if (file.isDirectory()) {
             String iconId = "..".equals(otherName) ? "folder-up" : "folder";
-            icon = win.app().iconSets()
+            icon = frame.app().iconSets()
                     .iconSet().getIcon(iconId, IconSetConfig.of(imageSize));
-
         } else {
             if (ImageViewerComponent.isImage(file.toString())) {
-                win.service().executorService()
+                frame.service().executorService()
                         .submit(() -> {
-                            ImageIcon icon2 = null;
+                            AppImage icon2 = null;
                             try {
-                                icon2 = ImageViewerComponent.loadIcon(file.getPath(), imageSize, imageSize);
+                                icon2 = ImageViewerComponent.loadIcon(file.getPath(), imageSize, imageSize, frame.app());
                             } catch (Exception ex) {
                                 //
                             }
                             if (icon2 != null) {
-                                final ImageIcon icon3 = icon2;
-                                SwingUtilities.invokeLater(() -> {
-                                    iconLabel.setIcon(icon3);
-                                    compPanel.updateUI();
-                                    compPanel.repaint();
+                                final AppImage icon3 = icon2;
+                                frame.app().runUI(() -> {
+                                    iconLabel.smallIcon().set(icon3);
+//                                    compPanel.updateUI();
+//                                    compPanel.repaint();
                                 });
                             }
                         });
                 String iconId = "datatype.image";
-                icon = win.app().iconSets().iconSet().getIcon(iconId, IconSetConfig.of(imageSize));
+                icon = frame.app().iconSets().iconSet().getIcon(iconId, IconSetConfig.of(imageSize));
             } else {
-                win.service().executorService()
+                frame.service().executorService()
                         .submit(() -> {
-                            ImageIcon icon2 = null;
+                            AppImage icon2 = null;
                             try {
                                 String cp = OtherUtils.probeContentType(file.getPath());
-                                icon2 = win.app().iconSets()
+                                icon2 = frame.app().iconSets()
                                         .iconSet().getIcon("content-type." + cp, IconSetConfig.of(imageSize));
                             } catch (Exception ex) {
                                 //
                             }
                             if (icon2 != null) {
-                                final ImageIcon icon3 = icon2;
-                                SwingUtilities.invokeLater(() -> {
-                                    iconLabel.setIcon(icon3);
-                                    compPanel.updateUI();
-                                    compPanel.repaint();
+                                final AppImage icon3 = icon2;
+                                frame.app().runUI(() -> {
+                                    iconLabel.smallIcon().set(icon3);
+//                                    compPanel.updateUI();
+//                                    compPanel.repaint();
                                 });
                             }
                         });
-                icon = win.app().iconSets()
+                icon = frame.app().iconSets()
                         .iconSet().getIcon("file", IconSetConfig.of(imageSize));
             }
         }
-        iconLabel.setIcon(icon);
-        iconLabel.setToolTipText(otherName == null ? file.getName() : file.getPath());
-        JLabel textLabel = new JLabel(otherName == null ? file.getName() : otherName);
-        textLabel.setToolTipText(file.getName());
-        textLabel.setPreferredSize(new Dimension(50, 20));
-        compPanel.setBackground(null);
-        compPanel.add(iconLabel, BorderLayout.NORTH);
-        compPanel.add(textLabel, BorderLayout.CENTER);
-        textLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        MouseAdapter li = new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                super.mouseEntered(e);
-                compPanel.setBackground(Color.lightGray);
-            }
+        iconLabel.smallIcon().set(icon);
+        iconLabel.tooltip().set(Str.of(otherName == null ? file.getName() : file.getPath()));
+        iconLabel.anchor().set(Anchor.TOP);
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                super.mouseExited(e);
-                compPanel.setBackground(null);
-            }
+        Label textLabel = new Label(Str.of(otherName == null ? file.getName() : file.getPath()), frame.app());
+        textLabel.tooltip().set(Str.of(file.getName()));
+        textLabel.prefSize().set(new Dimension(50, 20));
+        textLabel.textStyle().align().set(Anchor.CENTER);
+        textLabel.anchor().set(Anchor.CENTER);
 
+        compPanel.backgroundColor().set(null);
+        //compPanel.opaque().set(false);
+        compPanel.children().addAll(iconLabel,textLabel);
+        //textLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        AppComponentEventListener li = new AppComponentEventListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (file.isDirectory() || (file.isFile() && e.getClickCount() == 2)) {
-                        viewer.load(file.getPath());
+            public void onEvent(AppComponentEvent event) {
+                switch (event.eventType()) {
+                    case MOUSE_ENTER: {
+                        compPanel.backgroundColor().set(Color.LIGHT_GRAY(compPanel.app()));
+                        break;
+                    }
+                    case MOUSE_EXIT: {
+                        compPanel.backgroundColor().set(null);
+                        break;
+                    }
+                    case MOUSE_CLICKED: {
+                        if (event.isPrimaryMouseButton()) {
+                            if (file.isDirectory() || (file.isFile() && event.isDoubleClick())) {
+                                viewer.load(file.getPath());
+                            }
+                        }
+                        break;
                     }
                 }
             }
-
         };
-
-        compPanel.addMouseListener(li);
-        iconLabel.addMouseListener(li);
-
+        compPanel.events().add(li, AppEventType.MOUSE_MOVED,AppEventType.MOUSE_ENTER,AppEventType.MOUSE_EXIT);
+        iconLabel.events().add(li, AppEventType.MOUSE_MOVED,AppEventType.MOUSE_ENTER,AppEventType.MOUSE_EXIT);
         return compPanel;
     }
 
@@ -186,14 +192,14 @@ public class FolderViewerComponent implements URLViewerComponent {
     @Override
     public void setURL(String url) {
         this.url = url;
-        component.removeAll();
+        component.children().clear();
         File asFile = OtherUtils.asFile(url);
         if (asFile != null) {
             if (asFile.isDirectory() && asFile.getParentFile() != null) {
-                component.add(asComponent(asFile.getParentFile(), ".."));
+                component.children().add(asComponent(asFile.getParentFile(), ".."));
             }
             for (File f : listFiles(asFile)) {
-                component.add(asComponent(f, null));
+                component.children().add(asComponent(f, null));
             }
         }
         if (onSuccess != null) {
@@ -202,7 +208,7 @@ public class FolderViewerComponent implements URLViewerComponent {
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return component2;
     }
 
@@ -222,7 +228,7 @@ public class FolderViewerComponent implements URLViewerComponent {
     }
 
     public void disposeComponent() {
-        win.app().iconSets().id().listeners().remove(propertyListener);
+        frame.app().iconSets().id().listeners().remove(propertyListener);
 
     }
 

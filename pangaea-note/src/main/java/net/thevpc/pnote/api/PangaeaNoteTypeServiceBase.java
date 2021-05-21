@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.api;
 
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.EditTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
@@ -17,7 +17,7 @@ public interface PangaeaNoteTypeServiceBase {
 
     PangaeaNoteMimeType getContentType();
 
-    default EditTypeComponent createEditPanel(PangaeaNoteWindow win) {
+    default EditTypeComponent createEditPanel(PangaeaNoteFrame win) {
         return null;
     }
 

@@ -5,74 +5,75 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
-import java.awt.Dimension;
-import javax.swing.Box;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import net.thevpc.common.swing.color.ColorChooserButton;
-import net.thevpc.common.swing.color.ColorUtils;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.constraints.ParentWrapCount;
 import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
- *
  * @author vpc
  */
-public class PangaeaNoteTitleFormatPanel extends JPanel {
+public class PangaeaNoteTitleFormatPanel extends VerticalPane {
 
-    private PangaeaNoteWindow win;
-    private ColorChooserButton foregroundEditor;
-    private ColorChooserButton backgroundEditor;
-    private JCheckBox boldEditor;
-    private JCheckBox italicEditor;
-    private JCheckBox underlinedEditor;
-    private JCheckBox strikedEditor;
+    private PangaeaNoteFrame frame;
+    private ColorButton foregroundEditor;
+    private ColorButton backgroundEditor;
+    private CheckBox boldEditor;
+    private CheckBox italicEditor;
+    private CheckBox underlinedEditor;
+    private CheckBox strikedEditor;
 
-    public PangaeaNoteTitleFormatPanel(PangaeaNoteWindow win) {
-        this.win = win;
-        foregroundEditor = new ColorChooserButton();
-        backgroundEditor = new ColorChooserButton();
-        boldEditor = new JCheckBox(win.app().i18n().getString("Message.titleBold"));
-        italicEditor = new JCheckBox(win.app().i18n().getString("Message.titleItalic"));
-        underlinedEditor = new JCheckBox(win.app().i18n().getString("Message.titleUnderlined"));
-        strikedEditor = new JCheckBox(win.app().i18n().getString("Message.titleStriked"));
+    public PangaeaNoteTitleFormatPanel(PangaeaNoteFrame frame) {
+        super(frame.app());
+        this.frame = frame;
+        title().set(Str.i18n("PangaeaNoteListSettingsComponent.titleLabel"));
+        foregroundEditor = new ColorButton(app());
+        backgroundEditor = new ColorButton(app());
+        boldEditor = new CheckBox(Str.i18n("Message.titleBold"), app());
+        italicEditor = new CheckBox(Str.i18n("Message.titleItalic"), app());
+        underlinedEditor = new CheckBox(Str.i18n("Message.titleUnderlined"), app());
+        strikedEditor = new CheckBox(Str.i18n("Message.titleStriked"), app());
 
-        Box modifiersEditor = Box.createHorizontalBox();
-        modifiersEditor.add(boldEditor);
-        modifiersEditor.add(italicEditor);
-        modifiersEditor.add(underlinedEditor);
-        modifiersEditor.add(strikedEditor);
-        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(EditNoteDialog.class.getResource(
-                "/net/thevpc/pnote/forms/PangaeaNoteTitleFormatPanel.gbl-form"
-        ));
-        gbs.bind("foregroundLabel", new JLabel(win.app().i18n().getString("Message.titleForegroundColor")));
-        gbs.bind("foregroundEditor", foregroundEditor);
-        gbs.bind("backgroundLabel", new JLabel(win.app().i18n().getString("Message.titleBackgroundColor")));
-        gbs.bind("backgroundEditor", backgroundEditor);
-        gbs.bind("modifiersEditor", modifiersEditor);
-        gbs.apply(this);
+        children().addAll(
+                new VerticalPane(app())
+                        .with((VerticalPane v) -> {
+                            v.parentConstraints().add(new ParentWrapCount(2));
+                            v.children().addAll(boldEditor,
+                                    italicEditor,
+                                    underlinedEditor,
+                                    strikedEditor);
+                        }),
+                new VerticalPane(app())
+                        .with((VerticalPane v) -> {
+                            v.parentConstraints().add(new ParentWrapCount(2));
+                            v.children().addAll(new Label(Str.i18n("Message.titleForegroundColor"), app()),
+                                    foregroundEditor,
+                                    new Label(Str.i18n("Message.titleBackgroundColor"), app()),
+                                    backgroundEditor);
+                        })
+
+        );
     }
 
     public void loadFromNote(PangaeaNote note) {
-        foregroundEditor.setColorValue(ColorUtils.parseColor(note.getTitleForeground()));
-        backgroundEditor.setColorValue(ColorUtils.parseColor(note.getTitleBackground()));
-        foregroundEditor.setPreferredSize(new Dimension(20, 20));
-        backgroundEditor.setPreferredSize(new Dimension(20, 20));
-        boldEditor.setSelected(note.isTitleBold());
-        italicEditor.setSelected(note.isTitleItalic());
-        underlinedEditor.setSelected(note.isTitleUnderlined());
-        strikedEditor.setSelected(note.isTitleStriked());
+        foregroundEditor.value().set(Color.of(note.getTitleForeground(), app()));
+        backgroundEditor.value().set(Color.of(note.getTitleBackground(), app()));
+        foregroundEditor.prefSize().set(new Dimension(20, 20));
+        backgroundEditor.prefSize().set(new Dimension(20, 20));
+        boldEditor.selected().set(note.isTitleBold());
+        italicEditor.selected().set(note.isTitleItalic());
+        underlinedEditor.selected().set(note.isTitleUnderlined());
+        strikedEditor.selected().set(note.isTitleStriked());
     }
 
     public void loadToNote(PangaeaNote note) {
-        note.setTitleBackground(ColorUtils.formatColor(backgroundEditor.getColorValue()));
-        note.setTitleForeground(ColorUtils.formatColor(foregroundEditor.getColorValue()));
-        note.setTitleBold(boldEditor.isSelected());
-        note.setTitleItalic(italicEditor.isSelected());
-        note.setTitleUnderlined(underlinedEditor.isSelected());
-        note.setTitleStriked(strikedEditor.isSelected());
+        note.setTitleBackground(Color.format(backgroundEditor.value().get()));
+        note.setTitleForeground(Color.format(foregroundEditor.value().get()));
+        note.setTitleBold(boldEditor.selected().get());
+        note.setTitleItalic(italicEditor.selected().get());
+        note.setTitleUnderlined(underlinedEditor.selected().get());
+        note.setTitleStriked(strikedEditor.selected().get());
     }
 
 }

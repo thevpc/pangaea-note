@@ -7,9 +7,9 @@ package net.thevpc.pnote.core.viewers.fromeditor;
 
 import java.io.InputStream;
 import java.util.function.Consumer;
-import javax.swing.JComponent;
-import net.thevpc.common.swing.SwingUtilities3;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
@@ -23,7 +23,7 @@ import net.thevpc.pnote.util.OtherUtils;
  */
 public class NoteURLViewerComponent implements URLViewerComponent {
 
-    PangaeaNoteWindow win;
+    PangaeaNoteFrame frame;
     PangaeaNoteEditor ed;
     private final URLViewer outer;
     private boolean editable = true;
@@ -31,28 +31,28 @@ public class NoteURLViewerComponent implements URLViewerComponent {
     private Consumer<Exception> onError;
     private String contentType;
 
-    public NoteURLViewerComponent(String contentType, PangaeaNoteWindow win, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
+    public NoteURLViewerComponent(String contentType, PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
         this.outer = outer;
-        this.win = win;
+        this.frame = frame;
         this.contentType = contentType;
         this.onSuccess = onSuccess;
         this.onError = onError;
-        this.ed = new PangaeaNoteEditor(win, true);
+        this.ed = new PangaeaNoteEditor(frame, true);
     }
 
     public void setURL(String url) {
-        win.service().executorService().submit(
+        frame.service().executorService().submit(
                 () -> {
                     InputStream is = null;
                     try {
                         try {
                             is = OtherUtils.asURL(url).openStream();
                             if (is == null) {
-                                SwingUtilities3.invokeLater(() -> setContent("", contentType));
+                                frame.app().runUI(() -> setContent("", contentType));
                                 onError.accept(new IllegalArgumentException("null stream"));
                             } else {
                                 String s = new String(OtherUtils.toByteArray(is));
-                                SwingUtilities3.invokeLater(() -> setContent(s, contentType));
+                                frame.app().runUI(() -> setContent(s, contentType));
                                 onSuccess.run();
                             }
                         } finally {
@@ -68,14 +68,14 @@ public class NoteURLViewerComponent implements URLViewerComponent {
     }
 
     public void setContent(String content, String contentType) {
-        PangaeaNoteExt d = PangaeaNoteExt.of(win.service().newDocument());
-        PangaeaNoteExt n = PangaeaNoteExt.of(new PangaeaNote().setContentType(contentType).setContent(win.service().stringToElement(content)));
+        PangaeaNoteExt d = PangaeaNoteExt.of(frame.service().newDocument());
+        PangaeaNoteExt n = PangaeaNoteExt.of(new PangaeaNote().setContentType(contentType).setContent(frame.service().stringToElement(content)));
         d.addChild(n);
         ed.setNote(n);
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return ed;
     }
 

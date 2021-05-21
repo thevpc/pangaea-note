@@ -8,10 +8,13 @@ package net.thevpc.pnote.service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import net.thevpc.echo.Application;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
@@ -22,6 +25,7 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
     private Set<String> supportedMimeTypes = new HashSet<String>();
     private PangaeaNoteMimeType contentType;
     private PangaeaNoteService service;
+    private PangaeaNoteApp app;
 
     public AbstractPangaeaNoteTypeService(PangaeaNoteMimeType contentType, String... mimetypes) {
         this.contentType = contentType;
@@ -32,7 +36,9 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
     @Override
     public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
         this.service = service;
+        this.app = app;
     }
+
 
     @Override
     public String getContentTypeIcon(boolean folder, boolean expanded) {
@@ -58,7 +64,7 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
         if (content == null) {
             return true;
         }

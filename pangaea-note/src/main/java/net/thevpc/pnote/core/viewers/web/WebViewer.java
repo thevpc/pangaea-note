@@ -11,7 +11,7 @@ import java.util.Set;
 import net.thevpc.pnote.core.viewers.pdf.*;
 import java.util.function.Consumer;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -34,7 +34,7 @@ public class WebViewer implements PangaeaNoteFileViewerManager {
     );
 
     @Override
-    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteWindow win) {
+    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteFrame win) {
         if (SUPPORTED_EXTENSIONS.contains(extension) || CONTENT_TYPE_EXTENSIONS.contains(mimeType.getContentType())) {
             return 10;
         }
@@ -42,7 +42,7 @@ public class WebViewer implements PangaeaNoteFileViewerManager {
     }
 
     @Override
-    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType probedContentType, URLViewer viewer, PangaeaNoteWindow win) {
+    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType probedContentType, URLViewer viewer, PangaeaNoteFrame win) {
         Runnable onSuccess = () -> viewer.fireSuccessfulLoading(path);
         Consumer<Exception> onError = viewer::fireError;
 

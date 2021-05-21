@@ -5,25 +5,22 @@
  */
 package net.thevpc.pnote.core.types.forms.editor;
 
-import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.pnote.core.special.DataPane;
+import net.thevpc.pnote.core.special.DataPaneRenderer;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.util.OtherUtils;
-import net.thevpc.common.swing.list.JComponentList;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObject;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.common.swing.list.JComponentListItem;
+//import net.thevpc.echo.swing.SwingApplicationUtils;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
 
@@ -31,9 +28,9 @@ import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
  *
  * @author vpc
  */
-public class PangaeaNoteObjectDocumentComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteObjectDocumentComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
-    private JComponentList<PangaeaNoteObjectExt> componentList;
+    private DataPane<PangaeaNoteObjectExt> componentList;
     private PangaeaNoteExt currentNote;
     private PangaeaNoteObjectDocument dynamicDocument;
     private PangaeaNoteObjectTracker dynamicObjectTrackerAdapter = new PangaeaNoteObjectTracker() {
@@ -53,57 +50,48 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
         }
 
     };
-    private JToolBar bar = new JToolBar();
-    private PangaeaNoteWindow win;
-    private SwingApplicationsUtils.Tracker gtracker;
+    private ToolBar bar;
+    private PangaeaNoteFrame frame;
+//    private SwingApplicationUtils.Tracker gtracker;
     private boolean editable = true;
-    private JButton addToObjectList;
+    private Button addToObjectList;
     private boolean compactMode;
 
-    public PangaeaNoteObjectDocumentComponent(boolean compactMode, PangaeaNoteWindow win) {
-        super(new BorderLayout());
-        this.win = win;
+    public PangaeaNoteObjectDocumentComponent(boolean compactMode, PangaeaNoteFrame frame) {
+        super(frame.app());
+        this.frame = frame;
         this.compactMode = compactMode;
-        this.gtracker = new SwingApplicationsUtils.Tracker(win.app());
-        componentList = new JComponentList<PangaeaNoteObjectExt>(new JComponentListItem<PangaeaNoteObjectExt>() {
+//        this.gtracker = new SwingApplicationUtils.Tracker(win.app());
+        componentList = new DataPane<PangaeaNoteObjectExt>(PangaeaNoteObjectExt.class,new DataPaneRenderer<PangaeaNoteObjectExt>() {
             @Override
-            public JComponent createComponent(int pos, int size) {
-                return new Item(win, dynamicObjectTrackerAdapter);
+            public AppComponent create() {
+                return new Item(frame, dynamicObjectTrackerAdapter);
             }
 
             @Override
-            public void setComponentValue(JComponent comp, PangaeaNoteObjectExt value, int pos, int size) {
-                Item b = (Item) comp;
-                b.setValue(value, pos, size);
+            public void set(int index, PangaeaNoteObjectExt value, AppComponent component) {
+                Item b = (Item) component;
+                b.setValue(value, index, index);
             }
 
             @Override
-            public PangaeaNoteObjectExt getComponentValue(JComponent comp, int pos) {
-                return ((Item) comp).getValue(pos);
+            public PangaeaNoteObjectExt get(int index, AppComponent component) {
+                return ((Item) component).getValue(index);
             }
 
             @Override
-            public void uninstallComponent(JComponent comp) {
-                ((Item) comp).onUninstall();
+            public void dispose(AppComponent component) {
+                ((Item) component).onUninstall();
             }
-
-            @Override
-            public void setEditable(JComponent component, boolean editable, int pos, int size) {
-                ((Item) component).setEditable(editable);
-            }
-
-        });
-        JScrollPane scrollPane = new JScrollPane(componentList);
-        scrollPane.setWheelScrollingEnabled(true);
-        add(scrollPane, BorderLayout.CENTER);
-
-        Box hb = Box.createHorizontalBox();
-        hb.add(Box.createHorizontalGlue());
-        hb.add(bar);
-        bar.setFloatable(false);
-        bar.add(addToObjectList = new JButton(
-                this.gtracker.registerStandardAction(() -> onAddObject(), "addToObjectList")));
-        add(hb, BorderLayout.NORTH);
+        },app());
+        ScrollPane scrollPane = new ScrollPane(componentList)
+                .with(v->v.anchor().set(Anchor.CENTER));
+//        scrollPane.setWheelScrollingEnabled(true);
+        children().add(scrollPane);
+        bar=new ToolBar(app()).with(v->v.anchor().set(Anchor.TOP));
+        addToObjectList = new Button("addToObjectList",() -> onAddObject(), app());
+        bar.children().add(addToObjectList);
+        children().add(bar);
         refreshView();
     }
 
@@ -112,16 +100,16 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
     }
 
     public void refreshView() {
-        bar.setVisible(
+        bar.visible().set(
                 dynamicDocument != null
                 && (dynamicDocument.getValues() == null || dynamicDocument.getValues().isEmpty())
         );
-        this.invalidate();
-        this.revalidate();
+//        this.invalidate();
+//        this.revalidate();
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return this;
     }
 
@@ -130,11 +118,11 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         PangaeaNoteFormsService s = (PangaeaNoteFormsService) win.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
         this.currentNote = note;
         this.dynamicDocument = s.getContentAsObject(note.getContent());
-        componentList.setAllObjects(createAllList());
+        componentList.values().setAll(createAllList().toArray(new PangaeaNoteObjectExt[0]));
         setEditable(!note.isReadOnly());
         refreshView();
     }
@@ -163,30 +151,30 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
     }
 
     public void onFieldValueChangedImpl() {
-        PangaeaNoteFormsService s = (PangaeaNoteFormsService) win.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
+        PangaeaNoteFormsService s = (PangaeaNoteFormsService) frame.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
         currentNote.setContent(s.getContentAsElement(this.dynamicDocument));
-        win.onDocumentChanged();
+        frame.onDocumentChanged();
     }
 
     public void onListValuesChangedImpl() {
-        PangaeaNoteFormsService s = (PangaeaNoteFormsService) win.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
+        PangaeaNoteFormsService s = (PangaeaNoteFormsService) frame.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
         currentNote.setContent(s.getContentAsElement(this.dynamicDocument));
-        win.onDocumentChanged();
-        componentList.setAllObjects(createAllList());
+        frame.onDocumentChanged();
+        componentList.values().setAll(createAllList().toArray(new PangaeaNoteObjectExt[0]));
         refreshView();
     }
 
     private void onRemoveAllObjects() {
         if (dynamicDocument != null) {
-            String s = win.newDialog()
-                    .setTitleId("Message.warning")
-                    .setContentTextId("Message.askDeleteAllObjects")
+            String s = new Alert(frame.app())
+                    .setTitle(Str.i18n("Message.warning"))
+                    .setContentText(Str.i18n("Message.askDeleteAllObjects"))
                     .withYesNoButtons()
-                    .build().showDialog();
+                    .showDialog(null);
 
             if ("yes".equals(s)) {
                 dynamicDocument.getValues().clear();
-                componentList.setAllObjects(new ArrayList<>());
+                componentList.values().clear();
                 onListValuesChangedImpl();
             }
 
@@ -196,11 +184,11 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
     private void onRemoveObjectAt(int index) {
         if (dynamicDocument != null) {
             if (dynamicDocument.getValues() != null) {
-                String s = win.newDialog()
-                        .setTitleId("Message.warning")
-                        .setContentTextId("Message.askDeleteObject")
+                String s = new Alert(frame.app())
+                        .setTitle(Str.i18n("Message.warning"))
+                        .setContentText(Str.i18n("Message.askDeleteObject"))
                         .withYesNoButtons()
-                        .build().showDialog();
+                        .showDialog(null);
 
                 if ("yes".equals(s)) {
                     dynamicDocument.getValues().remove(index);
@@ -263,8 +251,8 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
             b = false;
         }
         this.editable = b;
-        this.addToObjectList.setEnabled(b);
-        this.componentList.setEditable(b);
+        this.addToObjectList.enabled().set(b);
+        this.componentList.editable().set(b);
     }
 
     @Override
@@ -272,41 +260,34 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
         return editable;
     }
 
-    private class Item extends JPanel {
+    private class Item extends BorderPane {
 
         private PangaeaNoteObjectComponent e;
-        private JToolBar bar = new JToolBar();
+        private ToolBar bar;
         private int pos;
-        private JButton global1;
-        private SwingApplicationsUtils.Tracker stracker;
+        private Button global1;
 
-        public Item(PangaeaNoteWindow win, PangaeaNoteObjectTracker tracker) {
-            super(new BorderLayout());
-            stracker = new SwingApplicationsUtils.Tracker(win.app());
-            e = new PangaeaNoteObjectComponent(tracker, win);
-            Box hb = Box.createHorizontalBox();
-            hb.add(Box.createHorizontalGlue());
-            hb.add(bar);
-            bar.setFloatable(false);
-            global1 = prepareButton(new JButton(stracker.registerStandardAction(() -> onRemoveAllObjects(), "clearObjectList")));
-            bar.add(prepareButton(new JButton(stracker.registerStandardAction(() -> onAddObjectAt(pos), "addToObjectList"))));
-            bar.add(prepareButton(new JButton(stracker.registerStandardAction(() -> onDuplicateObjectAt(pos), "duplicateInObjectList"))));
-            bar.addSeparator();
-            bar.add(prepareButton(new JButton(stracker.registerStandardAction(() -> onRemoveObjectAt(pos), "removeInObjectList"))));
-            bar.addSeparator();
-            bar.add(prepareButton(new JButton(stracker.registerStandardAction(() -> onMoveUpAt(pos), "moveUpInObjectList"))));
-            bar.add(prepareButton(new JButton(stracker.registerStandardAction(() -> onMoveDownAt(pos), "moveDownInObjectList"))));
-            bar.addSeparator();
-            bar.add(global1);
-            add(hb, BorderLayout.NORTH);
-            add(e, BorderLayout.CENTER);
+        public Item(PangaeaNoteFrame win, PangaeaNoteObjectTracker tracker) {
+            super(win.app());
+            e = new PangaeaNoteObjectComponent(tracker, win)
+                    .with(v->v.anchor().set(Anchor.CENTER));
+            bar = new ToolBar(win.app()).with(v->v.anchor().set(Anchor.TOP));
+            bar.children().add(new Button("addToObjectList",() -> onAddObjectAt(pos),app()));
+            bar.children().add(new Button("duplicateInObjectList",() -> onDuplicateObjectAt(pos), app()));
+            bar.children().addSeparator();
+            bar.children().add(new Button("removeInObjectList",() -> onRemoveObjectAt(pos), app()));
+            bar.children().addSeparator();
+            bar.children().add(new Button("moveUpInObjectList",() -> onMoveUpAt(pos),app()));
+            bar.children().add(new Button("moveDownInObjectList",() -> onMoveDownAt(pos),app()));
+            bar.children().addSeparator();
+            bar.children().add(global1 = new Button("clearObjectList",() -> onRemoveAllObjects(), app()));
+            children().add(bar);
+            children().add(e);
         }
 
         public void setEditable(boolean b) {
             e.setEditable(b);
-            for (Action action : stracker.getActions()) {
-                action.setEnabled(b);
-            }
+            bar.enabled().set(b);
         }
 
         public JButton prepareButton(JButton b) {
@@ -316,8 +297,8 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
 
         public void setValue(PangaeaNoteObjectExt value, int pos, int size) {
             this.pos = pos;
-            global1.setVisible(pos == 0);
-            setBorder(BorderFactory.createTitledBorder("Element " + (pos + 1)));
+            global1.visible().set(pos == 0);
+//            setBorder(BorderFactory.createTitledBorder("Element " + (pos + 1)));
             e.setObject(value);
         }
 
@@ -327,7 +308,7 @@ public class PangaeaNoteObjectDocumentComponent extends JPanel implements Pangae
 
         public void onUninstall() {
             e.uninstall();
-            stracker.unregisterAll();
+//            stracker.unregisterAll();
         }
     }
 

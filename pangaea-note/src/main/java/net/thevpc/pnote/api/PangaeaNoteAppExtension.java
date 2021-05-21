@@ -6,7 +6,7 @@
 package net.thevpc.pnote.api;
 
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
@@ -23,10 +23,10 @@ public interface PangaeaNoteAppExtension {
     default void onEnable(PangaeaNoteApp app) {
     }
 
-    default void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
+    default void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteFrame win) {
         
     }
-    default void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
+    default void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteFrame win) {
         
     }
 }

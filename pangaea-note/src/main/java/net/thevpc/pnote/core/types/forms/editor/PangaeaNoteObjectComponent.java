@@ -6,7 +6,6 @@
 package net.thevpc.pnote.core.types.forms.editor;
 
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.swing.JPanel;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.echo.GridPane;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.constraints.*;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteField;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObject;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
@@ -26,13 +29,13 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldType;
  *
  * @author vpc
  */
-public class PangaeaNoteObjectComponent extends JPanel {
+public class PangaeaNoteObjectComponent extends GridPane {
 
     private boolean editable = true;
     private PangaeaNoteObjectExt currentValue;
     private List<PangaeaNoteFieldDescriptorPanel> components = new ArrayList<>();
     private PangaeaNoteObjectTracker objectTracker;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
     private PangaeaNoteObjectTracker dynamicObjectTrackerAdapter = new PangaeaNoteObjectTracker() {
         @Override
         public void onStructureChanged() {
@@ -57,10 +60,10 @@ public class PangaeaNoteObjectComponent extends JPanel {
 
     };
 
-    public PangaeaNoteObjectComponent(PangaeaNoteObjectTracker objectTracker, PangaeaNoteWindow win) {
-        super(new GridBagLayout());
+    public PangaeaNoteObjectComponent(PangaeaNoteObjectTracker objectTracker, PangaeaNoteFrame frame) {
+        super(frame.app());
         this.objectTracker = objectTracker;
-        this.win = win;
+        this.frame = frame;
     }
 
     public PangaeaNoteObject getObject() {
@@ -89,10 +92,10 @@ public class PangaeaNoteObjectComponent extends JPanel {
                             r.updateDescriptor(field);
                             newComponents.add(r);
                         } else {
-                            newComponents.add(new PangaeaNoteFieldDescriptorPanel(win, field, dynamicObjectTrackerAdapter));
+                            newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
                         }
                     } else {
-                        newComponents.add(new PangaeaNoteFieldDescriptorPanel(win, field, dynamicObjectTrackerAdapter));
+                        newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
                     }
                 } else {
 
@@ -108,7 +111,7 @@ public class PangaeaNoteObjectComponent extends JPanel {
             } else {
                 //if there are no fields, add a new field descriptor and create the corresponding component
                 field = new PangaeaNoteFieldDescriptor();
-                field.setName(win.app().i18n().getString("Message.title"));
+                field.setName(frame.app().i18n().getString("Message.title"));
                 field.setType(PangaeaNoteFieldType.TEXT);
                 this.currentValue.getDocument().addField(field);
             }
@@ -121,10 +124,10 @@ public class PangaeaNoteObjectComponent extends JPanel {
                     r.updateDescriptor(field);
                     newComponents.add(r);
                 } else {
-                    newComponents.add(new PangaeaNoteFieldDescriptorPanel(win, field, dynamicObjectTrackerAdapter));
+                    newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
                 }
             } else {
-                newComponents.add(new PangaeaNoteFieldDescriptorPanel(win, field, dynamicObjectTrackerAdapter));
+                newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
             }
         }
 
@@ -136,9 +139,31 @@ public class PangaeaNoteObjectComponent extends JPanel {
         components.addAll(newComponents);
         relayoutObject();
     }
+    private void prepareConstraints(AppComponent comp,GridBagConstraints c){
+        comp.parentConstraints().clear();
+        comp.anchor().set(
+                (c.anchor==GridBagConstraints.PAGE_START || c.anchor==GridBagConstraints.NORTH)?Anchor.TOP:
+                        (c.anchor==GridBagConstraints.PAGE_END || c.anchor==GridBagConstraints.SOUTH)?Anchor.BOTTOM:
+                                (c.anchor==GridBagConstraints.LINE_START || c.anchor==GridBagConstraints.WEST)?Anchor.LEFT:
+                                        (c.anchor==GridBagConstraints.LINE_END || c.anchor==GridBagConstraints.EAST)?Anchor.RIGHT:
+                                                (c.anchor==GridBagConstraints.NORTHWEST)?Anchor.TOP_LEFT:
+                                                        (c.anchor==GridBagConstraints.NORTHEAST)?Anchor.TOP_RIGHT:
+                                                                (c.anchor==GridBagConstraints.SOUTHWEST)?Anchor.BOTTOM_LEFT:
+                                                                        (c.anchor==GridBagConstraints.SOUTHEAST)?Anchor.BOTTOM_RIGHT:
+                                                                                (c.anchor==GridBagConstraints.CENTER)?Anchor.CENTER:
+                                                                                        Anchor.CENTER
+        );
+        comp.childConstraints().addAll(
+                new Pos(c.gridx,c.gridy),
+                new Span(c.gridwidth,c.gridheight),
+                new Weight(c.weightx,c.weighty),
+                c.fill==GridBagConstraints.BOTH || c.fill==GridBagConstraints.HORIZONTAL ? GrowX.ALWAYS:GrowX.NEVER,
+                c.fill==GridBagConstraints.BOTH || c.fill==GridBagConstraints.VERTICAL ? GrowY.ALWAYS:GrowY.NEVER
+        );
+    }
 
     public void relayoutObject() {
-        removeAll();
+        children().clear();
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.PAGE_START;
@@ -156,14 +181,16 @@ public class PangaeaNoteObjectComponent extends JPanel {
                 c.gridheight = 1;
                 c.gridx = 0;
                 c.weighty = 0;
-                add(cad.getLabel(), c.clone());
+                prepareConstraints(cad.getLabel(),c);
+                children().add(cad.getLabel());
                 row++;
                 c.gridy = row;
                 c.gridx = 0;
                 c.gridwidth = 3;
                 c.gridheight = 2;
                 c.weighty = 4;
-                add(cad.getComponent(), c.clone());
+                prepareConstraints(cad.getComponent(),c);
+                children().add(cad.getComponent());
                 row += 2;
             } else {
                 c.weighty = 0;
@@ -172,11 +199,13 @@ public class PangaeaNoteObjectComponent extends JPanel {
                 c.weightx = 0;
                 c.gridwidth = 1;
                 c.gridx = 0;
-                add(cad.getLabel(), c.clone());
+                prepareConstraints(cad.getLabel(),c);
+                children().add(cad.getLabel());
                 c.weightx = 3;
                 c.gridwidth = 2;
                 c.gridx = 1;
-                add(cad.getComponent(), c.clone());
+                prepareConstraints(cad.getComponent(),c);
+                children().add(cad.getComponent());
                 row++;
             }
         }

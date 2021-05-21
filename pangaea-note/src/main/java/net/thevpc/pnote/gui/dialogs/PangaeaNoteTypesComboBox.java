@@ -5,39 +5,29 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
-import net.thevpc.common.i18n.Str;
-import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.*;
-import net.thevpc.pnote.api.PangaeaNoteTemplate;
-import net.thevpc.pnote.api.PangaeaNoteTypeService;
-import net.thevpc.pnote.api.model.ContentTypeSelector;
-import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.util.OtherUtils;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.thevpc.echo.ComboBox;
+import net.thevpc.echo.SimpleItem;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.api.model.ContentTypeSelector;
+import net.thevpc.pnote.api.PangaeaNoteTemplate;
+import net.thevpc.pnote.api.PangaeaNoteTypeService;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.util.OtherUtils;
 
 /**
+ *
  * @author vpc
  */
-public class PangaeaNoteTypesList extends BorderPane {
+public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
 
     private PangaeaNoteFrame frame;
-    private ChoiceList<SimpleItem> list;
-    private ScrollPane typeDescriptionContent;
-    private TextArea typeDescription;
 
-    public PangaeaNoteTypesList(PangaeaNoteFrame frame) {
-        super(frame.app());
+    public PangaeaNoteTypesComboBox(PangaeaNoteFrame frame) {
+        super(SimpleItem.class, frame.app());
         this.frame = frame;
         List<SimpleItem> availableTypes = new ArrayList<>();
         List<String> rct = frame.config().getRecentContentTypes();
@@ -58,81 +48,14 @@ public class PangaeaNoteTypesList extends BorderPane {
         }
 
         availableTypes.addAll(createTypeListNamedValue());
-        list = new ChoiceList<>(SimpleItem.class, frame.app());
-        list.disabledPredicate().set(SimpleItem::isGroup);
-        list.values().addAll(availableTypes.toArray(new SimpleItem[0]));
-        list.selection().multipleSelection().set(false);
-        list.selection().onChange(event -> {
-            SimpleItem v = list.selection().get();
-            if (v != null) {
-                typeDescription.text().set(
-                        Str.of(resolveNoteTypeDescription(getSelectedContentTypeId()))
-                );
-            } else {
-                typeDescription.text().set(Str.empty());
-            }
-        });
-        typeDescriptionContent = new ScrollPane(typeDescription
-                = new TextArea(Str.empty(),app())
-                .with((TextArea a)-> {
-                    a.textContentType().set("text/html");
-                    a.editable().set(false);
-                })
-        ).with(s->{
-            s.prefSize().set(new Dimension(300, 100));
-            s.anchor().set(Anchor.CENTER);
-        });
-
-        ScrollPane listWithScroll = new ScrollPane(list)
-                .with((ScrollPane s) -> s.anchor().set(Anchor.LEFT));
-        parentConstraints().addAll(GrowX.ALWAYS, GrowY.ALWAYS);
-        children().addAll(
-                listWithScroll,
-                typeDescriptionContent
-                );
-        list.selection().set(list.values().get(1));
-        System.out.println(list.selection().get());
-    }
-
-    public void addChangeListener(ChangeListener ce) {
-        list.selection().onChange(e->{
-            ce.stateChanged(new ChangeEvent(PangaeaNoteTypesList.this));
-        });
-    }
-
-    public String resolveNoteTypeDescription(String id) {
-        if (id == null || id.isEmpty() || id.equals("id")) {
-            id = "none";
-        }
-        if (id.startsWith("recent-")) {
-            id = id.substring("recent-".length());
-        }
-        String s = frame.app().i18n().getString("content-type." + id + ".help");
-        if (s.startsWith("resource://")) {
-            URL i = getClass().getClassLoader().getResource(s.substring("resource://".length()));
-            if (i == null) {
-                throw new IllegalArgumentException("not found resource " + s);
-            }
-            try (InputStream is = i.openStream()) {
-                s = new String(OtherUtils.toByteArray(is));
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        }
-        String toLowerCase = s.trim().toLowerCase();
-        if (!toLowerCase.startsWith("<html>")
-                && !toLowerCase.startsWith("<!doctype html>")) {
-            s = "<html><body>" + s + "</body></html>";
-        }
-        return s;
+        this.disabledPredicate().set(SimpleItem::isGroup);
+        this.values().addAll(availableTypes.toArray(new SimpleItem[0]));
+        this.selection().multipleSelection().set(false);
     }
 
     public String getSelectedContentTypeId() {
-        SimpleItem a = list.selection().get();
+        SimpleItem a = selection().get();
         if (a == null) {
-            return null;
-        }
-        if (a.isGroup()) {
             return null;
         }
         String id = a.getId();
@@ -142,7 +65,7 @@ public class PangaeaNoteTypesList extends BorderPane {
         return id;
     }
 
-    //    protected final NamedValue createNoteTypeFamilyNameValue(String id) {
+//    protected final NamedValue createNoteTypeFamilyNameValue(String id) {
 //        return new NamedValue(false, id,
 //                win.app().i18n().getString("content-type." + id),
 //                win.service().getContentTypeIcon(id)
@@ -201,7 +124,7 @@ public class PangaeaNoteTypesList extends BorderPane {
     }
 
     public void setSelectedContentType(PangaeaNoteMimeType contentType, String editorType) {
-        SimpleItem si=list.values().stream().filter(v->{
+        SimpleItem si=this.values().stream().filter(v->{
             if (v.getId() == null || v.getId().length() == 0) {
                 if (contentType == null) {
                     return true;
@@ -219,7 +142,7 @@ public class PangaeaNoteTypesList extends BorderPane {
             }
             return false;
         }).findFirst().orElse(null);
-        list.selection().set(si);
+        this.selection().set(si);
     }
 
 }

@@ -5,13 +5,11 @@
  */
 package net.thevpc.pnote.core.types.embedded.editor;
 
-import java.awt.BorderLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.echo.BorderPane;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
@@ -20,22 +18,20 @@ import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
  *
  * @author vpc
  */
-public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteDocumentEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
-    private JLabel file;
-    private JLabel error;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
     private boolean compactMode;
 
-    public PangaeaNoteDocumentEditorTypeComponent(boolean compactMode,PangaeaNoteWindow win) {
-        super(new BorderLayout());
-        this.win = win;
+    public PangaeaNoteDocumentEditorTypeComponent(boolean compactMode,PangaeaNoteFrame frame) {
+        super(frame.app());
+        this.frame = frame;
         this.compactMode=compactMode;
-        add(new JLabel("pangaea-note-document"), BorderLayout.NORTH);
-        add(file = new JLabel(""), BorderLayout.CENTER);
-        add(error = new JLabel(""), BorderLayout.SOUTH);
+//        add(new JLabel("pangaea-note-document"), BorderLayout.NORTH);
+//        add(file = new JLabel(""), BorderLayout.CENTER);
+//        add(error = new JLabel(""), BorderLayout.SOUTH);
     }
 
     public boolean isCompactMode() {
@@ -44,7 +40,7 @@ public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements Pa
     
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return this;
     }
 
@@ -53,23 +49,23 @@ public class PangaeaNoteDocumentEditorTypeComponent extends JPanel implements Pa
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         try {
             this.currentNote = note;
             String path = PangaeaNoteEmbeddedService.of(win.service()).getContentValueAsPath(note.getContent());
-            if (path == null || path.length() == 0) {
-                error.setText("missing file");
-            } else {
-                if (!note.isLoaded()) {
-                    PangaeaNote n = note.toNote();
-                    win.service().loadNode(n, win.wallet(), false, win.getCurrentFilePath());
-                    note.copyFrom(n);
-                }
-                error.setText(note.error == null ? "" : note.error.getEx().toString());
-            }
+//            if (path == null || path.length() == 0) {
+//                error.setText("missing file");
+//            } else {
+//                if (!note.isLoaded()) {
+//                    PangaeaNote n = note.toNote();
+//                    win.service().loadNode(n, win.wallet(), false, win.getCurrentFilePath());
+//                    note.copyFrom(n);
+//                }
+//                error.setText(note.error == null ? "" : note.error.getEx().toString());
+//            }
             setEditable(!note.isReadOnly());
         } catch (Exception ex) {
-            error.setText(ex.toString());
+            //error.setText(ex.toString());
         }
     }
 

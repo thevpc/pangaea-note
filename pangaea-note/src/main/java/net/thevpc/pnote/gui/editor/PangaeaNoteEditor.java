@@ -5,66 +5,69 @@
  */
 package net.thevpc.pnote.gui.editor;
 
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.BorderPane;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
-import net.thevpc.pnote.gui.editor.editorcomponents.empty.EmpyNNodtEditorTypeComponent;
+import net.thevpc.pnote.gui.editor.editorcomponents.empty.EmptyNoteEditorTypeComponent;
 import net.thevpc.pnote.gui.editor.editorcomponents.unsupported.UnsupportedEditorTypeComponent;
-import java.awt.CardLayout;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.JPanel;
+
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.Application;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.util.DefaultObjectListModel;
-import net.thevpc.common.swing.list.ObjectListModel;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtensionHandler;
 import net.thevpc.pnote.api.PangaeaNoteExtEditorListener;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteEditor extends JPanel {
+public class PangaeaNoteEditor extends BorderPane {
 
     private Map<String, PangaeaNoteEditorTypeComponent> components = new LinkedHashMap<String, PangaeaNoteEditorTypeComponent>();
     private PangaeaNoteEditorTypeComponent currentEditor;
     private PangaeaNoteExt currentNote;
-    private JPanel container;
+    private Panel container;
     private String editorTypeI18nPrefix = "EditorType";
     private List<PangaeaNoteExtEditorListener> listeners = new ArrayList<>();
     private EditorOnLocalChangePropertyListenerImpl editorOnLocalChangePropertyListenerImpl = new EditorOnLocalChangePropertyListenerImpl();
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
     private Application app;
     private boolean compactMode;
     private boolean editable;
 
-    public PangaeaNoteEditor(PangaeaNoteWindow win, boolean compactMode) {
-        super(new CardLayout());
+    public PangaeaNoteEditor(PangaeaNoteFrame frame, boolean compactMode) {
+        super("PangaeaNoteEditor",frame.app());
+        title().set(Str.i18n("Content"));
+        anchor().set(Anchor.CENTER);
         this.compactMode = compactMode;
-        this.win = win;
-        this.app = win.app();
-        this.setBorder(null);
+        this.frame = frame;
+        this.app = frame.app();
         container = this;
 //        add(container, BorderLayout.CENTER);
 
-        components.put("empty", new EmpyNNodtEditorTypeComponent(win));
-        components.put(PangaeaNoteTypes.EDITOR_UNSUPPORTED, new UnsupportedEditorTypeComponent());
+        components.put("empty", new EmptyNoteEditorTypeComponent(frame));
+        components.put(PangaeaNoteTypes.EDITOR_UNSUPPORTED, new UnsupportedEditorTypeComponent(app()));
 
-        for (Map.Entry<String, PangaeaNoteEditorTypeComponent> entry : components.entrySet()) {
-            container.add(entry.getValue().component(), entry.getKey());
-        }
+//        for (Map.Entry<String, PangaeaNoteEditorTypeComponent> entry : components.entrySet()) {
+//            container.add(entry.getValue().component(), entry.getKey());
+//        }
 
         showEditor("empty");
 
-        app.i18n().locale().listeners().add(editorOnLocalChangePropertyListenerImpl);
+        app.i18n().locale().onChange(editorOnLocalChangePropertyListenerImpl);
     }
 
     public void uninstall() {
@@ -72,8 +75,8 @@ public class PangaeaNoteEditor extends JPanel {
         for (Map.Entry<String, PangaeaNoteEditorTypeComponent> entry : components.entrySet()) {
             PangaeaNoteEditorTypeComponent c = entry.getValue();
             c.uninstall();
-            for (PangaeaNoteAppExtensionHandler appExtension : win.papp().getLoadedAppExtensions()) {
-                appExtension.getExtension().uninstallNoteEditorTypeComponent(null, c, win);
+            for (PangaeaNoteAppExtensionHandler appExtension : frame.app().getLoadedAppExtensions()) {
+                appExtension.getExtension().uninstallNoteEditorTypeComponent(null, c, frame);
             }
         }
     }
@@ -85,8 +88,8 @@ public class PangaeaNoteEditor extends JPanel {
     }
 
     public PangaeaNoteEditorTypeComponent createEditor(String name) {
-        for (PangaeaNoteEditorService t : win.papp().getEditorServices()) {
-            PangaeaNoteEditorTypeComponent c = t.createEditor(name, compactMode, win);
+        for (PangaeaNoteEditorService t : frame.app().getEditorServices()) {
+            PangaeaNoteEditorTypeComponent c = t.createEditor(name, compactMode, frame);
             if (c != null) {
                 return c;
             }
@@ -102,9 +105,8 @@ public class PangaeaNoteEditor extends JPanel {
         PangaeaNoteEditorTypeComponent c = createEditor(name);
         if (c != null) {
             components.put(name, c);
-            container.add(c.component(), name);
-            for (PangaeaNoteAppExtensionHandler appExtension : win.papp().getLoadedAppExtensions()) {
-                appExtension.getExtension().installNoteEditorTypeComponent(null, c, win);
+            for (PangaeaNoteAppExtensionHandler appExtension : frame.app().getLoadedAppExtensions()) {
+                appExtension.getExtension().installNoteEditorTypeComponent(null, c, frame);
             }
             return name;
         }
@@ -118,7 +120,8 @@ public class PangaeaNoteEditor extends JPanel {
     public void showEditor(String name) {
         String okName = getEditorName(name);
         this.currentEditor = getEditor(okName);
-        ((CardLayout) container.getLayout()).show(container, okName);
+        container.children().clear();
+        container.children().add(currentEditor.component());
     }
 
     public PangaeaNoteEditorTypeComponent editorComponent() {
@@ -126,14 +129,14 @@ public class PangaeaNoteEditor extends JPanel {
     }
     
 
-    public ObjectListModel createEditorTypeModel(PangaeaNoteMimeType contentType) {
-        contentType = win.service().normalizeContentType(contentType);
-        String all = win.service().getEditorType(contentType);
-        return new DefaultObjectListModel(
-                Arrays.asList(all),
-                x -> app.i18n().getString(editorTypeI18nPrefix + "." + x)
-        );
-    }
+//    public ObjectListModel createEditorTypeModel(PangaeaNoteMimeType contentType) {
+//        contentType = win.service().normalizeContentType(contentType);
+//        String all = win.service().getEditorType(contentType);
+//        return new DefaultObjectListModel(
+//                Arrays.asList(all),
+//                x -> app.i18n().getString(editorTypeI18nPrefix + "." + x)
+//        );
+//    }
 
     public PangaeaNoteExt getNote() {
         return currentNote;
@@ -144,9 +147,9 @@ public class PangaeaNoteEditor extends JPanel {
         if (note == null) {
             showEditor("empty");
         } else {
-            PangaeaNoteMimeType contentType = win.service().normalizeContentType(note.getContentType());
-            String editorType = win.service().normalizeEditorType(contentType, note.getEditorType());
-            getEditor(editorType).setNote(note, win);//TODO FIX ME
+            PangaeaNoteMimeType contentType = frame.service().normalizeContentType(note.getContentType());
+            String editorType = frame.service().normalizeEditorType(contentType, note.getEditorType());
+            getEditor(editorType).setNote(note, frame);//TODO FIX ME
             showEditor(editorType);
         }
     }

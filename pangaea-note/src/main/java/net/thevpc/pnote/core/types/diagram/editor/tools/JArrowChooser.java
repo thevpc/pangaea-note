@@ -19,7 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import org.jdesktop.swingx.renderer.DefaultListRenderer;
+//import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import net.thevpc.diagram4j.util.DiagramArrowType;
 import net.thevpc.diagram4j.util.DiagramArrowTypeIcon;
 
@@ -52,19 +52,19 @@ public class JArrowChooser extends JPanel {
                 fireStartSelectedChanged();
             }
         });
-        startArrows.setCellRenderer(new DefaultListRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                int w = 80;
-                int h = 40;
-                JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
-                c.setIcon(new DiagramArrowTypeIcon(Color.BLACK, w, h,
-                        DiagramArrowType.values()[index % DiagramArrowType.values().length],
-                        DiagramArrowType.NONE
-                ));
-                return c;
-            }
-        });
+//        startArrows.setCellRenderer(new DefaultListRenderer() {
+//            @Override
+//            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//                int w = 80;
+//                int h = 40;
+//                JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
+//                c.setIcon(new DiagramArrowTypeIcon(Color.BLACK, w, h,
+//                        DiagramArrowType.values()[index % DiagramArrowType.values().length],
+//                        DiagramArrowType.NONE
+//                ));
+//                return c;
+//            }
+//        });
         startArrows.setSelectedIndex(0);
 
         DefaultListModel endArrowsModel = new DefaultListModel();
@@ -80,18 +80,18 @@ public class JArrowChooser extends JPanel {
                 fireEndSelectedChanged();
             }
         });
-        endArrows.setCellRenderer(new DefaultListRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                int w = 80;
-                int h = 40;
-                JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
-                c.setIcon(new DiagramArrowTypeIcon(Color.BLACK, w, h, DiagramArrowType.NONE,
-                        DiagramArrowType.values()[index % DiagramArrowType.values().length]
-                ));
-                return c;
-            }
-        });
+//        endArrows.setCellRenderer(new DefaultListRenderer() {
+//            @Override
+//            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//                int w = 80;
+//                int h = 40;
+//                JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
+//                c.setIcon(new DiagramArrowTypeIcon(Color.BLACK, w, h, DiagramArrowType.NONE,
+//                        DiagramArrowType.values()[index % DiagramArrowType.values().length]
+//                ));
+//                return c;
+//            }
+//        });
         endArrows.setSelectedIndex(0);
 
 //                disabledPanel.setEnabled(doFill.isSelected());

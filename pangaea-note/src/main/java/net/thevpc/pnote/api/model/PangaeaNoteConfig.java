@@ -8,7 +8,7 @@ package net.thevpc.pnote.api.model;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import net.thevpc.echo.AppWindowDisplayMode;
+import net.thevpc.echo.FrameDisplayMode;
 
 /**
  *
@@ -21,7 +21,7 @@ public class PangaeaNoteConfig {
     private String lastOpenPath;
     private Boolean displayToolBar;
     private Boolean displayStatusBar;
-    private AppWindowDisplayMode displayMode;
+    private FrameDisplayMode displayMode;
     private String iconSet;
     private int iconSetSize;
     private List<String> recentFiles = new ArrayList<>();
@@ -85,11 +85,11 @@ public class PangaeaNoteConfig {
         }
     }
 
-    public AppWindowDisplayMode getDisplayMode() {
+    public FrameDisplayMode getDisplayMode() {
         return displayMode;
     }
 
-    public void setDisplayMode(AppWindowDisplayMode displayMode) {
+    public void setDisplayMode(FrameDisplayMode displayMode) {
         this.displayMode = displayMode;
     }
 

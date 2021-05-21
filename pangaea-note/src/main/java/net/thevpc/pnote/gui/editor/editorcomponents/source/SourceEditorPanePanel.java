@@ -5,276 +5,80 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.undo.UndoManager;
-import net.thevpc.common.swing.SwingComponentUtils;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.jeep.editor.JEditorPaneBuilder;
-import net.thevpc.jeep.editor.JSyntaxStyleManager;
-import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.SelectableElement;
-import net.thevpc.pnote.gui.util.AnyDocumentListener;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.util.GuiHelper;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.AppColor;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.api.components.AppContextMenu;
+import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.HighlightType;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.gui.SelectableElement;
 import net.thevpc.pnote.gui.search.SearchDialog;
-import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.core.types.rich.editor.RichEditor;
+
+import java.util.stream.Stream;
 
 /**
  *
  * @author vpc
  */
-public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTypeComponent {
+public class SourceEditorPanePanel extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
-    private JEditorPaneBuilder editorBuilder;
+    private TextArea textArea;
     private PangaeaNoteExt currentNote;
-    private boolean source;
     private boolean compactMode;
     private boolean editable = true;
-    private PangaeaNoteWindow win;
-    private SourceEditorPaneExtension textExtension = new SourceEditorPanePanelTextExtension();
-    DocumentListener documentListener = new AnyDocumentListener() {
-        public void anyChange(DocumentEvent e) {
-            if (currentNote != null) {
-                win.onDocumentChanged();
-                currentNote.setContent(win.service().stringToElement(editorBuilder.editor().getText()));
-            }
-        }
-    };
+    private PangaeaNoteFrame frame;
     private SelectableElement selectableElement=new SelectableElement() {
         @Override
         public String getSelectedText() {
-            String s = editorBuilder.editor().getSelectedText();
+            String s = textArea.textSelection().get();
             return (s!=null && s.length()>0)?s:null;
         }
     };
 
-    public SourceEditorPanePanel(boolean source, boolean compactMode, PangaeaNoteWindow win) {
-        super(new BorderLayout());
+    public SourceEditorPanePanel(boolean compactMode, PangaeaNoteFrame frame) {
+        super(frame.app());
         this.compactMode = compactMode;
-        boolean lineNumbers = source;
-        this.editorBuilder = new JEditorPaneBuilder();
-        this.editorBuilder.setEditor(new JTextPane());
-        for (PangaeaNoteTypeService contentTypeService : win.service().getContentTypeServices()) {
-            EditorKit k=contentTypeService.getSourceEditorKit();
-            if(k!=null){
-                        editorBuilder.editor().setEditorKitForContentType(
-                                contentTypeService.getContentType().toString()
-                                , k);
-            }
-        }
-        if (lineNumbers) {
-            editorBuilder.addLineNumbers();
-        }
-        if (!compactMode) {
-            editorBuilder.footer()
-                    //                .add(new JLabel("example..."))
-                    //                .add(new JSyntaxPosLabel(e, completion))
-                    .addGlue()
-                    .addCaret()
-                    .end();
-        } else {
-            setBorder(BorderFactory.createEmptyBorder());
-        }
-//        editorBuilder.footer()
-//                //                .add(new JLabel("example..."))
-//                //                .add(new JSyntaxPosLabel(e, completion))
-//                .addGlue()
-//                .addCaret()
-//                .end() //                .setEditorKit(HadraLanguage.MIME_TYPE, new HLJSyntaxKit(jContext))
-//                //                    .component()
-//                .header();
-        //.header().add(new JLabel(title))
-
-//        this.setWheelScrollingEnabled(true);
-        this.win = win;
-        this.source = source;
-        this.editorBuilder.editor().getDocument().addDocumentListener(documentListener);
-        this.editorBuilder.editor().addPropertyChangeListener("document", e -> {
-            Document o = (Document) e.getOldValue();
-            Document n = (Document) e.getNewValue();
-            if (o != null) {
-                o.removeDocumentListener(documentListener);
-            }
-            if (n != null) {
-                n.addDocumentListener(documentListener);
-            }
-        });
-        JPopupMenu popup = editorBuilder.editor().getComponentPopupMenu();
-        if (popup == null) {
-            popup = new JPopupMenu();
-            editorBuilder.editor().setComponentPopupMenu(popup);
-        }
-        textExtension.prepareEditor(editorBuilder, compactMode, win);
-        if (!compactMode) {
-            this.editorBuilder.header().addGlue();
-        }
-        this.editorBuilder.editor().addPropertyChangeListener("document", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                GuiHelper.installUndoRedoManager(editorBuilder.editor());
-            }
-        });
-        JEditorPane ed = this.editorBuilder.editor();
-        ed.getInputMap().put(KeyStroke.getKeyStroke("control F"), "search-text");
-        ed.getActionMap().put("search-text",
-                SwingApplicationsUtils.registerAction(new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        SearchDialog dialog = new SearchDialog(win);
-                        dialog.setTitleId("Message.search.searchInDocument");
-                        dialog.setSearchText(ed.getSelectedText());
-                        SearchQuery query = dialog.showDialog();
-                        if (query != null) {
-                            StringQuerySearch<String> fi = new StringQuerySearch(query);
-                            Stream<StringSearchResult<String>> found = fi.search(StringDocumentTextNavigator.of(ed.getText()), SearchProgressMonitor.NONE);
-                            found.forEach(x -> {
-                                int from = x.getStart();
-                                int to = x.getEnd();
-                                highlight(from, to, HighlightType.SEARCH_MAIN);
-                            });
-                        }
-                    }
-
-                }, "search", "search", win.app())
-        );
-        ed.getInputMap().put(KeyStroke.getKeyStroke("control D"), "duplicate-text");
-        ed.getActionMap().put("duplicate-text",
-                SwingApplicationsUtils.registerAction(new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            int ss = ed.getSelectionStart();
-                            int se = ed.getSelectionEnd();
-                            if (se > ss) {
-                                ed.getDocument().insertString(se, ed.getDocument().getText(ss, se - ss), null);
-                                ed.setCaretPosition(se + se - ss);
-                                ed.setSelectionStart(se);
-                                ed.setSelectionEnd(se + se - ss);
-                            } else {
-                                int currentLine = SwingComponentUtils.getLineFromOffset(ed, ed.getCaret().getDot());
-                                int startPos = SwingComponentUtils.getLineStartOffsetForLine(ed, currentLine);
-                                int endOffset = SwingComponentUtils.getLineEndOffsetForLine(ed, currentLine);
-                                ed.getDocument().insertString(endOffset, ed.getDocument().getText(startPos, endOffset - startPos), null);
-                                ed.setCaretPosition(ed.getCaret().getDot() + endOffset - startPos);
-                            }
-                        } catch (BadLocationException ex) {
-                            Logger.getLogger(SourceEditorPanePanel.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-
-                }, "search", "search", win.app())
-        );
-        ed.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "reset-highlights");
-        ed.getActionMap().put("reset-highlights",
-                SwingApplicationsUtils.registerAction(new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ed.getHighlighter().removeAllHighlights();
-                    }
-
-                }, "reset-highlights", "reset-highlights", win.app())
-        );
-
-        GuiHelper.installUndoRedoManager(editorBuilder.editor());
-        if (source) {
-            this.editorBuilder.editor().setFont(JSyntaxStyleManager.getDefaultFont());
-        }
-//        editorBuilder.editor().addPropertyChangeListener("editorKit", new PropertyChangeListener() {
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                EditorKit ek = (EditorKit) evt.getNewValue();
-//                String ct = ek == null ? "" : ek.getContentType();
-//                if (ct == null) {
-//                    ct = "";
-//                }
-//                for (EditorKitHeader toolbar : headers) {
-//                    toolbar.component().setVisible(toolbar.acceptContentType(ct));
-//                }
+        this.textArea = new TextArea(frame.app());
+        textArea.installDefaults();
+        textArea.registerAccelerator("search-text", "control F", () -> showSearchDialog());
+//        for (PangaeaNoteTypeService contentTypeService : win.service().getContentTypeServices()) {
+//            EditorKit k=contentTypeService.getSourceEditorKit();
+//            if(k!=null){
+//                        editorBuilder.editor().setEditorKitForContentType(
+//                                contentTypeService.getContentType().toString()
+//                                , k);
 //            }
 //        }
-//        );
-        add(editorBuilder.component());
-        SwingComponentUtils.addZoomTextOnMouseWheel(editorBuilder.editor());
-
-        ed.addCaretListener(new CaretListener() {
-            public void caretUpdate(CaretEvent evt) {
-                if (evt.getDot() == evt.getMark()) {
-                    return;
-                }
-
-                JTextPane txtPane = (JTextPane) evt.getSource();
-                DefaultHighlighter highlighter = (DefaultHighlighter) txtPane.getHighlighter();
-                String selText = txtPane.getSelectedText();
-                String contText = "";// = jTextPane1.getText();
-                DefaultStyledDocument document = (DefaultStyledDocument) txtPane.getDocument();
-                try {
-                    contText = document.getText(0, document.getLength());
-                } catch (BadLocationException ex) {
-                    ex.printStackTrace();
-                }
-                if (contText.length() > 0) {
-                    int index = 0;
-                    List<int[]> all = new ArrayList<>();
-                    while ((index = contText.indexOf(selText, index)) > -1) {
-                        all.add(new int[]{index, selText.length() + index});
-                        index = index + selText.length();
-                    }
-                    if (all.size() > 1) {
-                        highlighter.removeAllHighlights();
-                        for (int[] is : all) {
-                            highlight(is[0], is[1], HighlightType.CARET);
-                        }
-                    }
-                }
+        textArea.rowNumberRuler().set(true);
+        textArea.zoomOnMouseWheel().set(true);
+        this.frame = frame;
+        this.textArea.text().onChange(e->{
+            if (currentNote != null) {
+                frame.onDocumentChanged();
+                currentNote.setContent(frame.service().stringToElement(textArea.text().get().value()));
             }
         });
-        ed.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                win.selectableElement().set(selectableElement);
-            }
+        AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
+        children().add(new ScrollPane(textArea));
+//        GuiHelper.installUndoRedoManager(editorBuilder.editor());
+//        children().add(editorBuilder);
 
-            @Override
-            public void focusLost(FocusEvent e) {
-                if(selectableElement==win.selectableElement().get()){
-                    win.selectableElement().set(null);
+        textArea.focused()
+                .onChange(e -> {
+            if (e.newValue()) {
+                frame.selectableElement().set(selectableElement);
+            } else {
+                if (selectableElement == frame.selectableElement().get()) {
+                    frame.selectableElement().set(null);
                 }
             }
         });
@@ -286,33 +90,26 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
 //    }
     @Override
     public void uninstall() {
-        textExtension.uninstall(editorBuilder, win);
+//        textExtension.uninstall(editorBuilder, win);
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         this.currentNote = note;
         String c = win.service().elementToString(note.getContent());
         String type = note.getContentType();
         if (type == null) {
             type = "";
         }
-        editorBuilder.editor().setContentType(type.isEmpty() ? "text/plain" : type);
-        editorBuilder.editor().setText(c == null ? "" : c);
+        textArea.textContentType().set(type.isEmpty() ? "text/plain" : type);
+        textArea.text().set(Str.of(win.service().elementToString(note.getContent())));
         setEditable(!note.isReadOnly());
-        UndoManager um = GuiHelper.getUndoRedoManager(editorBuilder.editor());
-        um.discardAllEdits();
-    }
-
-    private Action prepareAction(AbstractAction a) {
-        //align-justify.png
-        String s = (String) a.getValue(AbstractAction.NAME);
-        SwingApplicationsUtils.registerAction(a, null, s, win.app());
-        return a;
+//        UndoManager um = GuiHelper.getUndoRedoManager(editorBuilder.editor());
+//        um.discardAllEdits();
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return this;
     }
 
@@ -321,16 +118,12 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
         if (currentNote != null && currentNote.isReadOnly()) {
             b = false;
         }
-        editorBuilder.editor().setEditable(b);
+        textArea.editable().set(b);
     }
 
     @Override
     public boolean isEditable() {
-        return editorBuilder.editor().isEditable();
-    }
-
-    public JEditorPaneBuilder getEditorBuilder() {
-        return editorBuilder;
+        return textArea.editable().get();
     }
 
     @Override
@@ -340,23 +133,34 @@ public class SourceEditorPanePanel extends JPanel implements PangaeaNoteEditorTy
 
     @Override
     public void moveTo(int pos) {
-        editorBuilder.editor().setCaretPosition(pos);
+        textArea.caretPosition().set(pos);
     }
 
     @Override
-    public void removeHighlights(HighlightType hightlightType) {
-        editorBuilder.editor().getHighlighter().removeAllHighlights();
+    public void removeHighlights(HighlightType highlightType) {
+        textArea.removeAllHighlights(highlightType);
     }
 
     @Override
-    public void highlight(int from, int to, HighlightType hightlightType) {
-        try {
-            Color c = win.colorForHighlightType(hightlightType);
-            javax.swing.text.DefaultHighlighter.DefaultHighlightPainter highlightPainter
-                    = new javax.swing.text.DefaultHighlighter.DefaultHighlightPainter(c);
-            editorBuilder.editor().getHighlighter().addHighlight(from, to, highlightPainter);
-        } catch (BadLocationException ex) {
-            Logger.getLogger(RichEditor.class.getName()).log(Level.SEVERE, null, ex);
+    public void highlight(int from, int to, HighlightType highlightType) {
+        AppColor c = frame.colorForHighlightType(highlightType);
+        textArea.highlight(from, to, c, highlightType);
+    }
+
+    public void showSearchDialog(){
+        SearchDialog dialog = new SearchDialog(frame);
+        dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
+        dialog.setSearchText(textArea.text().get().value());
+        SearchQuery query = dialog.showDialog();
+        if (query != null) {
+            StringQuerySearch<String> fi = new StringQuerySearch(query);
+            String txt = textArea.getText(0, textArea.getTextLength());
+            Stream<StringSearchResult<String>> found = fi.search(StringDocumentTextNavigator.of(txt), SearchProgressMonitor.NONE);
+            found.forEach(x -> {
+                int from = x.getStart();
+                int to = x.getEnd();
+                highlight(from, to, HighlightType.SEARCH_MAIN);
+            });
         }
     }
 }

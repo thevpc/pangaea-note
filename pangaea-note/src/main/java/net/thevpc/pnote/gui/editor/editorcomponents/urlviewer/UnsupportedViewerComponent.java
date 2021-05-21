@@ -6,9 +6,11 @@
 package net.thevpc.pnote.gui.editor.editorcomponents.urlviewer;
 
 import java.util.function.Consumer;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.Label;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
@@ -17,8 +19,8 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
  */
 public class UnsupportedViewerComponent implements URLViewerComponent {
 
-    PangaeaNoteWindow win;
-    JLabel a = new JLabel();
+    PangaeaNoteFrame frame;
+    Label a;
     private final URLViewer outer;
     private Runnable onSuccess;
     private Consumer<Exception> onError;
@@ -28,14 +30,15 @@ public class UnsupportedViewerComponent implements URLViewerComponent {
 
     public UnsupportedViewerComponent(
             String path, String extension, PangaeaNoteMimeType probedContentType,
-            PangaeaNoteWindow win, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
+            PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
         this.path = path;
         this.extension = extension;
         this.probedContentType = probedContentType;
         this.outer = outer;
-        this.win = win;
+        this.frame = frame;
         this.onSuccess = onSuccess;
         this.onError = onError;
+        a=new Label(Str.empty(), frame.app());
     }
 
     @Override
@@ -47,7 +50,7 @@ public class UnsupportedViewerComponent implements URLViewerComponent {
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return a;
     }
 

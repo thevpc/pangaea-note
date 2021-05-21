@@ -6,7 +6,7 @@
 package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
 import net.thevpc.jeep.editor.JEditorPaneBuilder;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
@@ -14,8 +14,8 @@ import net.thevpc.pnote.gui.PangaeaNoteWindow;
  */
 public interface SourceEditorPaneExtension {
 
-    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteWindow win);
+    public void uninstall(JEditorPaneBuilder editorBuilder, PangaeaNoteFrame win);
     
-    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteWindow win);
+    public void prepareEditor(JEditorPaneBuilder editorBuilder, boolean compactMode, PangaeaNoteFrame win);
 
 }

@@ -7,12 +7,14 @@ package net.thevpc.pnote.core.viewers.web;
 
 import java.io.IOException;
 import java.util.function.Consumer;
-import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
+
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.echo.ScrollPane;
+import net.thevpc.echo.UserControl;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 
@@ -22,9 +24,9 @@ import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent
  */
 public class WebViewerComponent implements URLViewerComponent {
 
-    PangaeaNoteWindow win;
+    PangaeaNoteFrame frame;
     JEditorPane component;
-    JScrollPane component2;
+    ScrollPane component2;
     private final URLViewer viewer;
     private String url;
 //    private String contentType;
@@ -38,15 +40,20 @@ public class WebViewerComponent implements URLViewerComponent {
 
     };
 
-    public WebViewerComponent(PangaeaNoteWindow win, final URLViewer viewer, Runnable onSuccess, Consumer<Exception> onError) {
+    public WebViewerComponent(PangaeaNoteFrame frame, final URLViewer viewer, Runnable onSuccess, Consumer<Exception> onError) {
         this.viewer = viewer;
-        this.win = win;
+        this.frame = frame;
         this.onSuccess = onSuccess;
         this.onError = onError;
         component = new JEditorPane("text/html","");
         component.setEditable(false);
-        component2 = new JScrollPane(component);
-        win.app().iconSets().id().listeners().add(propertyListener);
+        component2 = new ScrollPane(
+                new UserControl(
+                        "JEditorPane",
+                        component, frame.app()
+                )
+        );
+        frame.app().iconSets().id().onChange(propertyListener);
     }
 
     public void refresh() {
@@ -71,7 +78,7 @@ public class WebViewerComponent implements URLViewerComponent {
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return component2;
     }
 
@@ -90,7 +97,7 @@ public class WebViewerComponent implements URLViewerComponent {
     }
 
     public void disposeComponent() {
-        win.app().iconSets().id().listeners().remove(propertyListener);
+        frame.app().iconSets().id().listeners().remove(propertyListener);
 
     }
 

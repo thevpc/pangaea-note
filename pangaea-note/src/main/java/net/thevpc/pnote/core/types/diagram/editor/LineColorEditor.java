@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import net.thevpc.common.swing.color.ColorUtils;
 import net.thevpc.diagram4j.JDiagramCanvas;
 import net.thevpc.diagram4j.model.JDiagram;
 import net.thevpc.diagram4j.model.JDiagramElement;
@@ -30,13 +29,13 @@ public class LineColorEditor extends JLineColorChooser {
             @Override
             public void stateChanged(ChangeEvent e) {
                 if (canvas.getDiagram().getSelectionCount() > 0) {
-                    canvas.getDiagram().setSelectionLineColor(
-                            ColorUtils.formatPaint(jc.getSelectedColor())
-                    );
+//                    canvas.getDiagram().setSelectionLineColor(
+//                            ColorUtils.formatPaint(jc.getSelectedColor())
+//                    );
                 } else {
-                    canvas.getDiagram().setConfigLineColor(
-                            ColorUtils.formatPaint(jc.getSelectedColor())
-                    );
+//                    canvas.getDiagram().setConfigLineColor(
+//                            ColorUtils.formatPaint(jc.getSelectedColor())
+//                    );
                 }
             }
         });
@@ -48,7 +47,7 @@ public class LineColorEditor extends JLineColorChooser {
                 );
             }
         });
-        jc.setSelectedColor(ColorUtils.parseColor(canvas.getDiagram().getConfig().getLineColor()));
+//        jc.setSelectedColor(ColorUtils.parseColor(canvas.getDiagram().getConfig().getLineColor()));
         canvas.addDiagramChangeListener(new JDiagramListener() {
             @Override
             public void selectionChanged(JDiagram diagram, Set<String> before, Set<String> after) {
@@ -63,10 +62,10 @@ public class LineColorEditor extends JLineColorChooser {
                 List<JDiagramElement> se = canvas.getDiagram().getSelectedElements();
                 if (se.size() == 1) {
                     JDiagramElement de = se.get(0);
-                    jc.setSelectedColor(ColorUtils.parseColor(de.getLineColor()));
+//                    jc.setSelectedColor(ColorUtils.parseColor(de.getLineColor()));
                     jc.setSelectedStroke(StrokeUtils.parseStroke(de.getLineStroke()));
                 } else if (se.isEmpty()) {
-                    jc.setSelectedColor(ColorUtils.parseColor(canvas.getDiagram().getConfigLineColor()));
+//                    jc.setSelectedColor(ColorUtils.parseColor(canvas.getDiagram().getConfigLineColor()));
                     jc.setSelectedStroke(StrokeUtils.parseStroke(canvas.getDiagram().getConfigLineStroke()));
                 }
             }

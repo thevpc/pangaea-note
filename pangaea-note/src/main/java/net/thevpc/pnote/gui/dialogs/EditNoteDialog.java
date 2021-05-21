@@ -5,144 +5,117 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
-import net.thevpc.pnote.api.EditTypeComponent;
-import java.awt.BorderLayout;
-import java.awt.Window;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.function.Consumer;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import net.thevpc.common.i18n.I18n;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.pnote.api.EditTypeComponent;
+import net.thevpc.pnote.api.PangaeaNoteTypeServiceBase;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.api.PangaeaNoteTypeServiceBase;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
- *
  * @author vpc
  */
 public class EditNoteDialog {
 
-    private JPanel panel;
-    private JTextField nameEditor;
-    private JCheckBox readOnlyEditor;
+    private Panel panel;
+    private TextField nameEditor;
+    private CheckBox readOnlyEditor;
     private PangaeaNoteIconsList iconsEditor;
     private PangaeaNoteTitleFormatPanel titleEditor;
-    private PangaeaNoteTypesCombobox typeEditor;
+    private PangaeaNoteTypesComboBox typeEditor;
 
     private boolean ok = false;
     private PangaeaNote note;
     private PangaeaNoteExt vn;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
     private EditTypeComponent editTypeComponent;
-    private JPanel editTypeComponentPanel;
-    private JTabbedPane jTabbedPane;
+    private Panel editTypeComponentPanel;
+    private TabPane jTabbedPane;
 
-    public EditNoteDialog(PangaeaNoteWindow win, PangaeaNoteExt vn) {
-        this.win = win;
+    public EditNoteDialog(PangaeaNoteFrame frame, PangaeaNoteExt vn) {
+        this.frame = frame;
         this.vn = vn;
         this.note = vn.toNote();
-        nameEditor = new JTextField("");
-        typeEditor = new PangaeaNoteTypesCombobox(win);
-        titleEditor = new PangaeaNoteTitleFormatPanel(win);
-        typeEditor.setSelectedContentType(win.service().normalizeContentType(note.getContentType()), note.getEditorType());
-        typeEditor.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    onNoteTypeChanged();
-                }
-            }
-        });
-        iconsEditor = new PangaeaNoteIconsList(win);
-        I18n i18n = win.app().i18n();
-        readOnlyEditor = new JCheckBox(i18n.getString("Message.readOnly"));
 
-        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(EditNoteDialog.class.getResource(
-                "/net/thevpc/pnote/forms/EditNoteDialog.gbl-form"
-        ));
-        gbs.bind("nameLabel", new JLabel(i18n.getString("Message.name")));
-        gbs.bind("nameEditor", nameEditor);
-        gbs.bind("typeLabel", new JLabel(i18n.getString("Message.noteType")));
-        gbs.bind("typeEditor", typeEditor);
-        gbs.bind("readOnlyEditor", readOnlyEditor);
+        Application app = frame.app();
+        I18n i18n = app.i18n();
 
-        editTypeComponentPanel = new JPanel(new BorderLayout());
-        jTabbedPane = new JTabbedPane();
-        gbs.bind("tabs", jTabbedPane);
-        jTabbedPane.addTab(i18n.getString("PangaeaNoteListSettingsComponent.titleLabel"), titleEditor);
-        jTabbedPane.addTab(i18n.getString("PangaeaNoteListSettingsComponent.iconsLabel"), iconsEditor);
-        jTabbedPane.addTab(i18n.getString("PangaeaNoteListSettingsComponent.optionsLabel"), editTypeComponentPanel);
-        gbs.bind("tabs", jTabbedPane);
+        panel = new VerticalPane(app);
+        panel.children().addAll(
+                new Label(Str.i18n("Message.name"), app),
+                nameEditor = new TextField(Str.empty(), app),
+                new Label(Str.i18n("Message.noteType"), app),
+                typeEditor = new PangaeaNoteTypesComboBox(frame)
+                        .with(v -> {
+                            v.setSelectedContentType(frame.service().normalizeContentType(note.getContentType()), note.getEditorType());
+                            v.selection().onChange(e -> onNoteTypeChanged());
+                        }),
+                readOnlyEditor = new CheckBox(null, Str.i18n("Message.readOnly"), app),
+                jTabbedPane = new TabPane(app)
+                        .with(t -> {
+                            t.children().add(titleEditor = new PangaeaNoteTitleFormatPanel(frame));
+                            t.children().add(iconsEditor = new PangaeaNoteIconsList(frame));
+                            t.children().add(editTypeComponentPanel = new BorderPane(app)
+                                    .with((Panel p) -> {
+                                        p.title().set(Str.i18n("PangaeaNoteListSettingsComponent.optionsLabel"));
+                                    }));
+                        })
+        );
 
         onNoteTypeChanged();
-        iconsEditor.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                jTabbedPane.setIconAt(1, iconsEditor.getSelectedIcon());
-            }
-        });
-        nameEditor.setText(note.getName());
+        nameEditor.text().set(Str.of(note.getName()));
         iconsEditor.setSelectedIcon(note.getIcon());
-        readOnlyEditor.setSelected(note.isReadOnly());
+        readOnlyEditor.selected().set(note.isReadOnly());
         titleEditor.loadFromNote(note);
         editTypeComponent.loadFrom(note);
-
-        panel = (gbs.apply(new JPanel()));
     }
 
     private void onNoteTypeChanged() {
         PangaeaNoteMimeType ct = PangaeaNoteMimeType.of(typeEditor.getSelectedContentTypeId());
-        PangaeaNoteTypeServiceBase s = win.service().findContentTypeService(ct);
+        PangaeaNoteTypeServiceBase s = frame.service().findContentTypeService(ct);
         if (s == null) {
-            s = win.service().getTemplate(ct);
+            s = frame.service().getTemplate(ct);
         }
         EditTypeComponent c = null;
         if (s != null) {
-            c = s.createEditPanel(win);
+            c = s.createEditPanel(frame);
         }
-        boolean haveOptions=c!=null;
+        boolean haveOptions = c != null;
         if (c == null) {
-            c = new EmptyEditTypeComponent();
+            c = new EmptyEditTypeComponent(frame.app());
         }
         editTypeComponent = c;
-        editTypeComponentPanel.removeAll();
-        editTypeComponentPanel.add(editTypeComponent.component());
+        editTypeComponentPanel.children().removeAll();
+        editTypeComponentPanel.children().add(editTypeComponent.component());
         editTypeComponent.loadFrom(note);
-        jTabbedPane.setEnabledAt(2, haveOptions);
-        if (panel != null) {
-            Window p = SwingUtilities.getWindowAncestor(panel);
-            if (p != null) {
-                p.pack();
-            }
-        }
+        jTabbedPane.children().get(2).enabled().set(haveOptions);
+//        if (panel != null) {
+//            Window p = SwingUtilities.getWindowAncestor(panel);
+//            if (p != null) {
+//                p.pack();
+//            }
+//        }
     }
 
     protected PangaeaNote getNote() {
-        note.setName(nameEditor.getText());
-        if (nameEditor.getText() == null || nameEditor.getText().trim().length() == 0) {
+        String txt = nameEditor.text().getOr(x -> x == null ? null : x.value(frame.i18n()));
+        note.setName(txt);
+        if (txt == null || txt.trim().length() == 0) {
             String ct = note.getContentType();
-            nameEditor.setText(ct);
-            note.setName(win.app().i18n().getString("content-type." + ct));
+            nameEditor.text().set(Str.of(ct));
+            note.setName(frame.app().i18n().getString("content-type." + ct));
         }
         note.setIcon(iconsEditor.getSelectedIconId());
-        note.setReadOnly(readOnlyEditor.isSelected());
+        note.setReadOnly(readOnlyEditor.selected().get());
         titleEditor.loadToNote(note);
         note.setContentType(typeEditor.getSelectedContentTypeId());
         if (editTypeComponent != null) {
             editTypeComponent.loadTo(note);
         }
-        win.service().addRecentNoteType(note.getContentType());
+        frame.service().addRecentNoteType(note.getContentType());
         return note;
     }
 
@@ -163,12 +136,11 @@ public class EditNoteDialog {
     }
 
     public PangaeaNote showDialog() {
-        Consumer<Exception> exHandler = win::showError;
         while (true) {
             install();
             this.ok = false;
-            win.app().newDialog()
-                    .setTitleId("Message.editNote")
+            new Alert(frame.app())
+                    .setTitle(Str.i18n("Message.editNote"))
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {
@@ -180,16 +152,16 @@ public class EditNoteDialog {
                                 a.getDialog().closeDialog();
                             }
                     )
-                    .showDialog();
+                    .showDialog(null);
             try {
                 PangaeaNote n = get();
                 if (n != null) {
-                    win.service().updateNoteProperties(vn, n);
-                    win.onDocumentChanged();
+                    frame.service().updateNoteProperties(vn, n, frame);
+                    frame.onDocumentChanged();
                 }
                 return n;
             } catch (Exception ex) {
-                exHandler.accept(ex);
+                frame.app().errors().add(ex);
             }
         }
     }

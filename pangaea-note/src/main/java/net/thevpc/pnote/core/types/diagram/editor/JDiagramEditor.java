@@ -5,62 +5,42 @@
  */
 package net.thevpc.pnote.core.types.diagram.editor;
 
-import net.thevpc.pnote.core.types.diagram.ser.JDiagramBoundsMapper;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.util.Set;
-import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import net.thevpc.common.swing.color.ColorUtils;
-import net.thevpc.common.swing.font.FontUtils;
-import net.thevpc.echo.AppToolBar;
-import net.thevpc.echo.swing.SwingApplications;
-import net.thevpc.echo.swing.core.swing.JComponentSupplier;
-import net.thevpc.echo.swing.core.swing.JToolbarGroup;
+import net.thevpc.common.props.Path;
+import net.thevpc.diagram4j.*;
+import net.thevpc.diagram4j.actions.*;
+import net.thevpc.diagram4j.model.*;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.AppFont;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.constraints.Layout;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
-import net.thevpc.echo.AppToolButtonType;
-import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.diagram4j.JDiagramCanvas;
-import net.thevpc.diagram4j.JFontFormatter;
-import net.thevpc.diagram4j.actions.*;
-import net.thevpc.diagram4j.model.JDiagram;
-import net.thevpc.diagram4j.model.JDiagramModel;
-import net.thevpc.diagram4j.JPaintFormatter;
-import net.thevpc.diagram4j.JStrokeFormatter;
-import net.thevpc.diagram4j.model.JDiagramBounds;
-import net.thevpc.diagram4j.model.GridAlignMode;
-import net.thevpc.diagram4j.model.GridDistributeMode;
-import net.thevpc.diagram4j.model.GridLayerMode;
-import net.thevpc.diagram4j.model.GridMagnetMode;
-import net.thevpc.diagram4j.model.JDiagramGeometry;
-import net.thevpc.diagram4j.model.JDiagramListener;
-import net.thevpc.echo.AppToolToggleModel;
+import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
+import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
+import net.thevpc.pnote.core.types.diagram.ser.JDiagramBoundsMapper;
 import net.thevpc.pnote.core.types.diagram.ser.JDiagramGeometryMapper;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import org.icepdf.ri.common.utility.annotation.BorderPanel;
+
+import java.util.Set;
 
 /**
- *
  * @author vpc
  */
-public class JDiagramEditor extends JPanel implements PangaeaNoteEditorTypeComponent {
+public class JDiagramEditor extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
     private boolean compactMode;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
     private JDiagramCanvas canvas;
-    private AppToolBar toolbar;
+    private ToolBar toolbar;
     private PangaeaNoteExt note;
 
-    public JDiagramEditor(boolean compactMode, PangaeaNoteWindow win) {
-        super(new BorderLayout());
+    public JDiagramEditor(boolean compactMode, PangaeaNoteFrame frame) {
+        super(frame.app());
         this.compactMode = compactMode;
-        this.win = win;
+        this.frame = frame;
         this.canvas = new JDiagramCanvas();
         this.canvas.addDiagramChangeListener(new JDiagramListener() {
             @Override
@@ -87,275 +67,198 @@ public class JDiagramEditor extends JPanel implements PangaeaNoteEditorTypeCompo
             }
         });
         this.canvas.getRenderManager().setPaintFormatter(new JPaintFormatter() {
-            @Override
-            public Paint parsePaint(String paint) {
-                return ColorUtils.parsePaint(paint);
-            }
+                                                             @Override
+                                                             public java.awt.Paint parsePaint(String paint) {
+                                                                 throw new IllegalArgumentException("unsupported");
+//                                                                 return ColorUtils.parsePaint(paint);
+                                                             }
 
-            @Override
-            public String formatPaint(Paint paint) {
-                return ColorUtils.formatPaint(paint);
-            }
-        }
+                                                             @Override
+                                                             public String formatPaint(java.awt.Paint paint) {
+                                                                 throw new IllegalArgumentException("unsupported");
+//                                                                 return ColorUtils.formatPaint(paint);
+                                                             }
+                                                         }
         );
         this.canvas.getRenderManager().setStrokeFormatter(new JStrokeFormatter() {
-            @Override
-            public Stroke parseStroke(String stroke) {
-                return StrokeUtils.parseStroke(stroke);
-            }
+                                                              @Override
+                                                              public java.awt.Stroke parseStroke(String stroke) {
+                                                                  return StrokeUtils.parseStroke(stroke);
+                                                              }
 
-            @Override
-            public String formatStroke(Stroke stroke) {
-                return StrokeUtils.formatStroke(stroke);
-            }
-        }
+                                                              @Override
+                                                              public String formatStroke(java.awt.Stroke stroke) {
+                                                                  return StrokeUtils.formatStroke(stroke);
+                                                              }
+                                                          }
         );
         this.canvas.getRenderManager().setFontFormatter(new JFontFormatter() {
-            @Override
-            public Font parseFont(String font) {
-                return FontUtils.parseFont(font);
-            }
+                                                            @Override
+                                                            public java.awt.Font parseFont(String font) {
+                                                                throw new IllegalArgumentException("unsupported");
+//                                                                return FontUtils.parseFont(font);
+                                                            }
 
-            @Override
-            public String formatFont(Font font) {
-                return FontUtils.formatFont(font);
-            }
-        }
+                                                            @Override
+                                                            public String formatFont(java.awt.Font font) {
+                                                                throw new IllegalArgumentException("unsupported");
+//                                                                return FontUtils.formatFont(font);
+                                                            }
+                                                        }
         );
-        add(canvas, BorderLayout.CENTER);
-        toolbar = SwingApplications.Components.createToolBar(win.app());
-        Box header = Box.createHorizontalBox();
-        JToolbarGroup jtoolbarGroup = (JToolbarGroup) ((JComponentSupplier) toolbar).component();
-        header.add(jtoolbarGroup);
-        header.add(Box.createHorizontalGlue());
-        add(header, BorderLayout.PAGE_START);
+        parentConstraints().addAll(Layout.BORDER);
+        children().add(
+                new UserControl("canvas", canvas, frame.app())
+                        .with((UserControl c) -> c.anchor().set(Anchor.CENTER))
+        );
+        toolbar = new ToolBar(frame.app()).with(t -> t.anchor().set(Anchor.TOP));
+        addJDiagramActionToggle("graphSelectNode", JDiagramSelectNodeAction.class);
+        addJDiagramActionToggle("graphAddCircle", JDiagramAddCircleAction.class);
+        addJDiagramActionToggle("graphAddEllipse", JDiagramAddEllipseAction.class);
+        addJDiagramActionToggle("graphAddSquare", JDiagramAddSquareAction.class);
+        addJDiagramActionToggle("graphAddRectangle", JDiagramAddRectangleAction.class);
+        addJDiagramActionToggle("graphAddSegment", JDiagramAddSegmentAction.class);
+        addJDiagramActionToggle("graphAddEdge", JDiagramAddEdgeAction.class);
+        addJDiagramActionToggle("graphAddText", JDiagramAddTextAction.class);
 
-        toolbar.tools().<Boolean>addToggle()
-                .bind(new DiagramActionModel(JDiagramSelectNodeAction.class, canvas))
-                .path("/Default/graphSelectNode")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddCircleAction.class, canvas))
-                .path("/Default/graphAddCircle")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children()
+                .addSeparator(Path.of("/Default/*"));
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddEllipseAction.class, canvas))
-                .path("/Default/graphAddEllipse")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children()
+                .add(new Button("graphClear", () -> getDiagram().clear()
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new UserControl("graphFillColor", new FillColorEditor(getCanvas()), app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new UserControl("graphLineColor", new LineColorEditor(getCanvas()), app()), Path.of("/Default/Line/*"));
+        toolbar.children()
+                .add(new UserControl("graphArrow", new ArrowEditor(getCanvas()), app()), Path.of("/Default/Arrows/*"));
+        toolbar.children()
+                .add(new UserControl("graphTextColor", new TextColorEditor(getCanvas()), app()), Path.of("/Default/Texts/*"));
+        toolbar.children()
+                .add(new Button("graphTextFont", ()->showFont(),app()), Path.of("/Default/Texts/*"));
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddSquareAction.class, canvas))
-                .path("/Default/graphAddSquare")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children().addSeparator(Path.of("/Default/before-z"));
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddRectangleAction.class, canvas))
-                .path("/Default/graphAddRectangle")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children()
+                .add(new Button("move-up", () -> getDiagram().moveToLayer(GridLayerMode.UP, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("move-top", () -> getDiagram().moveToLayer(GridLayerMode.TOP, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("move-down", () -> getDiagram().moveToLayer(GridLayerMode.DOWN, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("move-bottom", () -> getDiagram().moveToLayer(GridLayerMode.BOTTOM, true)
+                        , app()), Path.of("/Default/*"));
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddSegmentAction.class, canvas))
-                .path("/Default/graphAddSegment")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children().addSeparator(Path.of("/Default/before-align"));
+        toolbar.children()
+                .add(new Button("align-top", () -> getDiagram().align(GridAlignMode.TOP, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-bottom", () -> getDiagram().align(GridAlignMode.BOTTOM, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-left", () -> getDiagram().align(GridAlignMode.LEFT, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-right", () -> getDiagram().align(GridAlignMode.RIGHT, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-center-horizontally", () -> getDiagram().align(GridAlignMode.CENTER_HORIZONTAL, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-center-vertically", () -> getDiagram().align(GridAlignMode.CENTER_VERTICAL, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("distribute-horizontally", () -> getDiagram().distribute(GridDistributeMode.HORIZONTAL, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("distribute-vertically", () -> getDiagram().distribute(GridDistributeMode.VERTICAL, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-position", () -> getDiagram().snapToGrid(GridMagnetMode.POSITION, true)
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("align-bounds", () -> getDiagram().snapToGrid(GridMagnetMode.BOUNDS, true)
+                        , app()), Path.of("/Default/*"));
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddEdgeAction.class, canvas))
-                .path("/Default/graphAddEdge")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children().addSeparator(Path.of("/Default/before-zoom-separator"));
+        toolbar.children()
+                .add(new Button("zoom-in", () -> getDiagram().zoomIn()
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("zoom-out", () -> getDiagram().zoomOut()
+                        , app()), Path.of("/Default/*"));
+        toolbar.children()
+                .add(new Button("un-zoom", () -> getDiagram().unzoom()
+                        , app()), Path.of("/Default/*"));
 
-        toolbar.tools()
-                .addToggle()
-                .bind(new DiagramActionModel(JDiagramAddTextAction.class, canvas))
-                .path("/Default/graphAddText")
-                .group("Graph.Tool")
-                .buttonType(AppToolButtonType.BUTTON)
-                .tool();
+        toolbar.children().addSeparator(Path.of("/Default/before-grid"));
 
-        toolbar.tools()
-                .addSeparator("/Default/sep1");
-
-        toolbar.tools()
-                .addAction()
-                .bind(() -> {
-                    getDiagram().clear();
+        CheckBox t = new CheckBox("gridVisible", frame.app());
+        t.selected().bindTarget(b -> getDiagram().setGridVisible(b));
+        getDiagram().addDiagramChangeListener(new JDiagramListener() {
+            @Override
+            public void propertyChanged(JDiagram diagram, JDiagramGeometry geometry, String property, Object oldValue, Object newValue) {
+                if ("gridVisible".equals(property)) {
+                    t.selected().set((Boolean) newValue);
                 }
-                ).path(
-                        "/Default/graphClear").tool();
-
-        toolbar.tools()
-                .addCustomTool("/Default/Fill/graphFillColor", c -> new FillColorEditor(getCanvas()));
-
-        toolbar.tools()
-                .addCustomTool("/Default/Line/graphLineColor", c -> new LineColorEditor(getCanvas()));
-
-        toolbar.tools()
-                .addCustomTool("/Default/Arrows/graphArrow", c -> new ArrowEditor(getCanvas()));
-
-        toolbar.tools()
-                .addCustomTool("/Default/Texts/graphTextColor", c -> new TextColorEditor(getCanvas()));
-        toolbar.tools()
-                .addAction()
-                .bind(new FontEditor(getCanvas()))
-                .path("/Default/graphTextFont")
-                .tool();
-
-        //        AbstractSourceEditorPaneExtension.addActionList(
-        //                "font-size", createSizeActions(
-        //                        (c) -> {
-        //                            getCanvas().getConfig().setLineThikness(c);
-        //                        }
-        //                ), jtoolbar, null, win.app());
-        toolbar.tools().addSeparator("/Default/before-z");
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().moveToLayer(GridLayerMode.UP, true))
-                .path("/Default/move-up")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().moveToLayer(GridLayerMode.TOP, true))
-                .path("/Default/move-top")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().moveToLayer(GridLayerMode.DOWN, true))
-                .path("/Default/move-down")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().moveToLayer(GridLayerMode.BOTTOM, true))
-                .path("/Default/move-bottom")
-                .tool();
-        toolbar.tools().addSeparator("/Default/before-align");
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().align(GridAlignMode.TOP, true))
-                .path("/Default/align-top")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().align(GridAlignMode.BOTTOM, true))
-                .path("/Default/align-bottom")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().align(GridAlignMode.LEFT, true))
-                .path("/Default/align-left")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().align(GridAlignMode.RIGHT, true))
-                .path("/Default/align-right")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().align(GridAlignMode.CENTER_HORINZONTAL, true))
-                .path("/Default/align-center-horizontally")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().align(GridAlignMode.VCENTER, true))
-                .path("/Default/align-center-vertically")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().distribute(GridDistributeMode.HORIZONTAL, true))
-                .path("/Default/distribute-horizontally")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().distribute(GridDistributeMode.VERTICAL, true))
-                .path("/Default/distribute-vertically")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().snapeToGrid(GridMagnetMode.POSITION, true))
-                .path("/Default/align-position")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().snapeToGrid(GridMagnetMode.BOUNDS, true))
-                .path("/Default/align-bounds")
-                .tool();
-        toolbar.tools().addSeparator("/Default/before-zoom-separator");
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().zoomIn())
-                .path("/Default/zoom-in")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().zoomOut())
-                .path("/Default/zoom-out")
-                .tool();
-        toolbar.tools()
-                .addAction()
-                .bind((e) -> getDiagram().unzoom())
-                .path("/Default/un-zoom")
-                .tool();
-        toolbar.tools().addSeparator("/Default/before-grid");
-        toolbar.tools()
-                .addToggle().buttonType(AppToolButtonType.CHECK)
-                .bind(new AppToolToggleModel() {
-                    @Override
-                    public boolean isSelected() {
-                        return getDiagram().isGridVisible();
-                    }
-
-                    @Override
-                    public void setSelected(boolean b) {
-                        getDiagram().setGridVisible(b);
-                    }
-                })
-                .path("/Default/Grid/gridVisible")
-                .tool();
-        toolbar.tools()
-                .addCustomTool("/Default/Grid/gridSize",
-                        (c) -> {
-                            JSlider sl = new JSlider(5, 400);
-                            sl.setSnapToTicks(true);
-                            sl.setExtent(5);
-                            sl.setPaintTicks(true);
-                            sl.setValue(getDiagram().getGridX());
-                            getCanvas().addDiagramChangeListener(new JDiagramListener() {
-                                @Override
-                                public void propertyChanged(JDiagram diagram, JDiagramGeometry geometry, String property, Object oldValue, Object newValue) {
-                                    if (property.equals("gridX") || property.equals("gridY")) {
-                                        sl.setValue(getDiagram().getGridX());
-                                    }
-                                }
-                            });
-                            sl.addChangeListener((a) -> {
-                                getDiagram().setGridX(sl.getValue());;
-                                getDiagram().setGridY(sl.getValue());;
-                            });
-                            return sl;
+            }
+        });
+        toolbar.children().add(
+                new NumberSlider(
+                        "gridSize",int.class,app()
+                ).with((NumberSlider s)->{
+                    s.min().set(5);
+                    s.max().set(400);
+                    s.snapToTicks().set(true);
+                    s.step().set(5);
+                    s.value().set(getDiagram().getGridX());
+                    getCanvas().addDiagramChangeListener(new JDiagramListener() {
+                        @Override
+                        public void propertyChanged(JDiagram diagram, JDiagramGeometry geometry, String property, Object oldValue, Object newValue) {
+                            if (property.equals("gridX") || property.equals("gridY")) {
+                                s.value().set(getDiagram().getGridX());
+                            }
                         }
-                );
-        win.getNutsWorkspace().formats().element().setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
-        win.getNutsWorkspace().formats().element().setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
+                    });
+                    s.onChange((a) -> getDiagram().setGridX(a.newValue()));
+                }),Path.of("/Default/Grid/*")
+        );
+        frame.getNutsWorkspace().formats().element().setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
+        frame.getNutsWorkspace().formats().element().setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
+    }
+
+    private ToggleButton addJDiagramActionToggle(String id, Class clazz) {
+        ToggleButton t = new ToggleButton(id, "Graph.Tool", frame.app());
+        t.selected().bindTarget(b -> {
+            if (b) {
+                canvas.setAction(clazz);
+            }
+        });
+        canvas.addDiagramChangeListener(new JDiagramListener() {
+            @Override
+            public void propertyChanged(JDiagram diagram, JDiagramGeometry geometry, String property, Object oldValue, Object newValue) {
+                if ("action".equals(property)) {
+                    JDiagramEditorAction a = canvas.getAction();
+                    t.selected().set(
+                            clazz.isInstance(a)
+                    );
+                }
+            }
+        });
+        JDiagramEditorAction a = canvas.getAction();
+        t.selected().set(
+                clazz.isInstance(a)
+        );
+        toolbar.children().add(
+                t, Path.of("/Default/" + id)
+        );
+        return t;
     }
 
     public JDiagramCanvas getCanvas() {
@@ -366,7 +269,7 @@ public class JDiagramEditor extends JPanel implements PangaeaNoteEditorTypeCompo
         return canvas.getDiagram();
     }
 
-    public JComponent component() {
+    public AppComponent component() {
         return this;
     }
 
@@ -374,17 +277,23 @@ public class JDiagramEditor extends JPanel implements PangaeaNoteEditorTypeCompo
         //
     }
 
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         this.note = note;
         NutsElement cnt = note.getContent();
         PangaeaNoteDiaService service = (PangaeaNoteDiaService) win.service().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
         canvas.setDiagram(service.elementToDiagram(cnt));
-        repaint();
+    }
+
+    protected void updateNoteFromDiagram() {
+        if (note != null) {
+            JDiagramModel d = canvas.getDiagram().getModel();
+            PangaeaNoteDiaService service = (PangaeaNoteDiaService) frame.service().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
+            note.setContent(service.diagramToElement(d));
+        }
     }
 
     public void setEditable(boolean b) {
         getDiagram().setEditable(b);
-        repaint();
     }
 
     public boolean isEditable() {
@@ -395,11 +304,25 @@ public class JDiagramEditor extends JPanel implements PangaeaNoteEditorTypeCompo
         return compactMode;
     }
 
-    protected void updateNoteFromDiagram() {
-        if (note != null) {
-            JDiagramModel d = canvas.getDiagram().getModel();
-            PangaeaNoteDiaService service = (PangaeaNoteDiaService) win.service().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
-            note.setContent(service.diagramToElement(d));
+
+    public void showFont() {
+        int sc = canvas.getDiagram().getSelectionCount();
+        Font initialFont = null;
+        if (sc == 0) {
+            initialFont = Font.of(canvas.getDiagram().getConfigTextFont(),app());
+        } else {
+            initialFont = Font.of(canvas.getDiagram().getSelectedElements().get(0).getTextFont(),app());
+        }
+        FontChooser jfc = new FontChooser(app());
+        jfc.selection().set(initialFont);
+        if (jfc.showDialog(null)) {
+            AppFont font = jfc.selection().get();
+            if (sc == 0) {
+                canvas.getDiagram().setConfigTextFont(Font.format(font));
+            } else {
+                canvas.getDiagram().setSelectionTextFont(Font.format(font));
+            }
         }
     }
+
 }

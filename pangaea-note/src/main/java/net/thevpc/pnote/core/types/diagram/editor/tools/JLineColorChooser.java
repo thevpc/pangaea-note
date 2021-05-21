@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.core.types.diagram.editor.tools;
 
-import net.thevpc.common.swing.panel.DisabledPanel;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,11 +27,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import net.thevpc.common.swing.icon.EmptyIcon;
-import net.thevpc.common.swing.icon.StrokeIcon;
 import net.thevpc.diagram4j.render.strokes.SloppyStroke;
-import org.jdesktop.swingx.color.EyeDropperColorChooserPanel;
-import org.jdesktop.swingx.renderer.DefaultListRenderer;
 
 /**
  *
@@ -50,7 +45,7 @@ public class JLineColorChooser extends JPanel {
     public JLineColorChooser() {
         super(new BorderLayout());
         jColorChooser = new JColorChooser();
-        jColorChooser.addChooserPanel(new EyeDropperColorChooserPanel());
+//        jColorChooser.addChooserPanel(new EyeDropperColorChooserPanel());
         jColorChooser.getSelectionModel().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -96,22 +91,22 @@ public class JLineColorChooser extends JPanel {
                 fireSelectedStrokeChanged();
             }
         });
-        fillModes.setCellRenderer(new DefaultListRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                int w = 80;
-                int h = 20;
-                if (index == 0) {
-                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "No Line", index, isSelected, cellHasFocus);
-                    c.setIcon(new EmptyIcon(2, h));
-                    return c;
-                } else {
-                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
-                    c.setIcon(new StrokeIcon(getSelectedColor(), w, h, getStroke(index)));
-                    return c;
-                }
-            }
-        });
+//        fillModes.setCellRenderer(new DefaultListRenderer() {
+//            @Override
+//            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//                int w = 80;
+//                int h = 20;
+//                if (index == 0) {
+//                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "No Line", index, isSelected, cellHasFocus);
+//                    c.setIcon(new EmptyIcon(2, h));
+//                    return c;
+//                } else {
+//                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
+//                    c.setIcon(new StrokeIcon(getSelectedColor(), w, h, getStroke(index)));
+//                    return c;
+//                }
+//            }
+//        });
         fillModes.setSelectedIndex(0);
 //                disabledPanel.setEnabled(doFill.isSelected());
     }

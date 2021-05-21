@@ -5,11 +5,14 @@
  */
 package net.thevpc.pnote.core.types.file.editor;
 
-import java.awt.BorderLayout;
 import java.util.Objects;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.echo.BorderPane;
+import net.thevpc.echo.HorizontalPane;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerListener;
@@ -19,17 +22,17 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
  *
  * @author vpc
  */
-public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent {
+public class FileEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
     private URLViewer fileViewer;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
-    private PangaeaNoteWindow win;
+    private PangaeaNoteFrame frame;
 
-    public FileEditorTypeComponent(PangaeaNoteWindow win) {
-        super(new BorderLayout());
-        this.win = win;
-        fileViewer = new URLViewer(win);
+    public FileEditorTypeComponent(PangaeaNoteFrame frame) {
+        super(frame.app());
+        this.frame = frame;
+        fileViewer = new URLViewer(frame);
         fileViewer.addViewerListener(new URLViewerListener() {
             @Override
             public void onError(String path, Exception ex) {
@@ -39,8 +42,8 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
             public void onStartLoading(String path) {
                 if (currentNote != null) {
                     if (!Objects.equals(path, currentNote.getContent())) {
-                        currentNote.setContent(win.service().stringToElement(path));
-                        win.onDocumentChanged();
+                        currentNote.setContent(frame.service().stringToElement(path));
+                        frame.onDocumentChanged();
                     }
                 }
             }
@@ -48,9 +51,9 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
             @Override
             public void onSuccessfulLoading(String path) {
                 if (currentNote != null) {
-                    if (!Objects.equals(path, currentNote.getContent())) {
-                        currentNote.setContent(win.service().stringToElement(path));
-                        win.onDocumentChanged();
+                    if (!Objects.equals(path, currentNote.getContent().toString())) {
+                        currentNote.setContent(frame.service().stringToElement(path));
+                        frame.onDocumentChanged();
                     }
                 }
             }
@@ -58,15 +61,15 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
             @Override
             public void onReset() {
                 if (currentNote != null) {
-                    if (!Objects.equals("", currentNote.getContent())) {
-                        currentNote.setContent(win.service().stringToElement(""));
-                        win.onDocumentChanged();
+                    if (!Objects.equals("", currentNote.getContent().toString())) {
+                        currentNote.setContent(frame.service().stringToElement(""));
+                        frame.onDocumentChanged();
                     }
                 }
             }
         });
         
-        add(fileViewer, BorderLayout.CENTER);
+        children.add(fileViewer);
     }
 
     @Override
@@ -75,7 +78,7 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return this;
     }
 
@@ -88,7 +91,7 @@ public class FileEditorTypeComponent extends JPanel implements PangaeaNoteEditor
 //        fileViewer.setEditable(fileViewer.isSupportedEdit());
 //    }
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win) {
+    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         this.currentNote = note;
         String c = win.service().elementToString(note.getContent());
         fileViewer.load(c);

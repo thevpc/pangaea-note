@@ -4,7 +4,7 @@ import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.core.editors.SourceEditorService;
 import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.service.refactor.EmptySourceContentTypeReplacer;
 import net.thevpc.pnote.core.types.sourcecode.c.PangaeaNoteCService;
@@ -46,12 +46,12 @@ public class CorePangaeaNoteApp {
        }
 
        @Override
-       public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
+       public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteFrame win) {
            CorePangaeaNoteApp.this.uninstallNoteEditorTypeComponent(editorContentType, component, win);
        }
 
        @Override
-       public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
+       public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteFrame win) {
            CorePangaeaNoteApp.this.installNoteEditorTypeComponent(editorContentType, component, win);
        }
    };
@@ -89,10 +89,10 @@ public class CorePangaeaNoteApp {
         app.installViewer(new FolderViewer());
     }
 
-    public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
+    public void uninstallNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteFrame win) {
 
     }
 
-    public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteWindow win) {
+    public void installNoteEditorTypeComponent(String editorContentType, PangaeaNoteEditorTypeComponent component, PangaeaNoteFrame win) {
     }
 }

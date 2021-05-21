@@ -12,7 +12,7 @@ import net.thevpc.pnote.core.types.list.model.PangaeaNoteListModel;
 import net.thevpc.pnote.core.types.list.refactor.NoteListToAnythingContentTypeReplacer;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -65,7 +65,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
+    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
         return Arrays.asList(new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", ""/**
          * nothing here*
          */
@@ -85,7 +85,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
 
         app.installEditorService(new PangaeaNoteEditorService() {
             @Override
-            public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow win) {
+            public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
                 switch (name) {
                     case PangaeaNoteTypes.EDITOR_NOTE_LIST:
                         return new PangaeaNoteListEditorTypeComponent(compactMode, win);
@@ -101,7 +101,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public EditTypeComponent createEditPanel(PangaeaNoteWindow win) {
+    public EditTypeComponent createEditPanel(PangaeaNoteFrame win) {
         return new PangaeaNoteListSettingsComponent(win);
     }
 
@@ -111,7 +111,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
         return service().isEmptyContent(content);
     }
 

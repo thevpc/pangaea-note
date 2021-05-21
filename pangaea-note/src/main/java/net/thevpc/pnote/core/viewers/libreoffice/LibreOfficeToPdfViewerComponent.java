@@ -5,17 +5,18 @@
  */
 package net.thevpc.pnote.core.viewers.libreoffice;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.function.Consumer;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
+//import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import net.thevpc.common.iconset.util.IconUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+
+import net.thevpc.echo.BorderPane;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.UserControl;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 import net.thevpc.pnote.util.OtherUtils;
@@ -32,22 +33,22 @@ import org.jodconverter.office.LocalOfficeManager;
  */
 public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
 
-    PangaeaNoteWindow win;
+    PangaeaNoteFrame frame;
 //    JLabel label = new JLabel();
     private final URLViewer outer;
     private Runnable onSuccess;
     private Consumer<Exception> onError;
-    private ImageIcon current;
+//    private ImageIcon current;
     private float zoomFactor;
-    private JPanel panel;
+    private Panel panel;
     private static boolean alreadyInstalled = false;
 
-    public LibreOfficeToPdfViewerComponent(PangaeaNoteWindow win, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
+    public LibreOfficeToPdfViewerComponent(PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
         this.outer = outer;
-        this.win = win;
+        this.frame = frame;
         this.onSuccess = onSuccess;
         this.onError = onError;
-        panel = new JPanel(new BorderLayout());
+        panel = new BorderPane(frame.app());
         if (!alreadyInstalled) {
             try {
                 LocalOfficeManager.install();
@@ -59,63 +60,13 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
         }
     }
 
-    public void zoomIn() {
-        zoom((float) (zoomFactor * Math.pow(1.1, 1)));
-    }
-
-    public void zoomOut() {
-        zoom((float) (zoomFactor / Math.pow(1.1, 1)));
-    }
-
-    public void zoom(float zoom) {
-        if (current == null) {
-            return;
-        }
-        if (zoom != 1) {
-            if (zoom < 1) {
-                if (zoom * current.getImage().getHeight(null) <= 1
-                        || zoom * current.getImage().getWidth(null) <= 1) {
-                    return;
-                }
-            } else {
-                if (zoom * current.getImage().getHeight(null) >= 100
-                        || zoom * current.getImage().getWidth(null) >= 100) {
-                    return;
-                }
-            }
-        }
-        zoomFactor = zoom;
-        updateImage();
-    }
-
-    public void unzoom() {
-        zoom(1);
-    }
-
-//    public void bestZoom() {
-//        if (current == null) {
-//            return;
-//        }
-//        int h = current.getImage().getHeight(null);
-//        int w = current.getImage().getWidth(null);
-//        
-//        zoomFactor = 1;
-//        updateImage();
-//    }
-    ImageIcon resizedIcon() {
-        if (current == null) {
-            return null;
-        }
-        return new ImageIcon(IconUtils.getFactorScaledImage(current.getImage(), zoomFactor, zoomFactor));
-    }
-
     @Override
     public void setURL(String url) {
         File u = OtherUtils.asFile(url);
         if (u != null) {
             File targetFile = null;
             try {
-                targetFile = new File(win.service().appContext().getWorkspace().io().tmp().createTempFile("a.pdf"));
+                targetFile = new File(frame.service().appContext().getWorkspace().io().tmp().createTempFile("a.pdf"));
                 File sourceFile = u;
                 LocalConverter.builder()
                         .build()
@@ -133,8 +84,8 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
                         new org.icepdf.ri.common.MyAnnotationCallback(
                                 controller.getDocumentViewController()));
                 controller.openDocument(targetFile.getPath());
-                panel.removeAll();
-                panel.add(viewer);
+                panel.children().removeAll();
+                panel.children().add(new UserControl(null,viewer, frame.app()));
                 onSuccess.run();
                 return;
             } catch (Exception ex) {
@@ -143,35 +94,10 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
             }
         }
         onError.accept(new IllegalArgumentException("unsupported " + url));
-
-//        new Thread() {
-//            public void run() {
-//                try {
-//                    current = loadIcon(url, -1, -1);
-//                    updateImage();
-//                    if (onSuccess != null) {
-//                        onSuccess.run();
-//                    }
-//                } catch (Exception ex) {
-//                    current = null;
-//                    updateImage();
-//                    if (onError != null) {
-//                        onError.accept(ex);
-//                    }
-//                }
-//            }
-//        }.start();
-    }
-
-    private void updateImage() {
-//        SwingUtilities3.invokeLater(() -> {
-//            label.setIcon(resizedIcon());
-//            label.updateUI();
-//        });
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return panel;
     }
 
@@ -182,35 +108,6 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
 
     @Override
     public void save() {
-    }
-
-    public static ImageIcon loadIcon(String url, int width, int height) {
-        URL u = OtherUtils.asURL(url);
-        if (u == null) {
-            File f = OtherUtils.asFile(url);
-            if (f != null) {
-                try {
-                    u = f.toURI().toURL();
-                } catch (MalformedURLException ex) {
-                    throw new IllegalArgumentException("not an image : " + url);
-                }
-            }
-        }
-        if (u == null) {
-            throw new IllegalArgumentException("not an image : " + url);
-        }
-        return IconUtils.loadFixedScaleImageIcon(u, width, height);
-
-    }
-
-    public static boolean isSvgImage(String name) {
-        String suffix = OtherUtils.getFileExtension(name).toLowerCase();
-        return suffix.toLowerCase().equals("svg");
-    }
-
-    public static boolean isImage(String name) {
-        String suffix = OtherUtils.getFileExtension(name).toLowerCase();
-        return suffix.equals("png") || suffix.equals("jpg") || suffix.equals("jpeg") || suffix.equals("svg");
     }
 
     @Override

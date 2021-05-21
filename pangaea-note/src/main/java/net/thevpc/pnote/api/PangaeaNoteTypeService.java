@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.text.EditorKit;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.PangaeaNoteService;
@@ -35,15 +35,15 @@ public interface PangaeaNoteTypeService extends PangaeaNoteTypeServiceBase {
 
     public String normalizeEditorType(String editorType);
 
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note);
+    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame);
 
-    default PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow win) {
+    default PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
         return null;
     }
 
     NutsElement createDefaultContent();
 
-    boolean isEmptyContent(NutsElement content);
+    boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame);
 
     default EditorKit getSourceEditorKit(){
         return null;

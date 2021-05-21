@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import net.thevpc.common.swing.color.ColorUtils;
 import net.thevpc.diagram4j.JDiagramCanvas;
 import net.thevpc.diagram4j.model.JDiagram;
 import net.thevpc.diagram4j.model.JDiagramListener;
@@ -28,18 +27,18 @@ public class FillColorEditor extends JPaintChooser {
         this.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                System.out.println("update chooser : " + ColorUtils.formatPaint(jc.getSelectedPaint()) + " = " + jc.getSelectedPaint());
-                if (canvas.getDiagram().getSelectionCount() > 0) {
-                    canvas.getDiagram().setSelectionFillColor(ColorUtils.formatPaint(jc.getSelectedPaint())
-                    );
-                } else {
-                    canvas.getDiagram().setConfigFillColor(ColorUtils.formatPaint(jc.getSelectedPaint())
-                    );
-                }
+//                System.out.println("update chooser : " + ColorUtils.formatPaint(jc.getSelectedPaint()) + " = " + jc.getSelectedPaint());
+//                if (canvas.getDiagram().getSelectionCount() > 0) {
+//                    canvas.getDiagram().setSelectionFillColor(ColorUtils.formatPaint(jc.getSelectedPaint())
+//                    );
+//                } else {
+//                    canvas.getDiagram().setConfigFillColor(ColorUtils.formatPaint(jc.getSelectedPaint())
+//                    );
+//                }
 
             }
         });
-        this.setSelectedPaint(ColorUtils.parsePaint(canvas.getDiagram().getConfig().getFillColor()));
+//        this.setSelectedPaint(ColorUtils.parsePaint(canvas.getDiagram().getConfig().getFillColor()));
         canvas.addDiagramChangeListener(new JDiagramListener() {
 
             @Override
@@ -55,9 +54,9 @@ public class FillColorEditor extends JPaintChooser {
                 List<JDiagramShape> se = canvas.getDiagram().getSelectedShapes();
                 if (se.size() == 1) {
                     JDiagramShape de = se.get(0);
-                    setSelectedPaint(ColorUtils.parsePaint(de.getFillColor()));
+//                    setSelectedPaint(ColorUtils.parsePaint(de.getFillColor()));
                 } else if (se.size() == 0) {
-                    setSelectedPaint(ColorUtils.parsePaint(canvas.getDiagram().getConfigFillColor()));
+//                    setSelectedPaint(ColorUtils.parsePaint(canvas.getDiagram().getConfigFillColor()));
                 }
             }
         });

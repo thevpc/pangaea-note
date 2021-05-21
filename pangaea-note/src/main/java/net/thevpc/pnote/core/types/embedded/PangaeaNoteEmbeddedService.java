@@ -11,7 +11,7 @@ import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
@@ -56,7 +56,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
     public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
         this.service = service;
         app.installEditorService(new PangaeaNoteEditorService() {
-            public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow win) {
+            public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
                 switch (name) {
                     case PangaeaNoteTypes.EDITOR_PANGAEA_NOTE_DOCUMENT:
                         return new PangaeaNoteDocumentEditorTypeComponent(compactMode, win);
@@ -76,14 +76,14 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
+    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
         return Arrays.asList(new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", getContentValueAsPath(note.getContent())).iterator()
         );
     }
 
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
         return service.isEmptyContent(content);
     }
 

@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -28,12 +28,12 @@ public class ImageViewer implements PangaeaNoteFileViewerManager {
     );
 
     @Override
-    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteWindow win) {
+    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteFrame win) {
         return SUPPORTED_EXTENSIONS.contains(extension) ? 2 : -1;
     }
 
     @Override
-    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteWindow win) {
+    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
         Runnable onSuccess = () -> viewer.fireSuccessfulLoading(path);
         Consumer<Exception> onError = viewer::fireError;
 

@@ -6,6 +6,8 @@
 package net.thevpc.pnote.api;
 
 import javax.swing.JComponent;
+
+import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
@@ -13,7 +15,7 @@ import net.thevpc.pnote.api.model.PangaeaNote;
  * @author vpc
  */
 public interface EditTypeComponent {
-    JComponent component();
+    AppComponent component();
     void loadFrom(PangaeaNote note);
     void loadTo(PangaeaNote note);
 }

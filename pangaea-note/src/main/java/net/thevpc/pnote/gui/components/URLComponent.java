@@ -26,7 +26,7 @@ public class URLComponent extends JPanel implements FormComponent {
     public URLComponent() {
         super(new BorderLayout());
         add(jtf);
-        GuiHelper.installUndoRedoManager(jtf);
+//        GuiHelper.installUndoRedoManager(jtf);
     }
 
     @Override

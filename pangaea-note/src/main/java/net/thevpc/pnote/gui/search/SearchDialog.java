@@ -5,18 +5,14 @@
  */
 package net.thevpc.pnote.gui.search;
 
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
 import net.thevpc.pnote.service.search.SearchQuery;
-import java.awt.Dimension;
+
 import java.awt.HeadlessException;
-import java.util.function.Consumer;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import net.thevpc.common.swing.NamedValue;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+//import net.thevpc.common.swing.NamedValue;
+//import net.thevpc.common.swing.layout.GridBagLayoutSupport;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
@@ -24,63 +20,46 @@ import net.thevpc.pnote.gui.PangaeaNoteWindow;
  */
 public class SearchDialog {
 
-    private JPanel panel;
-    private PangaeaNoteWindow win;
-    private JLabel matchModeLabel;
+    private Panel panel;
+    private PangaeaNoteFrame frame;
+    private Label matchModeLabel;
 
-    private JComboBox queryEditor;
-    private JCheckBox matchCaseEditor;
-    private JCheckBox wholeWordEditor;
-    private JComboBox modeEditor;
-//    private JRadioButton literalStrategyEditor;
-//    private JRadioButton simpleStrategyEditor;
-//    private JRadioButton regexpStrategyEditor;
+    private ComboBox queryEditor;
+    private CheckBox matchCaseEditor;
+    private CheckBox wholeWordEditor;
+    private ComboBox modeEditor;
 
     private boolean ok = false;
-    private String titleId = "Message.search";
+    private Str titleId = Str.i18n("Message.search");
     private Object[] params = {};
 
-    public SearchDialog(PangaeaNoteWindow win) throws HeadlessException {
-        this.win = win;
-        this.matchCaseEditor = new JCheckBox(win.app().i18n().getString("Message.matchCase"));
-        this.wholeWordEditor = new JCheckBox(win.app().i18n().getString("Message.wholeWord"));
-        this.matchModeLabel = new JLabel(win.app().i18n().getString("Message.match"));
-        DefaultComboBoxModel<Object> cm = new DefaultComboBoxModel<>();
-        cm.addElement(new NamedValue(SearchQuery.Strategy.LITERAL.toString(), win.app().i18n().getString("Message.searchLiteralStrategy")));
-        cm.addElement(new NamedValue(SearchQuery.Strategy.SIMPLE.toString(), win.app().i18n().getString("Message.searchSimpleStrategy")));
-        cm.addElement(new NamedValue(SearchQuery.Strategy.REGEXP.toString(), win.app().i18n().getString("Message.searchRegexpStrategy")));
+    public SearchDialog(PangaeaNoteFrame frame) throws HeadlessException {
+        this.frame = frame;
+        this.matchCaseEditor = new CheckBox(Str.i18n("Message.matchCase"),frame.app());
+        this.wholeWordEditor = new CheckBox(Str.i18n("Message.wholeWord"),frame.app());
+        this.matchModeLabel = new Label(Str.i18n("Message.match"),frame.app());
+        ComboBox<SimpleItem> modeEditor=new ComboBox<>(SimpleItem.class, frame.app());
+        modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.LITERAL.toString(), frame.app().i18n().getString("Message.searchLiteralStrategy")));
+        modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.SIMPLE.toString(), frame.app().i18n().getString("Message.searchSimpleStrategy")));
+        modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.REGEXP.toString(), frame.app().i18n().getString("Message.searchRegexpStrategy")));
 
-        modeEditor = new JComboBox<Object>(cm);
-        modeEditor.setSelectedIndex(0);
-//        this.literalStrategyEditor = new JRadioButton(win.app().i18n().getString("Message.searchLiteralStrategy"));
-//        this.simpleStrategyEditor = new JRadioButton(win.app().i18n().getString("Message.searchSimpleStrategy"));
-//        this.regexpStrategyEditor = new JRadioButton(win.app().i18n().getString("Message.searchRegexpStrategy"));
-//        this.literalStrategyEditor.setSelected(true);
-//        ButtonGroup bg = new ButtonGroup();
-//        bg.add(literalStrategyEditor);
-//        bg.add(simpleStrategyEditor);
-//        bg.add(regexpStrategyEditor);
+        modeEditor.selection().indices().set(0);
 
-        queryEditor = new JComboBox(new DefaultComboBoxModel(win.getRecentSearchQueries().toArray()));
-        queryEditor.setEditable(true);
-        queryEditor.setMinimumSize(new Dimension(50, 30));
-        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(SearchDialog.class.getResource(
-                "/net/thevpc/pnote/forms/SearchDialog.gbl-form"
-        ));
-        gbs.bind("label", new JLabel(win.app().i18n().getString("Message.searchLabel")));
-        gbs.bind("textEditor", queryEditor);
-        gbs.bind("matchCase", matchCaseEditor);
-        gbs.bind("wholeWord", wholeWordEditor);
-        gbs.bind("matchModeLabel", matchModeLabel);
-        gbs.bind("matchMode", modeEditor);
-        
-        
-//        gbs.bind("simpleStrategy", simpleStrategyEditor);
-//        gbs.bind("regexpStrategy", regexpStrategyEditor);
-//        gbs.bind("literalStrategy", literalStrategyEditor);
-
-        panel = (gbs.apply(new JPanel()));
-//        setPreferredSize(new Dimension(400, 250));
+        queryEditor = new ComboBox<String>(String.class, frame.app());
+        queryEditor.values().setAll(
+                frame.getRecentSearchQueries().toArray(new String[0])
+        );
+        queryEditor.editable().set(true);
+//        queryEditor.setMinimumSize(new Dimension(50, 30));
+        panel=new VerticalPane(frame.app());
+        panel.children().addAll(
+                new Label(Str.i18n("Message.searchLabel"),frame.app()),
+                queryEditor,
+                matchCaseEditor,
+                wholeWordEditor,
+                matchModeLabel,
+                modeEditor
+        );
     }
 
     protected void install() {
@@ -99,23 +78,22 @@ public class SearchDialog {
         this.ok = false;
     }
 
-    public String getTitleId() {
+    public Str getTitleId() {
         return titleId;
     }
 
-    public SearchDialog setTitleId(String titleId, Object... params) {
+    public SearchDialog setTitle(Str titleId, Object... params) {
         this.titleId = titleId;
         this.params = params;
         return this;
     }
 
     public SearchQuery showDialog() {
-        Consumer<Exception> exHandler = win::showError;
         while (true) {
             install();
             this.ok = false;
-            win.app().newDialog()
-                    .setTitleId(titleId, params)
+            new Alert(frame.app())
+                    .setTitle(titleId, params)
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {
@@ -127,28 +105,28 @@ public class SearchDialog {
                                 a.getDialog().closeDialog();
                             }
                     )
-                    .showDialog();
+                    .showDialog(null);
             try {
                 return get();
             } catch (Exception ex) {
-                exHandler.accept(ex);
+                frame.app().errors().add(ex);
             }
         }
     }
 
     public SearchQuery get() {
         if (ok) {
-            String s = (String) queryEditor.getSelectedItem();
-            if (s != null && s.length() > 0) {
-                SearchQuery.Strategy mm = SearchQuery.Strategy.valueOf((String) modeEditor.getSelectedItem());
-                SearchQuery q = new SearchQuery(
-                        s,
-                        matchCaseEditor.isSelected(),
-                        wholeWordEditor.isSelected(),
-                        mm
-                );
-                return q;
-            }
+//            String s = (String) queryEditor.getSelectedItem();
+//            if (s != null && s.length() > 0) {
+//                SearchQuery.Strategy mm = SearchQuery.Strategy.valueOf((String) modeEditor.getSelectedItem());
+//                SearchQuery q = new SearchQuery(
+//                        s,
+//                        matchCaseEditor.isSelected(),
+//                        wholeWordEditor.isSelected(),
+//                        mm
+//                );
+//                return q;
+//            }
         }
         return null;
     }
@@ -157,7 +135,7 @@ public class SearchDialog {
         if (selectedText == null) {
             selectedText = "";
         }
-        queryEditor.setSelectedItem(selectedText);
+//        queryEditor.setSelectedItem(selectedText);
     }
 
 }

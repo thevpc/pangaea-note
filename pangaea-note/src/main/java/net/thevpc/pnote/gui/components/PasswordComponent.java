@@ -5,105 +5,68 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import net.thevpc.pnote.gui.components.FormComponent;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import javax.swing.JCheckBox;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JPopupMenu;
-import javax.swing.event.DocumentEvent;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.gui.util.AnyDocumentListener;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
  * @author vpc
  */
-public class PasswordComponent extends JPanel implements FormComponent {
+public class PasswordComponent extends HorizontalPane implements FormComponent {
 
-    private JPasswordField pf = new JPasswordField();
-    private JCheckBox showPassword;
-    private AnyDocumentListener listener;
-    private SwingApplicationsUtils.Tracker tracker;
+    private PasswordField pf;
+    private Runnable callback;
 
-    public PasswordComponent(PangaeaNoteWindow win) {
-        tracker = new SwingApplicationsUtils.Tracker(win.app());
-        showPassword = new JCheckBox("Message.showPassword");
-        showPassword.addActionListener((e)
-                -> pf.setEchoChar(showPassword.isSelected() ? '\0' : '*')
-        );
-        new GridBagLayoutSupport("[pwd-===][check] ; insets(2)")
-                .bind("pwd", pf)
-                .bind("check", showPassword)
-                .apply(this);
-        JPopupMenu p = new JPopupMenu();
-        p.add(new JMenuItem(
-                tracker.registerStandardAction(
-                        () -> {
-                            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-                            try {
-                                clip.setContents(new StringSelection(new String(pf.getPassword())), null);
-                            } catch (Exception ex) {
-                                //ex.printStackTrace();
-                            }
-                        }, "copy"
-                )));
-        pf.setComponentPopupMenu(p);
+    public PasswordComponent(PangaeaNoteFrame win) {
+        super(win.app());
+        pf=new PasswordField(win.app());
+        ContextMenu p = new ContextMenu(app());
+        pf.contextMenu().set(p);
+        p.children().add(new Button("copy",()-> app().clipboard().putString(pf.text().get().value()),app()));
+        p.children().add(new Button("paste",()-> pf.text().set(Str.of(app().clipboard().getString())),app()));
+        pf.text().onChange(x->textChanged());
+        children().addAll(pf);
+    }
+
+    private void textChanged() {
+        if(callback!=null){
+            callback.run();
+        }
     }
 
     @Override
     public void install(Application app) {
-        showPassword.setText(app.i18n().getString("Message.showPassword"));
+//        showPassword.setText(app.i18n().getString("Message.showPassword"));
     }
 
-    public JPasswordField getPasswordField() {
-        return pf;
-    }
 
     @Override
     public void uninstall() {
-        if (listener != null) {
-            pf.getDocument().removeDocumentListener(listener);
-            listener = null;
-        }
-        tracker.unregisterAll();
     }
 
     @Override
     public String getContentString() {
-        return new String(pf.getPassword());
+        return new String(pf.text().get().value());
     }
 
     @Override
     public void setContentString(String s) {
-        pf.setText(s);
+        pf.text().set(Str.of(s));
     }
 
     @Override
     public void setFormChangeListener(Runnable callback) {
-        if (listener == null) {
-            listener = new AnyDocumentListener() {
-                @Override
-                public void anyChange(DocumentEvent e) {
-                    callback.run();
-                }
-            };
-            pf.getDocument().addDocumentListener(listener);
-        }
+        this.callback=callback;
     }
 
     public void setEditable(boolean b) {
-        pf.setEditable(b);
+        pf.editable().set(b);
     }
 
     public boolean isEditable() {
-        return pf.isEditable();
+        return pf.editable().get();
     }
 
 }

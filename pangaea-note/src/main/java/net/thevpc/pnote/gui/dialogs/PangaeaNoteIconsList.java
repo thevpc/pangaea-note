@@ -5,114 +5,107 @@
  */
 package net.thevpc.pnote.gui.dialogs;
 
-import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.Icon;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import net.thevpc.common.iconset.IconSetConfig;
-import net.thevpc.common.iconset.IconSets;
-import net.thevpc.common.swing.NamedValue;
-import net.thevpc.common.swing.icon.EmptyIcon;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.AppImage;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.echo.iconset.IconSetConfig;
+import net.thevpc.echo.iconset.IconSets;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
- *
  * @author vpc
  */
-public class PangaeaNoteIconsList extends JPanel {
+public class PangaeaNoteIconsList extends BorderPane {
 
-    private PangaeaNoteWindow win;
-    private DefaultListModel dmodel;
-    private JList list;
+    private PangaeaNoteFrame frame;
+    private ChoiceList<String> list;
 
-    public PangaeaNoteIconsList(PangaeaNoteWindow win) {
-        this.win = win;
-        dmodel = new DefaultListModel();
-        dmodel.addElement(new NamedValue(false, "", win.app().i18n().getString("Icon.none"), null, 0));
-        for (String icon : win.service().getAllIcons()) {
-            dmodel.addElement(createIconValue(icon));
+    public PangaeaNoteIconsList(PangaeaNoteFrame frame) {
+        super(frame.app());
+        this.title().set(Str.i18n("PangaeaNoteListSettingsComponent.iconsLabel"));
+        this.frame = frame;
+        list=new ChoiceList<>(String.class, frame.app());
+        list.values().add("");
+        for (String icon : frame.service().getAllIcons()) {
+            list.values().add(icon);
         }
-        list = new JList(dmodel);
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component e = super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
-                NamedValue nv = (NamedValue) value;
-                String icon = nv.getIcon();
-                IconSets iconSets = win.app().iconSets();
-                IconSetConfig c = iconSets.config().get();
-                setIcon(PangaeaNoteIconsList.this.getIcon(nv.getIcon()));
-                return e;
-            }
-
+        list.itemRenderer().set(context -> {
+            context.setText("");
+            context.setIcon(getIcon(context.getValue()));
+//            context.setValue(getIcon(context.getValue()));
+            context.renderDefault();
         });
-        add(new JScrollPane(list));
+        list.parentConstraints().addAll(Layout.FLOW);
+        children().add(new ScrollPane(list));
+        list().selection().onChange(ee -> {
+            smallIcon().set(getSelectedIcon());
+        });
+
     }
 
-    public void addChangeListener(ChangeListener changeListener) {
-        list.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                changeListener.stateChanged(new ChangeEvent(PangaeaNoteIconsList.this));
-            }
-        });
+//    public void addChangeListener(ChangeListener changeListener) {
+//        list.addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e) {
+//                changeListener.stateChanged(new ChangeEvent(PangaeaNoteIconsList.this));
+//            }
+//        });
+//    }
+
+    public ChoiceList<String> list() {
+        return list;
+    }
+
+    public AppImage getSelectedIcon() {
+        return getIcon(getSelectedIconId());
     }
 
     public void setSelectedIcon(String s) {
         if (s == null) {
             s = "";
         }
-        for (int i = 0; i < dmodel.getSize(); i++) {
-            NamedValue nv = (NamedValue) dmodel.get(i);
-            String id = nv.getId();
-            if (id == null) {
-                id = "";
-            }
-            if (id.equals(s)) {
-                list.setSelectedIndex(i);
-                return;
-            }
-        }
+        list.selection().set(s);
+//        for (int i = 0; i < dmodel.getSize(); i++) {
+//            SimpleItem nv = (SimpleItem) dmodel.get(i);
+//            String id = nv.getId();
+//            if (id == null) {
+//                id = "";
+//            }
+//            if (id.equals(s)) {
+//                list.setSelectedIndex(i);
+//                return;
+//            }
+//        }
     }
 
-    public Icon getSelectedIcon() {
-        return getIcon(getSelectedIconId());
-    }
-
-    public Icon getIcon(String icon) {
-        IconSets iconSets = win.app().iconSets();
+    public AppImage getIcon(String icon) {
+        IconSets iconSets = frame.app().iconSets();
         IconSetConfig c = iconSets.config().get();
-        return ((icon == null || icon.length() == 0) ? new EmptyIcon(c.getWidth(), c.getHeight())
-                : iconSets.icon(icon).get());
+        return ((icon == null || icon.length() == 0) ? new Image(c.getWidth(), c.getHeight(), null, app())
+                : iconSets.icon(icon).get() == null ? null :
+                iconSets.icon(icon).get()
+        );
     }
 
     public String getSelectedIconId() {
-        NamedValue a = (NamedValue) list.getSelectedValue();
-        return a == null ? null : a.getId();
+        return list.selection().get();
     }
 
-    protected NamedValue createIconValue(String id) {
-        if (id.startsWith("content-type.")) {
-            return new NamedValue(false, id,
-                    win.app().i18n().getString(id),
-                    id, 0);
-        }
-        if (id.startsWith("datatype.")) {
-            return new NamedValue(false, id,
-                    win.app().i18n().getString(id),
-                    id, 0);
-        }
-        return new NamedValue(false, id,
-                win.app().i18n().getString("Icon." + id),
-                id, 0);
-    }
+//    protected SimpleItem createIconValue(String id) {
+//        if (id.startsWith("content-type.")) {
+//            return new SimpleItem(false, id,
+//                    win.app().i18n().getString(id),
+//                    id, 0);
+//        }
+//        if (id.startsWith("datatype.")) {
+//            return new SimpleItem(false, id,
+//                    win.app().i18n().getString(id),
+//                    id, 0);
+//        }
+//        return new SimpleItem(false, id,
+//                win.app().i18n().getString("Icon." + id),
+//                id, 0);
+//    }
 
 }

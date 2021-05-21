@@ -5,11 +5,14 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.unsupported;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.Application;
+import net.thevpc.echo.BorderPane;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.Label;
+import net.thevpc.echo.Panel;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 
@@ -17,11 +20,13 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
  *
  * @author vpc
  */
-public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNoteEditorTypeComponent{
-    JLabel notSupported = new JLabel("Not supported");
+public class UnsupportedEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent{
+    Label notSupported;
 
-    public UnsupportedEditorTypeComponent() {
-        add(notSupported);
+    public UnsupportedEditorTypeComponent(Application app) {
+        super(app);
+        notSupported = new Label(Str.i18n("Message.NotSupported"),app);
+        children().add(notSupported);
     }
 
     @Override
@@ -30,7 +35,7 @@ public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNot
     }
 
     @Override
-    public JComponent component() {
+    public AppComponent component() {
         return this;
     }
 
@@ -39,8 +44,8 @@ public class UnsupportedEditorTypeComponent extends JPanel implements PangaeaNot
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note,PangaeaNoteWindow win) {
-        notSupported.setText("Not supported "+note.getContentType());
+    public void setNote(PangaeaNoteExt note,PangaeaNoteFrame win) {
+        notSupported.text().set(Str.of("Not supported "+note.getContentType()));
     }
 
     @Override

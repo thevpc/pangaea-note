@@ -5,79 +5,67 @@
  */
 package net.thevpc.pnote.gui.search;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.HighlightType;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import net.thevpc.common.swing.SwingUtilities3;
-import net.thevpc.echo.AppToolWindow;
-import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
- *
  * @author vpc
  */
-public class SearchResultPanel extends JPanel {
+public class SearchResultPanel extends BorderPane {
 
-    private PangaeaNoteWindow win;
-    private AppToolWindow resultPanelTool;
+    private PangaeaNoteFrame frame;
     private SearchResultPanelItem item;
 
-    public SearchResultPanel(PangaeaNoteWindow win) {
-        super(new BorderLayout());
-        this.win = win;
-        item = new SearchResultPanelItemImpl(win);
-        add((JComponent) item);
+    public SearchResultPanel(PangaeaNoteFrame frame) {
+        super("SearchResults", frame.app());
+        title().set(Str.i18n("Tools.SearchResults"));
+        this.frame = frame;
+        item = new SearchResultPanelItemImpl(frame);
+        children().add((AppComponent) item);
     }
 
     public SearchResultPanelItem createNewPanel() {
         return item;
     }
 
-    public AppToolWindow getResultPanelTool() {
-        return resultPanelTool;
-    }
-
-    public void setResultPanelTool(AppToolWindow resultPanelTool) {
-        this.resultPanelTool = resultPanelTool;
-    }
-
     public void showResults() {
-        resultPanelTool.active().set(true);
+        active().set(true);
     }
 
-    public static interface SearchResultPanelItem {
+    public interface SearchResultPanelItem {
 
         void appendResult(StringSearchResult<PangaeaNoteExt> x);
 
         boolean isSearching();
 
-        void resetResults();
-
         void setSearching(boolean b);
+
+        void resetResults();
 
         void setSearchProgress(double progressOrNaN, String text);
 
     }
 
-    public static class SearchResultPanelItemImpl extends JPanel implements SearchResultPanelItem {
+    public static class SearchResultPanelItemImpl extends BorderPane implements SearchResultPanelItem {
 
         private boolean searching;
-        private PangaeaNoteWindow win;
+        private PangaeaNoteFrame frame;
         private JTable table = new JTable();
-        private JProgressBar bar = new JProgressBar();
+        private ProgressBar<Integer> bar;
         private DefaultTableModel model = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -85,18 +73,20 @@ public class SearchResultPanel extends JPanel {
             }
         };
 
-        public SearchResultPanelItemImpl(PangaeaNoteWindow win) {
-            super(new BorderLayout());
-            this.win = win;
+        public SearchResultPanelItemImpl(PangaeaNoteFrame frame) {
+            super(frame.app());
+            this.frame = frame;
+            bar = new ProgressBar<>(Integer.class, app())
+                    .with(u -> u.anchor().set(Anchor.BOTTOM));
             model.setColumnIdentifiers(new Object[]{
-                win.app().i18n().getString("Message.search.position"),
-                win.app().i18n().getString("Message.search.note"),
-                win.app().i18n().getString("Message.search.matchingText"),});
-            win.app().i18n().locale().listeners().add((x) -> {
+                    frame.app().i18n().getString("Message.search.position"),
+                    frame.app().i18n().getString("Message.search.note"),
+                    frame.app().i18n().getString("Message.search.matchingText"),});
+            frame.app().i18n().locale().onChange((x) -> {
                 model.setColumnIdentifiers(new Object[]{
-                    win.app().i18n().getString("Message.search.position"),
-                    win.app().i18n().getString("Message.search.note"),
-                    win.app().i18n().getString("Message.search.matchingText"),});
+                        frame.app().i18n().getString("Message.search.position"),
+                        frame.app().i18n().getString("Message.search.note"),
+                        frame.app().i18n().getString("Message.search.matchingText"),});
             });
             table.setModel(model);
             table.addMouseListener(new MouseAdapter() {
@@ -108,8 +98,8 @@ public class SearchResultPanel extends JPanel {
                         if (r >= 0) {
                             StringSearchResult<PangaeaNoteExt> searchResult = (StringSearchResult<PangaeaNoteExt>) table.getModel().getValueAt(r, 2);
                             PangaeaNoteExt n = searchResult.getObject();
-                            win.tree().setSelectedNote(n);
-                            PangaeaNoteEditorTypeComponent comp = win.noteEditor().editorComponent();
+                            frame.treePane().setSelectedNote(n);
+                            PangaeaNoteEditorTypeComponent comp = frame.noteEditor().editorComponent();
                             comp.removeHighlights(HighlightType.SEARCH_MAIN);
                             comp.removeHighlights(HighlightType.SEARCH);
                             for (StringSearchResult<PangaeaNoteExt> rr : findResults(n)) {
@@ -128,13 +118,14 @@ public class SearchResultPanel extends JPanel {
             });
             table.getColumnModel().getColumn(0).setPreferredWidth(27);
             table.getColumnModel().getColumn(1).setPreferredWidth(120);
-            JScrollPane scroll = new JScrollPane(table);
-            scroll.setPreferredSize(new Dimension(50, 50));
-            add(scroll);
-            add(bar, BorderLayout.SOUTH);
-            bar.setMinimum(0);
-            bar.setMaximum(100);
-            bar.setValue(0);
+            UserControl tabControl = new UserControl("JTable", table, app());
+            ScrollPane scroll = new ScrollPane(tabControl);
+            scroll.prefSize().set(new Dimension(50, 50));
+            children().add(scroll);
+            children().add(
+                    bar
+
+            );
         }
 
         public List<StringSearchResult<PangaeaNoteExt>> findResults(PangaeaNoteExt n) {
@@ -148,50 +139,49 @@ public class SearchResultPanel extends JPanel {
             return ok;
         }
 
+        public void appendResult(StringSearchResult<PangaeaNoteExt> x) {
+            frame.app().runUI(() -> {
+                model.addRow(new Object[]{
+                        String.valueOf(x.getRow()) + ":" + String.valueOf(x.getColumn()),
+                        x.getObject().getName(),
+                        x
+                });
+            });
+        }
+
+        public boolean isSearching() {
+            return searching;
+        }
+
+        public void setSearching(boolean b) {
+            bar.indeterminate().set(b);
+            bar.visible().set(b);
+            bar.textPainted().set(b);
+            this.searching = b;
+        }
+
         public void resetResults() {
-            bar.setIndeterminate(false);
-            bar.setVisible(false);
-            SwingUtilities3.invokeLater(() -> {
+            bar.indeterminate().set(false);
+            bar.visible().set(false);
+            frame.app().runUI(() -> {
                 while (model.getRowCount() > 0) {
                     model.removeRow(0);
                 }
             });
         }
 
-        public void appendResult(StringSearchResult<PangaeaNoteExt> x) {
-            SwingUtilities3.invokeLater(() -> {
-                model.addRow(new Object[]{
-                    String.valueOf(x.getRow()) + ":" + String.valueOf(x.getColumn()),
-                    x.getObject().getName(),
-                    x
-                });
-            });
-        }
-
         public void setSearchProgress(double progressOrNaN, String text) {
             if (Double.isNaN(progressOrNaN) || progressOrNaN < 0 || progressOrNaN > 1) {
-                bar.setIndeterminate(true);
-                bar.setString(text);
-                bar.setStringPainted(true);
+                bar.indeterminate().set(true);
+                bar.text().set(Str.of(text));
+                bar.textPainted().set(true);
             } else {
-                bar.setStringPainted(true);
-                bar.setString(null);
-                bar.setValue((int) (progressOrNaN * 100));
-                bar.setIndeterminate(true);
-                bar.setIndeterminate(true);
+                bar.textPainted().set(true);
+                bar.text().set(null);
+                bar.value().set((int) (progressOrNaN * 100));
+                bar.indeterminate().set(false);
             }
 
-        }
-
-        public void setSearching(boolean b) {
-            bar.setIndeterminate(b);
-            bar.setVisible(b);
-            bar.setStringPainted(b);
-            this.searching = b;
-        }
-
-        public boolean isSearching() {
-            return searching;
         }
     }
 }

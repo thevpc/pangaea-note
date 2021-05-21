@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.swing.JColorChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import net.thevpc.common.swing.color.ColorUtils;
 import net.thevpc.diagram4j.JDiagramCanvas;
 import net.thevpc.diagram4j.model.JDiagram;
 import net.thevpc.diagram4j.model.JDiagramElement;
@@ -29,17 +28,17 @@ public class TextColorEditor extends JColorChooser {
             @Override
             public void stateChanged(ChangeEvent e) {
                 if (canvas.getDiagram().getSelectionCount() > 0) {
-                    canvas.getDiagram().setSelectionTextColor(
-                            ColorUtils.formatPaint(jc.getColor())
-                    );
+//                    canvas.getDiagram().setSelectionTextColor(
+//                            ColorUtils.formatPaint(jc.getColor())
+//                    );
                 } else {
-                    canvas.getDiagram().setConfigTextColor(
-                            ColorUtils.formatPaint(jc.getColor())
-                    );
+//                    canvas.getDiagram().setConfigTextColor(
+//                            ColorUtils.formatPaint(jc.getColor())
+//                    );
                 }
             }
         });
-        jc.setColor(ColorUtils.parseColor(canvas.getDiagram().getConfig().getLineColor()));
+//        jc.setColor(ColorUtils.parseColor(canvas.getDiagram().getConfig().getLineColor()));
         canvas.addDiagramChangeListener(new JDiagramListener() {
             @Override
             public void selectionChanged(JDiagram diagram, Set<String> before, Set<String> after) {
@@ -54,9 +53,9 @@ public class TextColorEditor extends JColorChooser {
                 List<JDiagramElement> se = canvas.getDiagram().getSelectedElements();
                 if (se.size() == 1) {
                     JDiagramElement de = se.get(0);
-                    jc.setColor(ColorUtils.parseColor(de.getTextColor()));
+//                    jc.setColor(ColorUtils.parseColor(de.getTextColor()));
                 } else if (se.isEmpty()) {
-                    jc.setColor(ColorUtils.parseColor(canvas.getDiagram().getConfigTextColor()));
+//                    jc.setColor(ColorUtils.parseColor(canvas.getDiagram().getConfigTextColor()));
                 }
             }
         });

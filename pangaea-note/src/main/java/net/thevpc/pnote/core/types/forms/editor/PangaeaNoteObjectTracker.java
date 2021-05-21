@@ -6,7 +6,6 @@
 package net.thevpc.pnote.core.types.forms.editor;
 
 /**
- *
  * @author vpc
  */
 public interface PangaeaNoteObjectTracker {
@@ -14,5 +13,6 @@ public interface PangaeaNoteObjectTracker {
     void onStructureChanged();
 
     void onListValuesChanged();
+
     void onFieldValueChanged();
 }

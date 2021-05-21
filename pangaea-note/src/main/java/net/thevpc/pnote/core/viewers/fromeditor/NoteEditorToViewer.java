@@ -8,7 +8,7 @@ package net.thevpc.pnote.core.viewers.fromeditor;
 import java.util.function.Consumer;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -20,13 +20,13 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 public class NoteEditorToViewer implements PangaeaNoteFileViewerManager {
 
     @Override
-    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteWindow win) {
+    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteFrame win) {
         PangaeaNoteTypeService sp = win.service().getContentTypeServiceByFileName(path, mimeType.getContentType());
         return sp != null ? 1 : -1;
     }
 
     @Override
-    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer,PangaeaNoteWindow win) {
+    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer,PangaeaNoteFrame win) {
         PangaeaNoteTypeService sp = win.service().getContentTypeServiceByFileName(path, mimeType.getContentType());
         String contentType = sp.getContentType().toString();
         Runnable onSuccess=() -> viewer.fireSuccessfulLoading(path);

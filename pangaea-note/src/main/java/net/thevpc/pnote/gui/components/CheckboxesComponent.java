@@ -5,47 +5,34 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import java.awt.BorderLayout;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.common.props.PropertyEvent;
+import net.thevpc.common.props.PropertyListener;
+import net.thevpc.echo.*;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.JCheckBox;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
 
 /**
  *
  * @author vpc
  */
-public class CheckboxesComponent extends JPanel implements FormComponent {
+public class CheckboxesComponent extends HorizontalPane implements FormComponent {
 
-    private List<JCheckBox> checkBoxes = new ArrayList<>();
+    private List<CheckBox> checkBoxes = new ArrayList<>();
     private Runnable callback;
-    private Box box;
-    private ItemListener itemListener;
+    private PropertyListener itemListener;
     private boolean editable = true;
-    private SwingApplicationsUtils.Tracker tracker;
 
-    public CheckboxesComponent(PangaeaNoteWindow win) {
-        super(new BorderLayout());
-        tracker = new SwingApplicationsUtils.Tracker(win.app());
-        box = Box.createHorizontalBox();
-        add(box);
-        itemListener = new ItemListener() {
+    public CheckboxesComponent(PangaeaNoteFrame win) {
+        super(win.app());
+        itemListener = new PropertyListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
+            public void propertyUpdated(PropertyEvent event) {
                 callOnValueChanged();
             }
         };
@@ -59,18 +46,18 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
 
     public void setSelectValues(List<String> newValues) {
         while (checkBoxes.size() > newValues.size()) {
-            JCheckBox c = checkBoxes.remove(checkBoxes.size() - 1);
-            c.removeItemListener(itemListener);
-            box.remove(c);
+            CheckBox c = checkBoxes.remove(checkBoxes.size() - 1);
+            c.listeners().remove(itemListener);
+            children().remove(c);
         }
         for (int i = 0; i < checkBoxes.size(); i++) {
-            JCheckBox c = checkBoxes.get(i);
+            CheckBox c = checkBoxes.get(i);
             String s = newValues.get(i);
             if (s == null) {
                 s = "";
             }
             s = s.trim();
-            c.setText(s);
+            c.text().set(Str.of(s));
         }
         for (int i = checkBoxes.size(); i < newValues.size(); i++) {
             String s = newValues.get(i);
@@ -78,42 +65,34 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
                 s = "";
             }
             s = s.trim();
-            JCheckBox cv = createCheckBox();
-            cv.setText(s);
-            cv.setEnabled(isEditable());
-            cv.addItemListener(itemListener);
+            CheckBox cv = createCheckBox();
+            cv.text().set(Str.of(s));
+            cv.enabled().set(isEditable());
+            cv.onChange(itemListener);
             checkBoxes.add(cv);
-            box.add(cv);
+            children().add(cv);
         }
     }
 
-    protected JCheckBox createCheckBox() {
-        JCheckBox c = new JCheckBox("value");
-        JPopupMenu p = new JPopupMenu();
-        Action a = tracker.registerStandardAction(
-                () -> {
-                    Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    try {
-                        clip.setContents(new StringSelection(c.getText()), null);
-                    } catch (Exception ex) {
-                        //ex.printStackTrace();
-                    }
-                }, "copy"
-        );
-        p.add(new JMenuItem(a));
-        c.setComponentPopupMenu(p);
+    protected CheckBox createCheckBox() {
+        CheckBox c = new CheckBox(Str.of("value"),app());
+        ContextMenu p = new ContextMenu(app());
+        p.children().add(new Button("copy",
+                ()->{app().clipboard().putString(c.text().get().value());},
+                app()));
+        c.contextMenu().set(new ContextMenu(app()));
         return c;
     }
 
     @Override
     public String getContentString() {
         StringBuilder sb = new StringBuilder();
-        for (JCheckBox cb : checkBoxes) {
-            if (cb.isSelected()) {
+        for (CheckBox cb : checkBoxes) {
+            if (cb.selected().get()) {
                 if (sb.length() > 0) {
                     sb.append("\n");
                 }
-                sb.append(cb.getText());
+                sb.append(cb.text().get());
             }
         }
         return (sb.toString());
@@ -128,8 +107,8 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
                 values.add(v);
             }
         }
-        for (JCheckBox cb : checkBoxes) {
-            cb.setSelected(values.contains(cb.getText().trim()));
+        for (CheckBox cb : checkBoxes) {
+            cb.selected().set(values.contains(cb.text().get().value().trim()));
         }
     }
 
@@ -148,8 +127,8 @@ public class CheckboxesComponent extends JPanel implements FormComponent {
 
     @Override
     public void setEditable(boolean b) {
-        for (JCheckBox checkBoxe : checkBoxes) {
-            checkBoxe.setEnabled(isEditable());
+        for (CheckBox checkBoxe : checkBoxes) {
+            checkBoxe.enabled().set(isEditable());
         }
     }
 

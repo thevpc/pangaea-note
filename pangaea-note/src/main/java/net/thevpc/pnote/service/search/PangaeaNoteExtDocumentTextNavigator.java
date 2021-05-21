@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.service.search;
 
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,10 +24,12 @@ public class PangaeaNoteExtDocumentTextNavigator implements DocumentTextNavigato
 
     private PangaeaNoteService service;
     private PangaeaNoteExt note;
+    private PangaeaNoteFrame frame;
 
-    public PangaeaNoteExtDocumentTextNavigator(PangaeaNoteService service, PangaeaNoteExt source) {
+    public PangaeaNoteExtDocumentTextNavigator(PangaeaNoteService service, PangaeaNoteExt source, PangaeaNoteFrame frame) {
         this.service = service;
         note = source == null ? new PangaeaNoteExt() : source;
+        this.frame=frame;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class PangaeaNoteExtDocumentTextNavigator implements DocumentTextNavigato
         parts.add(new StringDocumentTextNavigator("tags", note, "tags", String.join(" ", note.getTags())).iterator());
         PangaeaNoteMimeType ct = service.normalizeContentType(note.getContentType());
         List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> i = service.getContentTypeService(ct)
-                .resolveTextNavigators(note);
+                .resolveTextNavigators(note, frame);
         parts.addAll(i);
         List<DocumentTextPart<PangaeaNoteExt>> li = new ArrayList<>();
         for (Iterator<DocumentTextPart<PangaeaNoteExt>> o : parts) {

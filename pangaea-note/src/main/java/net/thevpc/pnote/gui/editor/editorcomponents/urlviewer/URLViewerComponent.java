@@ -5,6 +5,8 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.urlviewer;
 
+import net.thevpc.echo.api.components.AppComponent;
+
 import javax.swing.JComponent;
 
 /**
@@ -15,7 +17,7 @@ public interface URLViewerComponent {
 
     void setURL(String url);
 
-    JComponent component();
+    AppComponent component();
 
     boolean isEditable();
 

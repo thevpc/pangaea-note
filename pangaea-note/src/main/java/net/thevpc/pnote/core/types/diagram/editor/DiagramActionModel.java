@@ -6,7 +6,7 @@
 package net.thevpc.pnote.core.types.diagram.editor;
 
 import net.thevpc.diagram4j.JDiagramCanvas;
-import net.thevpc.echo.AppToolToggleModel;
+import net.thevpc.echo.api.AppToolToggleModel;
 import net.thevpc.diagram4j.JDiagramEditorAction;
 
 /**

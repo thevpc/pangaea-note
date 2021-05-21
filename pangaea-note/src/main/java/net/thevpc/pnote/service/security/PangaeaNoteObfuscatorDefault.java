@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.service.security;
 
+import net.thevpc.echo.api.CancelException;
 import net.thevpc.pnote.api.InvalidSecretException;
 import net.thevpc.pnote.api.PangaeaNoteObfuscator;
 import net.thevpc.pnote.api.model.CypherInfo;
@@ -16,7 +17,6 @@ import java.util.Base64;
 import java.util.function.Supplier;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import net.thevpc.common.swing.util.CancelException;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsContentType;
 import net.thevpc.pnote.api.model.PangaeaNote;

@@ -5,392 +5,200 @@
  */
 package net.thevpc.pnote.gui.tree;
 
+import net.thevpc.common.i18n.Str;
+import net.thevpc.common.props.ObservableBoolean;
+import net.thevpc.common.props.Path;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.components.AppTreeItemContext;
+import net.thevpc.echo.api.components.AppTreeItemRenderer;
+import net.thevpc.echo.api.components.AppTreeNode;
+import net.thevpc.echo.impl.TreeNode;
+import net.thevpc.echo.model.AppTreeMutator;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.api.model.ObservableNoteSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DropMode;
-import javax.swing.JMenu;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import net.thevpc.common.swing.tree.TreeTransferHandler;
-import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.api.model.ObservableNoteTreeModel;
-import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
-import net.thevpc.swing.plaf.UIPlafManager;
+import java.util.function.Consumer;
 
 /**
- *
  * @author vpc
  */
-public class PangaeaNoteDocumentTree extends JPanel {
+public class PangaeaNoteDocumentTree extends BorderPane {
 
-    JTree tree;
-    private JPopupMenu treePopupMenu;
-    private List<ObservableNoteSelectionListener> listeners = new ArrayList<>();
-    private PangaeaNoteWindow win;
+    private final EnableOnAnyTreeSelection enableIfSelection;
+    Tree<PangaeaNoteExt> tree;
     Application app;
-    private ObservableNoteTreeModel model;
-    List<TreeAction> actions = new ArrayList<>();
+    //    List<TreeAction> actions = new ArrayList<>();
+    private ContextMenu treePopupMenu;
+    private List<ObservableNoteSelectionListener> listeners = new ArrayList<>();
+    private PangaeaNoteFrame frame;
+    //    private ObservableNoteTreeModel model;
 
-    public PangaeaNoteDocumentTree(PangaeaNoteWindow win) {
-        super(new BorderLayout());
-        this.win = win;
-        this.app = win.app();
-        model = new ObservableNoteTreeModel(PangaeaNoteExt.of(this.win.service().newDocument()), this.win.service());
-        tree = new JTree(model);
-        tree.setRootVisible(false);
-        tree.setDragEnabled(true);
-        tree.setDropMode(DropMode.ON_OR_INSERT);
-        tree.setTransferHandler(new TreeTransferHandler(PangaeaNoteExt.class, model));
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
+    public PangaeaNoteDocumentTree(PangaeaNoteFrame frame) {
+        super("DocumentTree", frame.app());
+        title().set(Str.i18n("Tools.Document"));
+        this.frame = frame;
+        this.app = frame.app();
+//        model = new ObservableNoteTreeModel(PangaeaNoteExt.of(this.win.service().newDocument()), this.win.service());
+        tree = new Tree<>(PangaeaNoteExt.class, app);
+        enableIfSelection = new EnableOnAnyTreeSelection();
+
+        tree.rootVisible().set(false);
+        tree.childrenFactory().set(PangaeaNoteExt::getChildren);
+        tree.mutator().set(new AppTreeMutator<PangaeaNoteExt>() {
             @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                TreePath p = e.getNewLeadSelectionPath();
-                if (p == null) {
-                    fireOnSelectedNote(null);
-                } else {
-                    fireOnSelectedNote((PangaeaNoteExt) p.getLastPathComponent());
+            public void addChild(AppTreeNode<PangaeaNoteExt> parent, Object child, int index) {
+                if (child instanceof TreeNode) {
+                    child = ((TreeNode<?>) child).get();
                 }
-
-            }
-        });
-        UIPlafManager.getCurrentManager().addListener((p) -> tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(win)));
-        tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(win));
-        tree.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
-                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                    if (selRow != -1) {
-                        PangaeaNoteExt selectedNote = ((PangaeaNoteExt) selPath.getLastPathComponent());
-                        tree.setSelectionPath(selPath);
-                    } else {
-                        tree.clearSelection();
-//                        tree.setSelectionPath(
-//                                null
-////                                new TreePath(tree.getModel().getRoot())
-//                        );
+                PangaeaNoteExt nc = null;
+                if (child instanceof PangaeaNoteExt) {
+                    nc = (PangaeaNoteExt) child;
+                } else if (child instanceof String) {
+                    PangaeaNote nc0 = frame.service().createNoteFromSnippet(child);
+                    if (nc0 != null) {
+                        nc = PangaeaNoteExt.of(nc0);
                     }
-                    if (tree.isShowing()) {
-                        treePopupMenu.show(tree, e.getX(), e.getY());
-                    }
-                } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
-                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                    if (selRow != -1) {
-                        PangaeaNoteExt selectedNote = ((PangaeaNoteExt) selPath.getLastPathComponent());
-                        tree.setSelectionPath(selPath);
-                    } else {
-                        tree.clearSelection();
-//                        tree.setSelectionPath(
-//                                null
-////                                new TreePath(tree.getModel().getRoot())
-//                        );
-                    }
+                }
+                if (nc != null) {
+                    parent.get().addChild(index, nc);
+                    parent.children().add(index, tree.nodeOf(nc));
                 }
             }
 
             @Override
-            public void mousePressed(MouseEvent e) {
-
+            public void removeChild(AppTreeNode<PangaeaNoteExt> parent, int childIndex) {
+                parent.get().removeChild(childIndex);
+                parent.children().removeAt(childIndex);
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
+            public AppTreeNode<PangaeaNoteExt> copy(AppTreeNode<PangaeaNoteExt> node) {
+                PangaeaNoteExt n = node.get();
+                n = n.copy();
+                return tree.nodeOf(n);
             }
         });
-        treePopupMenu = new JPopupMenu();
-        tree.addPropertyChangeListener("UI", (p) -> SwingUtilities.updateComponentTreeUI(treePopupMenu));
-//        tree.setComponentPopupMenu(treePopupMenu);
-        treePopupMenu.add(new TreeAction("AddChildNote", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.addNote();
-                //
-            }
-        });
-        treePopupMenu.add(new TreeAction("AddNoteBefore", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.addNoteBefore();
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-                requireSelectedNote(note);
-            }
-        });
-        treePopupMenu.add(new TreeAction("AddNoteAfter", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.addNodeAfter();
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-                requireSelectedNote(note);
-            }
-        });
-//        JMenu addCustomMenu = new JMenu();
-//        SwingApplicationsUtils.registerButton(addCustomMenu, "Action.AddCustom", "$Action.AddCustom", app);
-//        treePopupMenu.add(addCustomMenu);
-//        addCustomMenu.add(new TreeAction("AddTodayNote") {
+        tree.root().set(
+                tree.nodeOf(PangaeaNoteExt.of(this.frame.service().newDocument()))
+        );
+//        tree.setDragEnabled(true);
+//        tree.setDropMode(DropMode.ON_OR_INSERT);
+//        tree.setTransferHandler(new TreeTransferHandler(PangaeaNoteExt.class, model));
+//        tree.addTreeSelectionListener(new TreeSelectionListener() {
 //            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                NewNoteDialog a = new NewNoteDialog(win);
-//                PangaeaNote n = a.showDialog(PangaeaNoteDocumentTree::showError);
-//                if (n != null) {
-//                    //
+//            public void valueChanged(TreeSelectionEvent e) {
+//                TreePath p = e.getNewLeadSelectionPath();
+//                if (p == null) {
+//                    fireOnSelectedNote(null);
+//                } else {
+//                    fireOnSelectedNote((PangaeaNoteExt) p.getLastPathComponent());
 //                }
-//                //
+//
 //            }
 //        });
-        treePopupMenu.add(new TreeAction("DuplicateNote", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.duplicateNote();
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-                requireSelectedNote(note);
-            }
-        });
-        treePopupMenu.addSeparator();
-        treePopupMenu.add(new TreeAction("RenameNote", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.renameNote();
-                //
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-                requireSelectedNote(note);
-            }
-        });
-        treePopupMenu.addSeparator();
-        JMenu importCustomMenu = new JMenu();
-        SwingApplicationsUtils.registerButton(importCustomMenu, "Action.Import", "$Action.Import.icon", app);
-        treePopupMenu.add(importCustomMenu);
-        importCustomMenu.add(new TreeAction("ImportAny", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.importFileInto();
-            }
-        });
-        importCustomMenu.add(new TreeAction("ImportPangaeaNote", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
-            }
-        });
-        for (PangaeaNoteFileImporter fileImporter : win.service().getFileImporters()) {
-            importCustomMenu.add(new TreeAction("ImportNote." + fileImporter.getName(), this) {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    win.importFileInto(fileImporter.getSupportedFileExtensions());
+        tree.selection().onChange(
+                x -> {
+                    AppTreeNode<PangaeaNoteExt> n = tree.selection().get();
+                    fireOnSelectedNote(n == null ? null : n.get());
                 }
-            });
+        );
+//        UIPlafManager.getCurrentManager().addListener((p) -> tree.setCellRenderer(new SimpleDefaultTreeCellRendererImpl(win)));
+
+        tree.itemRenderer().set(new SimpleDefaultTreeCellRendererImpl(frame));
+
+//        tree.addMouseListener(new MouseListener() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
+//                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
+//                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+//                    if (selRow != -1) {
+//                        PangaeaNoteExt selectedNote = ((PangaeaNoteExt) selPath.getLastPathComponent());
+//                        tree.setSelectionPath(selPath);
+//                    } else {
+//                        tree.clearSelection();
+////                        tree.setSelectionPath(
+////                                null
+//////                                new TreePath(tree.getModel().getRoot())
+////                        );
+//                    }
+//                    if (tree.isShowing()) {
+//                        treePopupMenu.show(tree, e.getX(), e.getY());
+//                    }
+//                } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
+//                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
+//                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+//                    if (selRow != -1) {
+//                        PangaeaNoteExt selectedNote = ((PangaeaNoteExt) selPath.getLastPathComponent());
+//                        tree.setSelectionPath(selPath);
+//                    } else {
+//                        tree.clearSelection();
+////                        tree.setSelectionPath(
+////                                null
+//////                                new TreePath(tree.getModel().getRoot())
+////                        );
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void mousePressed(MouseEvent e) {
+//
+//            }
+//
+//            @Override
+//            public void mouseReleased(MouseEvent e) {
+//
+//            }
+//
+//            @Override
+//            public void mouseEntered(MouseEvent e) {
+//
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent e) {
+//
+//            }
+//        });
+        treePopupMenu = new ContextMenu(app);
+//        tree.addPropertyChangeListener("UI", (p) -> SwingUtilities.updateComponentTreeUI(treePopupMenu));
+//        tree.setComponentPopupMenu(treePopupMenu);
+        tree.contextMenu().set(treePopupMenu);
+        treePopupMenu.children().add(new Button("AddChildNote", () -> frame.addNote(), app));
+        treePopupMenu.children().add(new Button("AddNoteBefore", () -> frame.addNoteBefore(), app).with(enableIfSelection));
+        treePopupMenu.children().add(new Button("AddNoteAfter", () -> frame.addNodeAfter(), app).with(enableIfSelection));
+        treePopupMenu.children().add(new Button("DuplicateNote", () -> frame.duplicateNote(), app).with(enableIfSelection));
+        treePopupMenu.children().addSeparator();
+        treePopupMenu.children().add(new Button("RenameNote", () -> frame.renameNote(), app).with(enableIfSelection));
+        treePopupMenu.children().addSeparator();
+        treePopupMenu.children().add(new Button("Import.Any", () -> frame.importFileInto(), app), Path.of("/Import/*"));
+        treePopupMenu.children().add(new Button("Import.PangaeaNote", () ->
+                frame.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString())
+                , app), Path.of("/Import/*"));
+
+        for (PangaeaNoteFileImporter fileImporter : frame.service().getFileImporters()) {
+            treePopupMenu.children().add(new Button("Import." + fileImporter.getName(), () ->
+                    frame.importFileInto(fileImporter.getSupportedFileExtensions())
+                    , app), Path.of("/Import/*"));
         }
-//        JMenu exportMenu = new JMenu();
-//        SwingApplicationsUtils.registerButton(exportMenu, "Action.Export", "$Action.Export.icon", app);
-//        treePopupMenu.add(exportMenu);
-//        exportMenu.add(new TreeAction("ExportPangaeaNote", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//
-//        });
-//        exportMenu.add(new TreeAction("ExportCherryTree", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//
-//        });
-        treePopupMenu.addSeparator();
-        treePopupMenu.add(new TreeAction("DeleteNote", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                win.deleteSelectedNote();
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-                requireSelectedNote(note);
-            }
-
-        });
-//        treePopupMenu.addSeparator();
-//        JMenu moveMenu = new JMenu();
-//        SwingApplicationsUtils.registerButton(moveMenu, "Action.Move", "$Action.Move.icon", app);
-//        treePopupMenu.add(moveMenu);
-//        moveMenu.add(new TreeAction("MoveUp", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//
-//        });
-//        moveMenu.add(new TreeAction("MoveDown", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//
-//        });
-//        moveMenu.add(new TreeAction("MoveLeft", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//
-//        });
-//        moveMenu.add(new TreeAction("MoveRight", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//
-//        });
-//        moveMenu.add(new TreeAction("SortNoteAsc", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//        });
-//        moveMenu.add(new TreeAction("SortNoteDesc", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//        });
-
-        treePopupMenu.addSeparator();
-        treePopupMenu.add(new TreeAction("SearchNote", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    win.searchNote();
-                } catch (Exception ex) {
-                    win.app().errors().add(ex);
-                }
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-
-            }
-        });
-//        treePopupMenu.add(new TreeAction("SearchAndReplaceNote", this) {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //
-//            }
-//
-//            @Override
-//            protected void onSelectedNote(PangaeaNoteExt note) {
-//                requireSelectedNote(note);
-//            }
-//        });
-        treePopupMenu.addSeparator();
-        treePopupMenu.add(new TreeAction("NoteProperties", this) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    win.editNote();
-                } catch (Exception ex) {
-                    win.app().errors().add(ex);
-                }
-            }
-
-            @Override
-            protected void onSelectedNote(PangaeaNoteExt note) {
-                try {
-                    requireSelectedNote(note);
-                } catch (Exception ex) {
-                    win.app().errors().add(ex);
-                }
-            }
-
-        });
-
+        treePopupMenu.children().addSeparator();
+        treePopupMenu.children().add(new Button("DeleteNote", () -> frame.deleteSelectedNote(), app).with(enableIfSelection));
+        treePopupMenu.children().addSeparator();
+        treePopupMenu.children().add(new Button("SearchNote", () -> frame.searchNote(), app));
+        treePopupMenu.children().addSeparator();
+        treePopupMenu.children().add(new Button("NoteProperties", () -> frame.editNote(), app).with(enableIfSelection));
         PangaeaNoteExt sn = getSelectedNote();
-        for (TreeAction action : actions) {
-            action.onSelectedNote(sn);
-        }
-        add(new JScrollPane(tree));
-    }
-
-    public void setSelectedNote(PangaeaNoteExt note) {
-        List<PangaeaNoteExt> elems = new ArrayList<>();
-        while (note != null) {
-            elems.add(0, note);
-            note = note.getParent();
-        }
-        if (elems.isEmpty()) {
-            elems.add(getDocument());
-        }
-        TreePath tPath = new TreePath(elems.toArray());
-        tree.setSelectionPath(tPath);
+//        for (TreeAction action : actions) {
+//            action.onSelectedNote(sn);
+//        }
+        children.add(new ScrollPane(tree));
     }
 
     public PangaeaNoteDocumentTree addNoteSelectionListener(ObservableNoteSelectionListener listener) {
@@ -405,20 +213,20 @@ public class PangaeaNoteDocumentTree extends JPanel {
     }
 
     public void fireOnSelectedNote(PangaeaNoteExt note) {
-        model.nodeChanged(note);
-        for (TreeAction action : actions) {
-            action.onSelectedNote(note);
-        }
+        //model.nodeChanged(note);
+//        for (TreeAction action : actions) {
+//            action.onSelectedNote(note);
+//        }
         for (ObservableNoteSelectionListener listener : listeners) {
             listener.onSelectionChanged(note);
         }
     }
 
     public PangaeaNoteExt getDocument() {
-        return (PangaeaNoteExt) model.getRoot();
+        return (PangaeaNoteExt) tree.root().get().get();
     }
 
-//    protected Icon resolveIcon(String name) {
+    //    protected Icon resolveIcon(String name) {
 //        if (name == null || name.length() == 0) {
 //            return null;
 //        }
@@ -427,37 +235,101 @@ public class PangaeaNoteDocumentTree extends JPanel {
     public void updateTree() {
 //        model = new ObservableNoteTreeModel((PangaeaNoteExt) model.getRoot());
 //        tree = new JTree(model);
-        TreePath o = tree.getSelectionPath();
-        model.treeStructureChanged();
-        tree.invalidate();
-        tree.revalidate();
-        tree.setSelectionPath(o);
+//        TreePath o = tree.getSelectionPath();
+//        model.treeStructureChanged();
+//        tree.invalidate();
+//        tree.revalidate();
+//        tree.setSelectionPath(o);
     }
 
     public PangaeaNoteExt getSelectedNoteOrDocument() {
-        TreePath p = tree.getSelectionPath();
+        AppTreeNode<PangaeaNoteExt> p = tree.selection().get();
         if (p != null) {
-            PangaeaNoteExt c = (PangaeaNoteExt) p.getLastPathComponent();
+            PangaeaNoteExt c = p.get();
             if (c != null) {
                 return c;
             }
         }
-        return (PangaeaNoteExt) tree.getModel().getRoot();
+        return tree.root().get().get();
     }
 
     public PangaeaNoteExt getSelectedNote() {
-        TreePath p = tree.getSelectionPath();
+        AppTreeNode<PangaeaNoteExt> p = tree.selection().get();
         if (p != null) {
-            PangaeaNoteExt c = (PangaeaNoteExt) p.getLastPathComponent();
-            if (c != null && c != tree.getModel().getRoot()) {
+            PangaeaNoteExt c = p.get();
+            if (c != null) {
                 return c;
             }
         }
         return null;
     }
 
-    public void setDocumentNote(PangaeaNoteExt e) {
-        model.setRoot(e);
+    public void setSelectedNote(AppTreeNode<PangaeaNoteExt> sel) {
+        tree.selection().set(sel);
     }
 
+    public void setSelectedNote(PangaeaNoteExt note) {
+        List<PangaeaNoteExt> elems = new ArrayList<>();
+        while (note != null) {
+            elems.add(0, note);
+            note = note.getParent();
+        }
+        if (elems.isEmpty()) {
+            elems.add(getDocument());
+        }
+        tree.selection().set(tree.findNode(elems.toArray()));
+    }
+
+    public void setDocumentNote(PangaeaNoteExt e) {
+        tree.root().set(tree.nodeOf(e));
+    }
+
+
+    public AppTreeNode<PangaeaNoteExt> addNodeChild(AppTreeNode<PangaeaNoteExt> parent, Object child, int index) {
+        if (child instanceof TreeNode) {
+            child = ((TreeNode<?>) child).get();
+        }
+        PangaeaNoteExt nc = null;
+        if (child instanceof PangaeaNoteExt) {
+            nc = (PangaeaNoteExt) child;
+        } else if (child instanceof String) {
+            PangaeaNote nc0 = frame.service().createNoteFromSnippet(child);
+            if (nc0 != null) {
+                nc = PangaeaNoteExt.of(nc0);
+            }
+        }
+        if (nc != null) {
+            if (index < 0) {
+                index = parent.get().getChildren().size();
+            }
+            parent.get().addChild(index, nc);
+            TreeNode<PangaeaNoteExt> v = tree.nodeOf(nc);
+            parent.children().add(index, v);
+            return v;
+        }
+        return null;
+    }
+
+    public void removeNodeChild(AppTreeNode<PangaeaNoteExt> parent, int childIndex) {
+        parent.get().removeChild(childIndex);
+        parent.children().removeAt(childIndex);
+    }
+
+    public Tree<PangaeaNoteExt> tree() {
+        return tree;
+    }
+
+    public EnableOnAnyTreeSelection getEnableIfSelection() {
+        return enableIfSelection;
+    }
+
+    private class EnableOnAnyTreeSelection implements Consumer<Button> {
+        ObservableBoolean notNull = tree.selection().isNotNull();
+
+        @Override
+        public void accept(Button b) {
+            b.enabled().bindSource(notNull);
+            b.visible().bindSource(notNull);
+        }
+    }
 }

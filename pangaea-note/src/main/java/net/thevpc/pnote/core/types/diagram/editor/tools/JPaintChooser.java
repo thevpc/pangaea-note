@@ -5,28 +5,19 @@
  */
 package net.thevpc.pnote.core.types.diagram.editor.tools;
 
-import net.thevpc.common.swing.panel.DisabledPanel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Paint;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.DefaultListModel;
-import javax.swing.JColorChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import net.thevpc.common.swing.color.ColorUtils;
-import net.thevpc.common.swing.icon.EmptyIcon;
-import net.thevpc.common.swing.icon.PaintIcon;
-import org.jdesktop.swingx.color.EyeDropperColorChooserPanel;
-import org.jdesktop.swingx.renderer.DefaultListRenderer;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+//import net.thevpc.common.swing.color.ColorUtils;
+//import net.thevpc.common.swing.icon.EmptyIcon;
+//import net.thevpc.common.swing.icon.PaintIcon;
+//import org.jdesktop.swingx.color.EyeDropperColorChooserPanel;
+//import org.jdesktop.swingx.renderer.DefaultListRenderer;
 
 /**
  *
@@ -34,7 +25,7 @@ import org.jdesktop.swingx.renderer.DefaultListRenderer;
  */
 public class JPaintChooser extends JPanel {
 
-    DisabledPanel disabledPanel;
+//    DisabledPanel disabledPanel;
     JColorChooser jColorChooser;
     List<ChangeListener> colorChanged = new ArrayList<>();
     JList fillModes = new JList<>();
@@ -42,7 +33,7 @@ public class JPaintChooser extends JPanel {
     public JPaintChooser() {
         super(new BorderLayout());
         jColorChooser = new JColorChooser();
-        jColorChooser.addChooserPanel(new EyeDropperColorChooserPanel());
+//        jColorChooser.addChooserPanel(new EyeDropperColorChooserPanel());
         jColorChooser.getSelectionModel().addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -50,8 +41,8 @@ public class JPaintChooser extends JPanel {
                 fireSelectedColorChanged();
             }
         });
-        disabledPanel = new DisabledPanel(jColorChooser, new Color(255, 0, 0, 30));
-        this.add(disabledPanel, BorderLayout.CENTER);
+//        disabledPanel = new DisabledPanel(jColorChooser, new Color(255, 0, 0, 30));
+//        this.add(disabledPanel, BorderLayout.CENTER);
         this.add(fillModes, BorderLayout.EAST);
         DefaultListModel defaultListModel = new DefaultListModel();
 
@@ -65,27 +56,27 @@ public class JPaintChooser extends JPanel {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int i = fillModes.getSelectionModel().getMinSelectionIndex();
-                disabledPanel.setEnabled(i > 0);
+//                disabledPanel.setEnabled(i > 0);
                 repaint();
                 fireSelectedColorChanged();
             }
         });
-        fillModes.setCellRenderer(new DefaultListRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                int w = 80;
-                int h = 40;
-                if (index == 0) {
-                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "No Fill", index, isSelected, cellHasFocus);
-                    c.setIcon(new EmptyIcon(2, h));
-                    return c;
-                } else {
-                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
-                    c.setIcon(new PaintIcon(getPaint(index), w, h));
-                    return c;
-                }
-            }
-        });
+//        fillModes.setCellRenderer(new DefaultListRenderer() {
+//            @Override
+//            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//                int w = 80;
+//                int h = 40;
+//                if (index == 0) {
+//                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "No Fill", index, isSelected, cellHasFocus);
+//                    c.setIcon(new EmptyIcon(2, h));
+//                    return c;
+//                } else {
+//                    JLabel c = (JLabel) super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
+//                    c.setIcon(new PaintIcon(getPaint(index), w, h));
+//                    return c;
+//                }
+//            }
+//        });
         fillModes.setSelectedIndex(0);
 //                disabledPanel.setEnabled(doFill.isSelected());
     }
@@ -104,23 +95,23 @@ public class JPaintChooser extends JPanel {
     }
 
     protected Paint getPaint(int index, Color c) {
-        String cs = ColorUtils.formatColor(c);
-        switch (index) {
-            case 0:
-                return null;
-            case 1:
-                return c;
-            case 2:
-                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE1 + ";color=" + cs + ";width=8;height=8");
-            case 3:
-                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE2 + ";color=" + cs + ";width=8;height=8");
-            case 4:
-                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE3 + ";color=" + cs + ";width=8;height=8");
-            case 5:
-                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE4 + ";color=" + cs + ";width=8;height=8");
-            case 6:
-                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE5 + ";color=" + cs + ";color2=" + ColorUtils.formatColor(Color.WHITE) + ";size=8");
-        }
+//        String cs = ColorUtils.formatColor(c);
+//        switch (index) {
+//            case 0:
+//                return null;
+//            case 1:
+//                return c;
+//            case 2:
+//                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE1 + ";color=" + cs + ";width=8;height=8");
+//            case 3:
+//                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE2 + ";color=" + cs + ";width=8;height=8");
+//            case 4:
+//                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE3 + ";color=" + cs + ";width=8;height=8");
+//            case 5:
+//                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE4 + ";color=" + cs + ";width=8;height=8");
+//            case 6:
+//                return ColorUtils.parsePaint("texture:" + ColorUtils.TEXTUTE_ID_SAMPLE5 + ";color=" + cs + ";color2=" + ColorUtils.formatColor(Color.WHITE) + ";size=8");
+//        }
         throw new IllegalArgumentException("unsupported");
     }
 
@@ -140,9 +131,9 @@ public class JPaintChooser extends JPanel {
             return true;
         }
         if (p1 != null && p2 != null) {
-            String s1 = ColorUtils.formatPaint(p1);
-            String s2 = ColorUtils.formatPaint(p2);
-            return s1.equals(s2);
+//            String s1 = net.thevpc.echo.Paint.format(p1);
+//            String s2 = net.thevpc.echo.Paint.format(p2);
+//            return s1.equals(s2);
         }
         return false;
     }
@@ -165,21 +156,21 @@ public class JPaintChooser extends JPanel {
                 fillModes.setSelectedIndex(1);
                 jColorChooser.getSelectionModel().setSelectedColor((Color) p);
             } else {
-                Color cc = ColorUtils.paintToColor(p);
-                if (cc == null) {
-                    cc = Color.BLACK;
-                }
-                for (int i = 2; i < 7; i++) {
-                    Paint pp = getPaint(i, cc);
-                    String s1 = ColorUtils.formatPaint(pp);
-                    String s2 = ColorUtils.formatPaint(pp);
-                    if (s1.equals(s2)) {
-                        jColorChooser.getSelectionModel().setSelectedColor(cc);
-                        fillModes.setSelectedIndex(i);
-                        fireSelectedColorChanged();
-                        return;
-                    }
-                }
+//                Color cc = ColorUtils.paintToColor(p);
+//                if (cc == null) {
+//                    cc = Color.BLACK;
+//                }
+//                for (int i = 2; i < 7; i++) {
+//                    Paint pp = getPaint(i, cc);
+//                    String s1 = ColorUtils.formatPaint(pp);
+//                    String s2 = ColorUtils.formatPaint(pp);
+//                    if (s1.equals(s2)) {
+//                        jColorChooser.getSelectionModel().setSelectedColor(cc);
+//                        fillModes.setSelectedIndex(i);
+//                        fireSelectedColorChanged();
+//                        return;
+//                    }
+//                }
             }
         }
     }

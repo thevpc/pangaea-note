@@ -12,7 +12,7 @@ import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
@@ -66,7 +66,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
         service.register(new CreditCardAccountTemplate());
         app.installEditorService(new PangaeaNoteEditorService() {
             @Override
-            public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteWindow win) {
+            public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
                 switch (name) {
                     case PangaeaNoteTypes.EDITOR_FORMS:
                         return new PangaeaNoteObjectDocumentComponent(compactMode, win);
@@ -87,7 +87,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note) {
+    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
         return Arrays.asList(new PangaeaNoteObjectDocumentTextNavigator(service(), note, note.getContent()).iterator()
         );
     }
@@ -112,7 +112,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
         PangaeaNoteObjectDocument a = getContentAsObject(content);
         if (a == null) {
             return true;

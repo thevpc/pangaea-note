@@ -5,135 +5,86 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import java.awt.Component;
-import java.awt.HeadlessException;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.AppFileFilter;
+import net.thevpc.echo.constraints.Layout;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.util.OtherUtils;
+
+//import javax.swing.*;
+//import java.awt.*;
+//import java.awt.event.FocusEvent;
+//import java.awt.event.FocusListener;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
-import net.thevpc.common.swing.layout.GridBagLayoutSupport;
-import net.thevpc.common.swing.text.FilePathTextAutoComplete;
-import net.thevpc.common.swing.text.TextAutoCompleteSupport;
-import net.thevpc.echo.Application;
-import net.thevpc.echo.swing.core.swing.SwingApplicationsUtils;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
-import net.thevpc.pnote.util.OtherUtils;
 
 /**
  *
  * @author vpc
  */
-public class FileComponent extends JPanel {
+public class FileComponent extends HorizontalPane {
 
-    private JTextField textField = new JTextField();
-    private JButton openFile;
-    private JButton reloadFile;
+    private TextField textField;
+    private Button openFile;
+    private Button reloadFile;
     private Application app;
     private boolean acceptAllFileFilterUsed;
-    private List<FileFilter> fileFilters = new ArrayList<>();
+    private List<AppFileFilter> fileFilters = new ArrayList<>();
     private List<FileChangeListener> listeners = new ArrayList<>();
     private String contentString = "";
     private SelectMode selectMode = SelectMode.FILES_AND_DIRECTORIES;
 
-    public FileComponent(PangaeaNoteWindow win) {
-        openFile = new JButton();
-        SwingApplicationsUtils.registerButton(
-                openFile,
-                null, "folder",
-                win.app()
-        );
-        openFile.addActionListener((e)
-                -> {
-            onShowDialog();
-        }
-        );
-
-        reloadFile = new JButton();
-        SwingApplicationsUtils.registerButton(
-                reloadFile,
-                null, "reload",
-                win.app()
-        );
-        reloadFile.addActionListener((e)
-                -> {
-            doReload();
-        }
-        );
-        reloadFile.setVisible(false);
-        textField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                textField.setText(contentString);
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                String s = textField.getText();
-                setContentString(s);
-
-            }
+    public FileComponent(PangaeaNoteFrame win) {
+        super(win.app());
+        openFile = new Button("OpenFile",()->onShowDialog(),app)
+        .with(b->{
+            openFile.text().set((Str) null);
+            openFile.smallIcon().set(Str.of("folder"));
         });
-        new GridBagLayoutSupport("[pwd-===][check][reload] ; insets(2)")
-                .bind("pwd", textField)
-                .bind("check", openFile)
-                .bind("reload", reloadFile)
-                .apply(this);
-
-        TextAutoCompleteSupport.setup(textField, new FilePathTextAutoComplete());
-    }
-
-    public boolean isReloadButtonVisible() {
-        return reloadFile.isVisible();
-    }
-
-    public FileComponent setReloadButtonVisible(boolean visible) {
-        this.reloadFile.setVisible(visible);
-        return this;
-    }
-
-    public JTextField getTextField() {
-        return textField;
+        reloadFile = new Button("OpenFile",()->doReload(),app)
+        .with(b->{
+            openFile.text().set((Str) null);
+            openFile.smallIcon().set(Str.of("reload"));
+        });
+        textField.onChange(x->{
+            setContentString(x.newValue());
+        });
+        children().addAll(
+                textField,openFile,reloadFile
+        );
+        //TextAutoCompleteSupport.setup(textField, new FilePathTextAutoComplete());
     }
 
     public boolean isEditable() {
-        return openFile.isEnabled() && textField.isEditable();
+        return openFile.enabled().get() && textField.editable().get();
     }
 
     public void setEditable(boolean b) {
-        openFile.setEnabled(b);
-        textField.setEditable(b);
+        openFile.enabled().set(b);
+        textField.editable().set(b);
     }
 
-    private void onShowDialog() throws HeadlessException {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(
-                getSelectMode() == SelectMode.FILES_ONLY ? JFileChooser.FILES_ONLY
-                        : getSelectMode() == SelectMode.DIRECTORIES_ONLY ? JFileChooser.DIRECTORIES_ONLY
-                                : getSelectMode() == SelectMode.FILES_AND_DIRECTORIES ? JFileChooser.FILES_AND_DIRECTORIES
-                                        : JFileChooser.FILES_AND_DIRECTORIES);
-        File f = OtherUtils.asFile(textField.getText());
+    private void onShowDialog() {
+        FileChooser chooser = new FileChooser(app);
+        chooser.acceptFiles().set(getSelectMode() == SelectMode.FILES_ONLY || getSelectMode() == SelectMode.FILES_AND_DIRECTORIES);
+        chooser.acceptDirectories().set(getSelectMode() == SelectMode.DIRECTORIES_ONLY || getSelectMode() == SelectMode.FILES_AND_DIRECTORIES);
+        File f = OtherUtils.asFile(getContentString());
         if (f != null && f.getParentFile() != null) {
-            chooser.setCurrentDirectory(f);
+            chooser.currentDirectory().set(f.getPath());
         }
         if (f != null) {
-            chooser.setSelectedFile(f);
+            chooser.selection().set(f.getPath());
         }
-        for (FileFilter filter : fileFilters) {
-            chooser.addChoosableFileFilter(filter);
+        for (AppFileFilter filter : fileFilters) {
+            chooser.filters().add(filter);
         }
-        chooser.setAcceptAllFileFilterUsed(acceptAllFileFilterUsed);
-        int v = chooser.showOpenDialog(
-                app == null ? null : (Component) app.mainWindow().get().component()
-        );
-        if (v == JFileChooser.APPROVE_OPTION) {
-            setContentString(chooser.getSelectedFile().getPath());
+        if(acceptAllFileFilterUsed){
+            chooser.filters().add(new FileFilter(Str.i18n("*.*"),"*.*"));
+        }
+        if (chooser.showOpenDialog(null)) {
+            setContentString(chooser.selection().get());
         }
     }
 
@@ -147,14 +98,14 @@ public class FileComponent extends JPanel {
     }
 
     public String getContentString() {
-        return textField.getText();
+        return textField.text().get().value(app.i18n());
     }
 
-    public List<FileFilter> getFileFilters() {
+    public List<AppFileFilter> getFileFilters() {
         return fileFilters;
     }
 
-    public FileComponent setFileFilters(List<FileFilter> fileFilters) {
+    public FileComponent setFileFilters(List<AppFileFilter> fileFilters) {
         this.fileFilters = fileFilters;
         return this;
     }
@@ -171,7 +122,7 @@ public class FileComponent extends JPanel {
         }
         if (!s.equals(contentString)) {
             contentString = s;
-            textField.setText(s);
+            textField.text().set(Str.of(s));
             for (FileChangeListener listener : listeners) {
                 listener.onFilePathChanged(s);
             }

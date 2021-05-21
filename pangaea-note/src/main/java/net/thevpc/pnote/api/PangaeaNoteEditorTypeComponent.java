@@ -6,8 +6,10 @@
 package net.thevpc.pnote.api;
 
 import javax.swing.JComponent;
+
+import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.gui.PangaeaNoteWindow;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 
 /**
@@ -16,17 +18,17 @@ import net.thevpc.pnote.api.model.PangaeaNoteExt;
  */
 public interface PangaeaNoteEditorTypeComponent {
 
-    JComponent component();
+    AppComponent component();
 
     void uninstall();
 
-    public void setNote(PangaeaNoteExt note, PangaeaNoteWindow win);
+    void setNote(PangaeaNoteExt note, PangaeaNoteFrame win);
 
-    public void setEditable(boolean b);
+    void setEditable(boolean b);
 
-    public boolean isEditable();
+    boolean isEditable();
 
-    public boolean isCompactMode();
+    boolean isCompactMode();
 
     default public void moveTo(int pos){
         
