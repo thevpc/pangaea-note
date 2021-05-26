@@ -40,8 +40,8 @@
     <orderEntry type="library" name="Maven: org.slf4j:log4j-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: net.thevpc.nuts:nuts:0.8.1" level="project" />
     <orderEntry type="module" module-name="diagram4j" />
-    <orderEntry type="library" name="Maven: net.thevpc.more.iconsets:iconset-feather:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.more.iconsets:iconset-svgrepo-color:1.0.0" level="project" />
+    <orderEntry type="module" module-name="iconset-feather" />
+    <orderEntry type="module" module-name="iconset-svgrepo-color" />
     <orderEntry type="module" module-name="echo-swing" scope="RUNTIME" />
     <orderEntry type="module" module-name="echo-api" />
     <orderEntry type="module" module-name="thevpc-common-i18n" />
@@ -53,10 +53,12 @@
     <orderEntry type="library" name="Maven: com.kitfox.svg:svg-salamander:1.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.more.shef:shef-core:0.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.sf.jtidy:jtidy:r938" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.jeep:jeep-editor-swing:1.2.7" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.jeep:jeep:1.2.7" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-text-source:1.3.0" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-text-source-log:1.3.0" level="project" />
+    <orderEntry type="module" module-name="jeep-swing-editor" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jeep" scope="RUNTIME" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.common:thevpc-common-text-source:1.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.common:thevpc-common-text-source-log:1.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.common:thevpc-common-classpath:1.3.2" level="project" />
+    <orderEntry type="module" module-name="jeep-swing-editorkits" scope="RUNTIME" />
     <orderEntry type="module" module-name="echo-jfx" />
     <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-window:8.0-r6" level="project" />
     <orderEntry type="library" name="Maven: org.jfxtras:jfxtras-common:8.0-r6" level="project" />
@@ -68,25 +70,6 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:linux:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-swing:15.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-swing:linux:15.0.1" level="project" />
-    <orderEntry type="module" module-name="echo-swing-mydoggy" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.more.mydoggy:mydoggy-api:1.5.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.more.mydoggy:mydoggy-plaf:1.5.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: tablelayout:TableLayout:20050920" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.more.mydoggy:mydoggy-res:1.5.1" level="project" />
-    <orderEntry type="module" module-name="echo-swing-swingx" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.hl.ide:hl4swing:0.1.0" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.hl:hadra-build-tool:0.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm:8.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-util:8.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-tree:8.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.ow2.asm:asm-analysis:8.0.1" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.tson:tson:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.hl:hadra-lang:0.1.0" level="project" />
-    <orderEntry type="library" name="Maven: net.thevpc.common:thevpc-common-classpath:1.3.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jopendocument:jOpenDocument:1.3" level="project" />
     <orderEntry type="library" name="Maven: org.jodconverter:jodconverter-local:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.jodconverter:jodconverter-core:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.6" level="project" />

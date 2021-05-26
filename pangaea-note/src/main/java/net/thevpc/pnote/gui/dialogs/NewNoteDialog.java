@@ -7,16 +7,18 @@ package net.thevpc.pnote.gui.dialogs;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.GrowX;
-import net.thevpc.echo.constraints.GrowY;
-import net.thevpc.echo.constraints.Layout;
+import net.thevpc.echo.api.components.AppEventType;
+import net.thevpc.echo.constraints.AllFill;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.Fill;
+import net.thevpc.echo.constraints.Grow;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.util.OtherUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,20 +39,41 @@ public class NewNoteDialog {
 
     public NewNoteDialog(PangaeaNoteFrame frame) {
         this.frame = frame;
-        panel = new VerticalPane(frame.app())
+        panel = new GridPane(1, frame.app())
                 .with(p -> {
-                    p.parentConstraints().addAll(GrowX.ALWAYS, GrowY.NEVER);
+                    p.parentConstraints().addAll(AllMargins.of(5), AllFill.HORIZONTAL);
                     p.children().addAll(
                             new Label(Str.i18n("Message.name"), frame.app()),
-                            nameText = new TextField(Str.empty(), frame.app()),
+                            nameText = new TextField(Str.empty(), frame.app())
+                                    .with(t -> {
+                                        t.events().add((e) -> {
+                                            ChoiceList<SimpleItem> list = typeList.list();
+                                            if (e.code() == KeyCode.DOWN) {
+                                                int i = list.selection().indices().get();
+                                                if (i < list.values().size() - 1) {
+                                                    list.selection().indices().set(
+                                                            i + 1
+                                                    );
+                                                    list.ensureIndexIsVisible(i + 1);
+                                                }
+                                            } else if (e.code() == KeyCode.UP) {
+                                                int i = list.selection().indices().get();
+                                                if (i > 0) {
+                                                    list.selection().indices().set(i - 1);
+                                                    list.ensureIndexIsVisible(i - 1);
+                                                }
+                                            }
+                                        }, AppEventType.KEY_PRESSED);
+                                    })
+                            ,
                             new Label(Str.i18n("Message.noteType"), frame.app()),
                             typeList = new PangaeaNoteTypesList(frame)
-                            .with(t->{
-                                t.onChange(e->onNoteTypeChange(typeList.getSelectedContentTypeId()));
-                            })
-                            );
-                })
-        ;
+                                    .with(t -> {
+                                        t.onChange(e -> onNoteTypeChange(typeList.getSelectedContentTypeId()));
+                                        t.childConstraints().addAll(Fill.BOTH, Grow.BOTH);
+                                    })
+                    );
+                });
 
 //        onNoteTypeChange(null);
 //        onNoteTypeChange(typeList.getSelectedContentTypeId());
@@ -111,7 +134,11 @@ public class NewNoteDialog {
             install();
             this.ok = false;
             new Alert(frame.app())
-                    .setTitle(Str.i18n("Message.addNewNote"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.addNewNote"));
+                        a.headerText().set(Str.i18n("Message.addNewNote"));
+                        a.headerIcon().set(Str.of("add"));
+                    })
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {
@@ -153,7 +180,7 @@ public class NewNoteDialog {
                 throw new IllegalArgumentException("not found resource " + s);
             }
             try (InputStream is = i.openStream()) {
-                s = new String(OtherUtils.toByteArray(is));
+                s = new String(Applications.toByteArray(is));
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
@@ -171,7 +198,6 @@ public class NewNoteDialog {
             boolean embeddedDocumentType = id.equals(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
 
 //            typeFileValue.setVisible(embeddedDocumentType);
-
 //            typeFileValue.setAcceptAllFileFilterUsed(embeddedDocumentType);
 //            typeFileValue.getFileFilters().clear();
 //            if (embeddedDocumentType) {
@@ -183,7 +209,6 @@ public class NewNoteDialog {
 //            }
 //            valueLabel.setVisible(embeddedDocumentType);
 //            valueLabel.setText(embeddedDocumentType ? win.app().i18n().getString("Message.valueForFile") : "");
-
         } else {
 //            valueLabel.setVisible(false);
 //            typeFileValue.setVisible(false);

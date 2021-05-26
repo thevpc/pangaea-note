@@ -19,7 +19,7 @@ import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
-import net.thevpc.pnote.core.types.forms.editor.PangaeaNoteObjectDocumentComponent;
+import net.thevpc.pnote.core.types.forms.editor.PangaeaNoteFormsEditorTypeComponent;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
 import net.thevpc.pnote.core.types.forms.templates.BankAccountTemplate;
@@ -69,7 +69,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
             public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
                 switch (name) {
                     case PangaeaNoteTypes.EDITOR_FORMS:
-                        return new PangaeaNoteObjectDocumentComponent(compactMode, win);
+                        return new PangaeaNoteFormsEditorTypeComponent(compactMode, win);
                 }
                 return null;
             }

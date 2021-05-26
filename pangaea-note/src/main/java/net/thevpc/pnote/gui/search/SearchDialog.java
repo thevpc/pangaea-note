@@ -10,8 +10,11 @@ import net.thevpc.echo.*;
 import net.thevpc.pnote.service.search.SearchQuery;
 
 import java.awt.HeadlessException;
-//import net.thevpc.common.swing.NamedValue;
-//import net.thevpc.common.swing.layout.GridBagLayoutSupport;
+import net.thevpc.echo.constraints.AllAnchors;
+import net.thevpc.echo.constraints.AllFill;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.AllPaddings;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
@@ -31,34 +34,40 @@ public class SearchDialog {
 
     private boolean ok = false;
     private Str titleId = Str.i18n("Message.search");
-    private Object[] params = {};
 
     public SearchDialog(PangaeaNoteFrame frame) throws HeadlessException {
         this.frame = frame;
-        this.matchCaseEditor = new CheckBox(Str.i18n("Message.matchCase"),frame.app());
-        this.wholeWordEditor = new CheckBox(Str.i18n("Message.wholeWord"),frame.app());
-        this.matchModeLabel = new Label(Str.i18n("Message.match"),frame.app());
-        ComboBox<SimpleItem> modeEditor=new ComboBox<>(SimpleItem.class, frame.app());
-        modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.LITERAL.toString(), frame.app().i18n().getString("Message.searchLiteralStrategy")));
-        modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.SIMPLE.toString(), frame.app().i18n().getString("Message.searchSimpleStrategy")));
-        modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.REGEXP.toString(), frame.app().i18n().getString("Message.searchRegexpStrategy")));
+        PangaeaNoteApp app = frame.app();
+        this.matchCaseEditor = new CheckBox(Str.i18n("Message.matchCase"), app);
+        this.wholeWordEditor = new CheckBox(Str.i18n("Message.wholeWord"), app);
+        this.matchModeLabel = new Label(Str.i18n("Message.matchingText"), app);
+        this.modeEditor = new ComboBox<>(SimpleItem.class, app);
+        this.modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.LITERAL.toString(), Str.i18n("Message.searchLiteralStrategy")));
+        this.modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.SIMPLE.toString(), Str.i18n("Message.searchSimpleStrategy")));
+        this.modeEditor.values().add(new SimpleItem(SearchQuery.Strategy.REGEXP.toString(), Str.i18n("Message.searchRegexpStrategy")));
 
-        modeEditor.selection().indices().set(0);
+        this.modeEditor.selection().indices().set(0);
 
-        queryEditor = new ComboBox<String>(String.class, frame.app());
-        queryEditor.values().setAll(
-                frame.getRecentSearchQueries().toArray(new String[0])
-        );
-        queryEditor.editable().set(true);
+        this.queryEditor = new ComboBox<String>(String.class, app);
+        this.queryEditor.values().setCollection(frame.getRecentSearchQueries());
+        this.queryEditor.editable().set(true);
 //        queryEditor.setMinimumSize(new Dimension(50, 30));
-        panel=new VerticalPane(frame.app());
-        panel.children().addAll(
-                new Label(Str.i18n("Message.searchLabel"),frame.app()),
+        this.panel = new GridPane(1, app)
+                .with(p -> {
+                    p.parentConstraints().addAll(AllMargins.of(5), AllAnchors.LEFT, AllFill.HORIZONTAL);
+                });
+        panel.children().addAll(new Label(Str.i18n("Message.searchLabel"), app),
                 queryEditor,
-                matchCaseEditor,
-                wholeWordEditor,
-                matchModeLabel,
-                modeEditor
+                new GridPane(app)
+                        .with((Panel hh) -> {
+                            hh.parentConstraints().addAll(AllPaddings.of(5));
+                            hh.children().addAll(
+                                    matchCaseEditor,
+                                    wholeWordEditor,
+                                    matchModeLabel,
+                                    modeEditor
+                            );
+                        })
         );
     }
 
@@ -82,9 +91,8 @@ public class SearchDialog {
         return titleId;
     }
 
-    public SearchDialog setTitle(Str titleId, Object... params) {
+    public SearchDialog setTitle(Str titleId) {
         this.titleId = titleId;
-        this.params = params;
         return this;
     }
 
@@ -93,7 +101,11 @@ public class SearchDialog {
             install();
             this.ok = false;
             new Alert(frame.app())
-                    .setTitle(titleId, params)
+                    .with((Alert a) -> {
+                        a.title().set(titleId);
+                        a.headerText().set(titleId);
+                        a.headerIcon().set(Str.of("search"));
+                    })
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {

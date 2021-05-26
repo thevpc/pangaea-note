@@ -5,20 +5,13 @@
  */
 package net.thevpc.pnote.core.types.sourcecode.html;
 
-import java.io.StringReader;
-import java.io.Writer;
-import java.util.Stack;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.core.types.sourcecode.html.refactor.PlainToHtmlContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 /**
  *
@@ -29,13 +22,9 @@ public class PangaeaNoteHtmlService extends AbstractPangaeaNoteSourceCodeService
     public static final PangaeaNoteMimeType HTML = PangaeaNoteMimeType.of("text/html");
 
     public PangaeaNoteHtmlService() {
-        super(HTML);
+        super(HTML, "sources", new String[0], new String[]{".html", ".htm"});
     }
 
-    @Override
-    public ContentTypeSelector getContentTypeSelector() {
-        return new ContentTypeSelector(getContentType(), "sources", 0);
-    }
     @Override
     public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
         super.onInstall(service, app);
@@ -81,6 +70,5 @@ public class PangaeaNoteHtmlService extends AbstractPangaeaNoteSourceCodeService
 //        }
 //        return text.toString();
     }
-
 
 }

@@ -10,7 +10,7 @@ package net.thevpc.pnote.core.types.list.model;
  * @author vpc
  */
 public enum PangaeaNoteListLayout {
-    HORIZONTAL,
     VERTICAL,
+    HORIZONTAL,
     TAB,
 }

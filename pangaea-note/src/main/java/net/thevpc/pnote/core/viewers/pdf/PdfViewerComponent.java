@@ -6,11 +6,10 @@
 package net.thevpc.pnote.core.viewers.pdf;
 
 import net.thevpc.echo.UserControl;
-import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
-import net.thevpc.pnote.util.OtherUtils;
 import org.icepdf.ri.common.ComponentKeyBinding;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
@@ -24,7 +23,7 @@ import java.util.function.Consumer;
  *
  * @author vpc
  */
-public class PdfViewerComponent implements URLViewerComponent {
+public class PdfViewerComponent extends UserControl implements URLViewerComponent {
 
     PangaeaNoteFrame frame;
 //    JLabel label = new JLabel();
@@ -35,10 +34,11 @@ public class PdfViewerComponent implements URLViewerComponent {
     private float zoomFactor;
     private SwingController controller;
     private JPanel viewerComponentPanel;
-    private AppComponent appComponent;
 
     
     public PdfViewerComponent(PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
+        super("Pdfcomponent",null, frame.app());
+
         this.outer = outer;
         this.frame = frame;
         this.onSuccess = onSuccess;
@@ -52,13 +52,13 @@ public class PdfViewerComponent implements URLViewerComponent {
         controller.getDocumentViewController().setAnnotationCallback(
                 new org.icepdf.ri.common.MyAnnotationCallback(
                         controller.getDocumentViewController()));
-        appComponent=new UserControl("Pdfcomponent",viewerComponentPanel, frame.app());
+        this.renderer().set(viewerComponentPanel);
     }
 
 
     @Override
-    public void setURL(String url) {
-        URL u = OtherUtils.asURL(url);
+    public void navigate(String url) {
+        URL u = Applications.asURL(url);
         if (u != null) {
             try {
                 controller.openDocument(u);
@@ -71,10 +71,6 @@ public class PdfViewerComponent implements URLViewerComponent {
         onError.accept(new IllegalArgumentException("unsupported " + url));
     }
 
-    @Override
-    public AppComponent component() {
-        return appComponent;
-    }
 
     @Override
     public boolean isEditable() {

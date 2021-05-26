@@ -8,15 +8,13 @@ package net.thevpc.pnote.gui.dialogs;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.constraints.*;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.util.OtherUtils;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -45,7 +43,7 @@ public class PangaeaNoteTypesList extends BorderPane {
             List<SimpleItem> recent = new ArrayList<>();
             for (String id : rct) {
                 if (frame.service().isValidContentTypeExt(id)) {
-                    recent.add(new SimpleItem(false, "recent-" + id, frame.app().i18n().getString("content-type." + id),
+                    recent.add(new SimpleItem(false, "recent-" + id, Str.i18n("content-type." + id),
                                     frame.service().getContentTypeIcon(PangaeaNoteMimeType.of(id)), 0
                             )
                     );
@@ -85,19 +83,16 @@ public class PangaeaNoteTypesList extends BorderPane {
 
         ScrollPane listWithScroll = new ScrollPane(list)
                 .with((ScrollPane s) -> s.anchor().set(Anchor.LEFT));
-        parentConstraints().addAll(GrowX.ALWAYS, GrowY.ALWAYS);
+        parentConstraints().addAll(GrowContainer.BOTH);
         children().addAll(
                 listWithScroll,
                 typeDescriptionContent
                 );
         list.selection().set(list.values().get(1));
-        System.out.println(list.selection().get());
     }
 
-    public void addChangeListener(ChangeListener ce) {
-        list.selection().onChange(e->{
-            ce.stateChanged(new ChangeEvent(PangaeaNoteTypesList.this));
-        });
+    public ChoiceList<SimpleItem> list() {
+        return list;
     }
 
     public String resolveNoteTypeDescription(String id) {
@@ -114,7 +109,7 @@ public class PangaeaNoteTypesList extends BorderPane {
                 throw new IllegalArgumentException("not found resource " + s);
             }
             try (InputStream is = i.openStream()) {
-                s = new String(OtherUtils.toByteArray(is));
+                s = new String(Applications.toByteArray(is));
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
@@ -149,7 +144,7 @@ public class PangaeaNoteTypesList extends BorderPane {
 //        );
 //    }
     protected final SimpleItem createNoteTypeFamilyNameGroup(String id) {
-        return new SimpleItem(true, id, frame.app().i18n().getString("content-type." + id), null, 0);
+        return new SimpleItem(true, id, Str.i18n("content-type." + id), null, 0);
     }
 
     private List<SimpleItem> createTypeListNamedValue() {
@@ -166,7 +161,7 @@ public class PangaeaNoteTypesList extends BorderPane {
             }
             li.add(
                     new SimpleItem(false, contentTypeSelector.getContentType().toString(),
-                            frame.app().i18n().getString("content-type." + contentTypeSelector.getContentType().toString()),
+                            Str.i18n("content-type." + contentTypeSelector.getContentType().toString()),
                             frame.service().getContentTypeIcon(contentTypeSelector.getContentType()),
                             contentTypeSelector.getOrder()
                     )
@@ -175,7 +170,7 @@ public class PangaeaNoteTypesList extends BorderPane {
 
         for (PangaeaNoteTemplate template : frame.service().getTemplates()) {
             String g = template.getGroup();
-            if (OtherUtils.isBlank(g)) {
+            if (Applications.isBlank(g)) {
                 g = "templates";
             }
             List<SimpleItem> li = selectors.get(g);
@@ -183,9 +178,9 @@ public class PangaeaNoteTypesList extends BorderPane {
                 li = new ArrayList<>();
                 selectors.put(g, li);
             }
-            String s = template.getLabel(frame.service());
+            Str s = template.getLabel(frame.service());
             if (s == null) {
-                s = frame.app().i18n().getString("content-type." + template.getContentType().toString());
+                s = Str.i18n("content-type." + template.getContentType().toString());
             }
             SimpleItem n = new SimpleItem(false, template.getContentType().toString(), s, frame.service().getContentTypeIcon(template.getContentType()),
                     template.getOrder()

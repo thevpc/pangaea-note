@@ -45,10 +45,6 @@ public interface PangaeaNoteTypeService extends PangaeaNoteTypeServiceBase {
 
     boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame);
 
-    default EditorKit getSourceEditorKit(){
-        return null;
-    }
-    
     default int getFileNameSupport(String fileName, String extension, String probedContentType){
         return -1;
     }

@@ -10,7 +10,6 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.AppColor;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.api.components.AppContextMenu;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
@@ -26,28 +25,29 @@ import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import java.util.stream.Stream;
 
 /**
- *
  * @author vpc
  */
-public class SourceEditorPanePanel extends BorderPane implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
     private TextArea textArea;
     private PangaeaNoteExt currentNote;
     private boolean compactMode;
     private boolean editable = true;
     private PangaeaNoteFrame frame;
-    private SelectableElement selectableElement=new SelectableElement() {
+    private SelectableElement selectableElement = new SelectableElement() {
         @Override
         public String getSelectedText() {
             String s = textArea.textSelection().get();
-            return (s!=null && s.length()>0)?s:null;
+            return (s != null && s.length() > 0) ? s : null;
         }
     };
 
-    public SourceEditorPanePanel(boolean compactMode, PangaeaNoteFrame frame) {
+    public PangaeaNoteSourceEditorTypeComponent(boolean compactMode, PangaeaNoteFrame frame) {
         super(frame.app());
         this.compactMode = compactMode;
         this.textArea = new TextArea(frame.app());
+        this.textArea.rowNumberRuler().set(true);
+        TextToolBarHelper.prepare(frame);
         textArea.installDefaults();
         textArea.registerAccelerator("search-text", "control F", () -> showSearchDialog());
 //        for (PangaeaNoteTypeService contentTypeService : win.service().getContentTypeServices()) {
@@ -61,7 +61,7 @@ public class SourceEditorPanePanel extends BorderPane implements PangaeaNoteEdit
         textArea.rowNumberRuler().set(true);
         textArea.zoomOnMouseWheel().set(true);
         this.frame = frame;
-        this.textArea.text().onChange(e->{
+        this.textArea.text().onChange(e -> {
             if (currentNote != null) {
                 frame.onDocumentChanged();
                 currentNote.setContent(frame.service().stringToElement(textArea.text().get().value()));
@@ -74,20 +74,22 @@ public class SourceEditorPanePanel extends BorderPane implements PangaeaNoteEdit
 
         textArea.focused()
                 .onChange(e -> {
-            if (e.newValue()) {
-                frame.selectableElement().set(selectableElement);
-            } else {
-                if (selectableElement == frame.selectableElement().get()) {
-                    frame.selectableElement().set(null);
-                }
-            }
-        });
+                    if (e.newValue()) {
+                        frame.selectableElement().set(selectableElement);
+                    } else {
+                        if (selectableElement == frame.selectableElement().get()) {
+                            frame.selectableElement().set(null);
+                        }
+                    }
+                });
 
     }
 
-//    public boolean isSupportedType(String contentType) {
-//        return supported != null && supported.contains(contentType);
-//    }
+    @Override
+    public void requestFocus() {
+        textArea.requestFocus();
+    }
+
     @Override
     public void uninstall() {
 //        textExtension.uninstall(editorBuilder, win);
@@ -108,9 +110,21 @@ public class SourceEditorPanePanel extends BorderPane implements PangaeaNoteEdit
 //        um.discardAllEdits();
     }
 
-    @Override
-    public AppComponent component() {
-        return this;
+    public void showSearchDialog() {
+        SearchDialog dialog = new SearchDialog(frame);
+        dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
+        dialog.setSearchText(textArea.text().get().value());
+        SearchQuery query = dialog.showDialog();
+        if (query != null) {
+            StringQuerySearch<String> fi = new StringQuerySearch(query);
+            String txt = textArea.getText(0, textArea.getTextLength());
+            Stream<StringSearchResult<String>> found = fi.search(StringDocumentTextNavigator.of(txt), SearchProgressMonitor.NONE);
+            found.forEach(x -> {
+                int from = x.getStart();
+                int to = x.getEnd();
+                highlight(from, to, HighlightType.SEARCH_MAIN);
+            });
+        }
     }
 
     @Override
@@ -147,20 +161,4 @@ public class SourceEditorPanePanel extends BorderPane implements PangaeaNoteEdit
         textArea.highlight(from, to, c, highlightType);
     }
 
-    public void showSearchDialog(){
-        SearchDialog dialog = new SearchDialog(frame);
-        dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
-        dialog.setSearchText(textArea.text().get().value());
-        SearchQuery query = dialog.showDialog();
-        if (query != null) {
-            StringQuerySearch<String> fi = new StringQuerySearch(query);
-            String txt = textArea.getText(0, textArea.getTextLength());
-            Stream<StringSearchResult<String>> found = fi.search(StringDocumentTextNavigator.of(txt), SearchProgressMonitor.NONE);
-            found.forEach(x -> {
-                int from = x.getStart();
-                int to = x.getEnd();
-                highlight(from, to, HighlightType.SEARCH_MAIN);
-            });
-        }
-    }
 }

@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * @author vpc
  */
-public class JDiagramEditor extends BorderPane implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
     private boolean compactMode;
     private PangaeaNoteFrame frame;
@@ -37,7 +37,7 @@ public class JDiagramEditor extends BorderPane implements PangaeaNoteEditorTypeC
     private ToolBar toolbar;
     private PangaeaNoteExt note;
 
-    public JDiagramEditor(boolean compactMode, PangaeaNoteFrame frame) {
+    public PangaeaNoteDiagramEditorTypeComponent(boolean compactMode, PangaeaNoteFrame frame) {
         super(frame.app());
         this.compactMode = compactMode;
         this.frame = frame;
@@ -233,6 +233,11 @@ public class JDiagramEditor extends BorderPane implements PangaeaNoteEditorTypeC
         frame.getNutsWorkspace().formats().element().setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
     }
 
+    @Override
+    public void requestFocus() {
+        canvas.requestFocus();
+    }
+    
     private ToggleButton addJDiagramActionToggle(String id, Class clazz) {
         ToggleButton t = new ToggleButton(id, "Graph.Tool", frame.app());
         t.selected().bindTarget(b -> {
@@ -267,10 +272,6 @@ public class JDiagramEditor extends BorderPane implements PangaeaNoteEditorTypeC
 
     public JDiagram getDiagram() {
         return canvas.getDiagram();
-    }
-
-    public AppComponent component() {
-        return this;
     }
 
     public void uninstall() {

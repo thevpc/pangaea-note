@@ -6,9 +6,6 @@
 package net.thevpc.pnote.core.types.forms.editor;
 
 import net.thevpc.common.i18n.Str;
-import net.thevpc.echo.Button;
-import net.thevpc.echo.Label;
-import net.thevpc.echo.Menu;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.AppDialogResult;
 import net.thevpc.echo.api.components.AppComponent;
@@ -16,11 +13,9 @@ import net.thevpc.pnote.core.types.forms.model.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.components.*;
 
-import java.util.List;
 import java.util.*;
 
 /**
- *
  * @author vpc
  */
 class PangaeaNoteFieldDescriptorPanel {
@@ -35,8 +30,6 @@ class PangaeaNoteFieldDescriptorPanel {
 
     private PangaeaNoteObjectTracker objectTracker;
     private PangaeaNoteFrame frame;
-//    private SwingApplicationUtils.Tracker tracker;
-//    private List<AbstractButton> buttons = new ArrayList<>();
 
     private Menu changeTypeMenu;
     private boolean editable = true;
@@ -55,30 +48,30 @@ class PangaeaNoteFieldDescriptorPanel {
         label.contextMenu().set(jPopupMenu);
         jPopupMenu.children().add(new Button("changeFieldName", this::onDescriptorRename, app));
 
-        changeTypeMenu = new Menu(Str.i18n("Action.changeFieldType"),app);
+        changeTypeMenu = new Menu(Str.i18n("Action.changeFieldType"), app);
         jPopupMenu.children().add(changeTypeMenu);
-        changeTypeMenu.children().add(new Button("changeFieldTypeText", () -> onDescriptorChangeType(PangaeaNoteFieldType.TEXT),app));
-        changeTypeMenu.children().add(new Button("changeFieldTypeCombobox", () -> onDescriptorChangeType(PangaeaNoteFieldType.COMBOBOX),app));
-        changeTypeMenu.children().add(new Button("changeFieldTypeCheckbox", () -> onDescriptorChangeType(PangaeaNoteFieldType.CHECKBOX),app));
-        changeTypeMenu.children().add(new Button("changeFieldTypeLongText", () -> onDescriptorChangeType(PangaeaNoteFieldType.TEXTAREA),app));
-        changeTypeMenu.children().add(new Button("changeFieldTypeURL", () -> onDescriptorChangeType(PangaeaNoteFieldType.URL),app));
-        changeTypeMenu.children().add(new Button("changeFieldTypePassword", () -> onDescriptorChangeType(PangaeaNoteFieldType.PASSWORD),app));
-        jPopupMenu.children().add(new Button("changeFieldValues", () -> onDescriptorEditValues(),app));
+        changeTypeMenu.children().add(new Button("changeFieldTypeText", () -> onDescriptorChangeType(PangaeaNoteFieldType.TEXT), app));
+        changeTypeMenu.children().add(new Button("changeFieldTypeCombobox", () -> onDescriptorChangeType(PangaeaNoteFieldType.COMBOBOX), app));
+        changeTypeMenu.children().add(new Button("changeFieldTypeCheckbox", () -> onDescriptorChangeType(PangaeaNoteFieldType.CHECKBOX), app));
+        changeTypeMenu.children().add(new Button("changeFieldTypeLongText", () -> onDescriptorChangeType(PangaeaNoteFieldType.TEXTAREA), app));
+        changeTypeMenu.children().add(new Button("changeFieldTypeURL", () -> onDescriptorChangeType(PangaeaNoteFieldType.URL), app));
+        changeTypeMenu.children().add(new Button("changeFieldTypePassword", () -> onDescriptorChangeType(PangaeaNoteFieldType.PASSWORD), app));
+        jPopupMenu.children().add(new Button("changeFieldValues", () -> onDescriptorEditValues(), app));
 
         jPopupMenu.children().addSeparator();
-        jPopupMenu.children().add(new Button("addField", () -> onAddField(),app));
+        jPopupMenu.children().add(new Button("addField", () -> onAddField(), app));
 
         jPopupMenu.children().addSeparator();
-        jPopupMenu.children().add(new Button("removeField", () -> onRemoveField(),app));
+        jPopupMenu.children().add(new Button("removeField", () -> onRemoveField(), app));
 
         jPopupMenu.children().addSeparator();
-        jPopupMenu.children().add(new Button("moveUpField", () -> onMoveUpField(),app));
-        jPopupMenu.children().add(new Button("moveDownField", () -> onMoveDownField(),app));
+        jPopupMenu.children().add(new Button("moveUpField", () -> onMoveUpField(), app));
+        jPopupMenu.children().add(new Button("moveDownField", () -> onMoveDownField(), app));
         jPopupMenu.children().addSeparator();
-        jPopupMenu.children().add(new Button("hideField", () -> onHideField(),app));
-        jPopupMenu.children().add(new Button("unhideFields", () -> onUnhideFields(),app));
+        jPopupMenu.children().add(new Button("hideField", () -> onHideField(), app));
+        jPopupMenu.children().add(new Button("unhideFields", () -> onUnhideFields(), app));
         jPopupMenu.children().addSeparator();
-        jPopupMenu.children().add(new Button("copy", () -> onCopyLabel(),app));
+        jPopupMenu.children().add(new Button("copy", () -> onCopyLabel(), app));
 
         FormComponent comp = createFormComponent(descr.getType());
         comp.install(app);
@@ -86,6 +79,27 @@ class PangaeaNoteFieldDescriptorPanel {
         comp.setFormChangeListener(() -> callOnValueChanged());
         component = (AppComponent) comp;
     } //=new ButtonGroup()
+
+    private static List<String> resolveValues(PangaeaNoteFieldDescriptor descr) {
+        Set<String> a = new LinkedHashSet<>();
+        if (descr.getValues() != null) {
+            for (String value : descr.getValues()) {
+                if (value == null) {
+                    value = "";
+                }
+                a.add(value);
+            }
+        }
+        String dv = descr.getDefaultValue();
+        if (dv == null) {
+            dv = "";
+        }
+        a.add(dv);
+        if (a.isEmpty()) {
+            a.add("");
+        }
+        return new ArrayList<>(a);
+    }
 
     private FormComponent createFormComponent(PangaeaNoteFieldType t) {
         switch (t) {
@@ -96,11 +110,11 @@ class PangaeaNoteFieldDescriptorPanel {
                 return new PasswordComponent(frame);
             }
             case URL: {
-                return new URLComponent();
+                return new URLComponent(frame);
             }
 
             case COMBOBOX: {
-                return new ComboboxComponent();
+                return new ComboboxComponent(frame);
             }
             case CHECKBOX: {
                 return new CheckboxesComponent(frame);
@@ -152,27 +166,6 @@ class PangaeaNoteFieldDescriptorPanel {
         df.setName(this.descr.getName());
         df.setValue(getStringValue());
         return df;
-    }
-
-    private static List<String> resolveValues(PangaeaNoteFieldDescriptor descr) {
-        Set<String> a = new LinkedHashSet<>();
-        if (descr.getValues() != null) {
-            for (String value : descr.getValues()) {
-                if (value == null) {
-                    value = "";
-                }
-                a.add(value);
-            }
-        }
-        String dv = descr.getDefaultValue();
-        if (dv == null) {
-            dv = "";
-        }
-        a.add(dv);
-        if (a.isEmpty()) {
-            a.add("");
-        }
-        return new ArrayList<>(a);
     }
 
     public void uninstall() {
@@ -266,10 +259,14 @@ class PangaeaNoteFieldDescriptorPanel {
                 oldValue = (String.join("\n", all));
             }
             AppDialogResult s = new Alert(frame.app())
-                    .setTitle(Str.i18n("Message.changeFieldValues"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.changeFieldValues"));
+                        a.headerText().set(Str.i18n("Message.changeFieldValues"));
+                        a.headerIcon().set(Str.of("edit"));
+                        a.prefSize().set(new Dimension(400, 300));
+                    })
                     .setInputTextAreaContent(Str.i18n("Message.changeFieldValues.label"), Str.of(oldValue))
                     .withOkCancelButtons()
-                    .setPreferredSize(400, 300)
                     .showInputDialog(null);
             if (s.isButton("ok") && !s.isBlankValue()) {
                 document.updateFieldValues(descr.getName(), s.<String>value().split("\n"));
@@ -282,7 +279,11 @@ class PangaeaNoteFieldDescriptorPanel {
         if (document != null) {
             AppDialogResult r = new Alert(frame.app())
                     .withOkCancelButtons()
-                    .setTitle(Str.i18n("Message.renameField"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.renameField"));
+                        a.headerText().set(Str.i18n("Message.renameField"));
+                        a.headerIcon().set(Str.of("edit"));
+                    })
                     .setInputTextFieldContent(
                             Str.i18n("Message.renameField.label"), Str.of(descr.getName())
                     )
@@ -308,7 +309,11 @@ class PangaeaNoteFieldDescriptorPanel {
     public void onRemoveField() {
         if (document != null) {
             String s = new Alert(frame.app())
-                    .setTitle(Str.i18n("Message.warning"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.warning"));
+                        a.headerText().set(Str.i18n("Message.warning"));
+                        a.headerIcon().set(Str.of("delete"));
+                    })
                     .setContentText(Str.i18n("Message.askDeleteField"))
                     .withYesNoButtons()
                     .showDialog(null);
@@ -324,7 +329,11 @@ class PangaeaNoteFieldDescriptorPanel {
         if (document != null) {
             AppDialogResult r = new Alert(frame.app())
                     .withOkCancelButtons()
-                    .setTitle(Str.i18n("Message.addField"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.addField"));
+                        a.headerText().set(Str.i18n("Message.addField"));
+                        a.headerIcon().set(Str.of("add"));
+                    })
                     .setInputTextFieldContent(
                             Str.i18n("Message.addField.label"), Str.of("")
                     )
@@ -357,7 +366,7 @@ class PangaeaNoteFieldDescriptorPanel {
         }
     }
 
-//    public void onDuplicateField() {
+    //    public void onDuplicateField() {
 //        if (document != null) {
 //            String n = JOptionPane.showInputDialog(null, descr.getName());
 //            if (n != null) {
@@ -366,7 +375,6 @@ class PangaeaNoteFieldDescriptorPanel {
 //            }
 //        }
 //    }
-
 //    private Action createAction(String id, Runnable r) {
 //        AbstractAction a = new AbstractAction() {
 //            @Override
@@ -377,7 +385,6 @@ class PangaeaNoteFieldDescriptorPanel {
 //        tracker.registerStandardAction(a, id);
 //        return a;
 //    }
-
     public boolean isEditable() {
         return editable;
     }

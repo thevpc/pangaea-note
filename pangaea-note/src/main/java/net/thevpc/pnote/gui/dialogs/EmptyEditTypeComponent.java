@@ -9,12 +9,8 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.Label;
-import net.thevpc.echo.Panel;
 import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.EditTypeComponent;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
@@ -25,12 +21,9 @@ public class EmptyEditTypeComponent extends BorderPane implements EditTypeCompon
 
     public EmptyEditTypeComponent(Application application) {
         super(application);
-        children().add(new Label(Str.of("Hello"),application));
-    }
-
-    @Override
-    public AppComponent component() {
-        return this;
+        Label options = new Label(Str.of("No Options available"), application);
+        options.enabled().set(false);
+        children().add(options);
     }
 
     @Override

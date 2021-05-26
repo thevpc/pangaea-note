@@ -5,20 +5,16 @@
  */
 package net.thevpc.pnote.api;
 
-import javax.swing.JComponent;
-
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
  * @author vpc
  */
-public interface PangaeaNoteEditorTypeComponent {
-
-    AppComponent component();
+public interface PangaeaNoteEditorTypeComponent extends AppComponent{
 
     void uninstall();
 
@@ -30,12 +26,14 @@ public interface PangaeaNoteEditorTypeComponent {
 
     boolean isCompactMode();
 
-    default public void moveTo(int pos){
-        
+    default void moveTo(int pos) {
+
     }
 
-    default void removeHighlights(HighlightType hightlightType) {
+    default void removeHighlights(HighlightType highlightType) {
     }
+
+
 
     default void highlight(int fromm, int too, HighlightType hightlightType) {
     }

@@ -12,8 +12,10 @@ import net.thevpc.echo.FontWeight;
 import net.thevpc.echo.api.AppColor;
 import net.thevpc.echo.api.AppFont;
 import net.thevpc.echo.api.AppImage;
+import net.thevpc.echo.api.components.AppTree;
 import net.thevpc.echo.api.components.AppTreeItemContext;
 import net.thevpc.echo.api.components.AppTreeItemRenderer;
+import net.thevpc.echo.iconset.IconSet;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 
@@ -111,19 +113,20 @@ class SimpleDefaultTreeCellRendererImpl implements AppTreeItemRenderer<PangaeaNo
 
         if (value instanceof PangaeaNoteExt) {
             PangaeaNoteExt n = (PangaeaNoteExt) value;
-            String iconName = frame.service().getNoteIcon(n.toNote(), n.getChildren().size() > 0, context.isExpanded());
-            AppImage icon = app.iconSets().icon(iconName).get();
+            String iconName = frame.service().getNoteIcon(n.toNote(), context.isExpanded());
+            AppTree<PangaeaNoteExt> tree = context.getTree();
+            AppImage icon = app.iconSets().icon(iconName,tree.iconSet().get());
             context.setIcon(icon);
         } else {
-            context.setIcon(resolveIcon("file"));
+            context.setIcon(resolveIcon("file",context));
         }
     }
 
-    protected AppImage resolveIcon(String name) {
+    protected AppImage resolveIcon(String name,AppTreeItemContext<PangaeaNoteExt> context) {
         if (name == null || name.length() == 0) {
             return null;
         }
-        return app.iconSets().icon(name).get();
+        return app.iconSets().icon(name,context.getTree().iconSet().get());
     }
 
 }

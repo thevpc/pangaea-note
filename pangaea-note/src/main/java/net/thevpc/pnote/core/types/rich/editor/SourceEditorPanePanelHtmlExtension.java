@@ -61,15 +61,8 @@
 //        Application app = win.app();
 //        context = new AbstractSourceEditorPaneExtension.Context(win, editor);
 //
-//        addActionList("insert-bloc", createBlocTypeActions(editor), bar, popup, context);
-//
-//        addActionList("font-styles", createfontStyleActions(editor), bar, popup, context);
-//
-//        addActionList("align-text", createAlignActions(editor), bar, popup, context);
 //
 //        addSeparator(bar, popup, context);
-//        addActionListener("insert-ul", (e) -> ShefHelper.runInsertBloc(editor, BlocEnum.UL), bar, popup, context);
-//        addActionListener("insert-ol", (e) -> ShefHelper.runInsertBloc(editor, BlocEnum.OL), bar, popup, context);
 //
 //        addActionList("font-type", createFontFamilyActions(editor, win), bar, popup, context);
 //
@@ -78,70 +71,8 @@
 //        addActionList("colors", createColorActions(app, editor), bar, popup, context);
 //
 //        addSeparator(bar, popup, context);
-//        addActionList("insert-tag", new ActionInfo[]{
-//            new ActionInfo("insert-hr", al((e) -> ShefHelper.runInsertHorizontalRule(editor))),
-//            new ActionInfo("insert-break", new StyledEditorKit.InsertBreakAction()),}, bar, popup, context);
-//
-//        addContentTypeChangeListener(context, new ContentTypeChangeListener() {
-//            @Override
-//            public void onContentTypeChanged(PangaeaNoteMimeType contentType, Context context) {
-//                boolean isHtml = true;//always!!
-//                if (bar != null) {
-//                    bar.setVisible(isHtml);
-//                }
-//                context.setAllActionsVisible(isHtml);
-//                context.setAllActionsEnabled(isHtml);
-//            }
-//        });
-//        if (bar != null) {
-//            editorBuilder.header().add(bar);
-//        }
-//        boolean isHtml = "text/html".equals(editor.getContentType());
-//        if (bar != null) {
-//            bar.setVisible(isHtml);
-//        }
-//        context.setAllActionsVisible(isHtml);
-//        context.setAllActionsEnabled(isHtml);
 //    }
 //
-//    protected static ActionInfo[] createBlocTypeActions(JEditorPane editor) {
-//        return new ActionInfo[]{
-//            new ActionInfo("insert-h1", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.H1))),
-//            new ActionInfo("insert-h2", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.H2))),
-//            new ActionInfo("insert-h3", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.H3))),
-//            new ActionInfo("insert-h4", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.H4))),
-//            new ActionInfo("insert-h5", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.H5))),
-//            new ActionInfo("insert-h6", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.H6))),
-//            new ActionInfo("insert-pre", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.PRE))),
-//            new ActionInfo("insert-div", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.DIV))),
-//            new ActionInfo("insert-p", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.P))),
-//            new ActionInfo("insert-blockquote", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.BLOCKQUOTE))),
-//            new ActionInfo("insert-ol", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.OL))),
-//            new ActionInfo("insert-ul", ((e) -> ShefHelper.runInsertBloc(editor, BlocEnum.UL))),};
-//    }
-//
-//    protected static ActionInfo[] createfontStyleActions(JEditorPane editor) {
-//        return new ActionInfo[]{
-//            new ActionInfo("font-bold", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.BOLD)),
-//            new ActionInfo("font-italic", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.ITALIC)),
-//            new ActionInfo("font-underline", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.UNDERLINE)),
-//            new ActionInfo("font-strike", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.STRIKE)),
-//            new ActionInfo("font-sup", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.SUP)),
-//            new ActionInfo("font-sub", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.SUB)),
-//            null,
-//            new ActionInfo("font-strong", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.STRONG)),
-//            new ActionInfo("font-em", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.EM)),
-//            new ActionInfo("font-cite", (e) -> ShefHelper.runToggleInlineStyle(editor, InlineStyleEnum.CITE))
-//        };
-//    }
-//
-//    protected static ActionInfo[] createAlignActions(JEditorPane editor) {
-//        return new ActionInfo[]{
-//            new ActionInfo("align-left", (e) -> ShefHelper.runTextAlign(editor, AlignEnum.LEFT)),
-//            new ActionInfo("align-center", (e) -> ShefHelper.runTextAlign(editor, AlignEnum.CENTER)),
-//            new ActionInfo("align-right", (e) -> ShefHelper.runTextAlign(editor, AlignEnum.RIGHT)),
-//            new ActionInfo("align-justify", (e) -> ShefHelper.runTextAlign(editor, AlignEnum.JUSTIFY)),};
-//    }
 //
 //    protected static ActionInfo[] createFontFamilyActions(JEditorPane editor, PangaeaNoteFrame win) {
 //        List<ActionInfo> fontActions = new ArrayList<>();

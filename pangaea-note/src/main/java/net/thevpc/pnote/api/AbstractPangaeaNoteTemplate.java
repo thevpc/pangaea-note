@@ -6,6 +6,7 @@
 package net.thevpc.pnote.api;
 
 import net.thevpc.common.i18n.I18n;
+import net.thevpc.common.i18n.Str;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
@@ -42,9 +43,8 @@ public abstract class AbstractPangaeaNoteTemplate implements PangaeaNoteTemplate
     }
 
     @Override
-    public String getLabel(PangaeaNoteService win) {
-        I18n i18n = win.i18n();
-        return i18n.getString("content-type." + getContentType().toString());
+    public Str getLabel(PangaeaNoteService win) {
+        return Str.i18n("content-type." + getContentType().toString());
     }
 
     public String getShortId() {

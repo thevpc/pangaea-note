@@ -5,47 +5,24 @@
  */
 package net.thevpc.pnote.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.file.Files;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.Color;
+import net.thevpc.echo.FontPosture;
+import net.thevpc.echo.FontWeight;
+import net.thevpc.echo.WritableTextStyle;
+import net.thevpc.echo.api.AppFont;
+import net.thevpc.echo.api.AppImage;
+import net.thevpc.echo.api.components.AppTextControl;
+import net.thevpc.echo.api.components.AppToggleControl;
+import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
+
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 /**
- *
  * @author vpc
  */
 public class OtherUtils {
-
-    public static String getFileExtension(String name) {
-        name = name.replace('\\', '/');
-        int x = name.lastIndexOf('/');
-        if (x >= 0) {
-            name = name.substring(x + 1);
-        }
-        x = name.lastIndexOf('.');
-        String suffix = "";
-        if (x >= 0) {
-            suffix = name.substring(x + 1);
-        }
-        return suffix;
-    }
-
-    public static String trim(String in) {
-        return in == null ? "" : in.trim();
-    }
-
-    public static boolean isBlank(String in) {
-        return in == null || in.trim().isEmpty();
-    }
 
     public static String toEscapedName(String in) {
         return toEscapedString(in, '`', false, "<no-name>");
@@ -116,26 +93,6 @@ public class OtherUtils {
         return sb.toString();
     }
 
-    public static byte[] toByteArray(InputStream in) {
-
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-            byte[] buffer = new byte[1024];
-            int len;
-
-            // read bytes from the input stream and store them in buffer
-            while ((len = in.read(buffer)) != -1) {
-                // write bytes from the buffer into output stream
-                os.write(buffer, 0, len);
-            }
-
-            return os.toByteArray();
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
     public static <T> boolean switchListValues(List<T> values, int index1, int index2) {
         if (values != null) {
             if (index1 >= 0 && index1 < values.size()) {
@@ -164,153 +121,35 @@ public class OtherUtils {
         return out.toString();
     }
 
-    public static String toHex(int value, int pad) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(Integer.toHexString(value));
-        while (sb.length() < pad) {
-            sb.insert(0, '0');
+    public static void applyTitle(PangaeaNoteExt n, AppTextControl textControl, boolean selected) {
+        if (n == null) {
+            return;
         }
-        return sb.toString();
-    }
+        WritableTextStyle textStyle = textControl.textStyle();
+        AppFont font = textStyle.font().get();
 
-    private static Properties EXT_TO_MIMETYPE;
-
-    public static Properties getExtensionToProperties() {
-        if (EXT_TO_MIMETYPE != null) {
-            return EXT_TO_MIMETYPE;
+        textStyle.font().set(font == null ? null : font.derive(null, null, n.isTitleBold() ? FontWeight.BOLD : null,
+                n.isTitleItalic() ? FontPosture.ITALIC : null));
+        textStyle.underline().set(n.isTitleUnderlined());
+        textStyle.strikethrough().set(n.isTitleStriked());
+        PangaeaNoteApp app = (PangaeaNoteApp) textControl.app();
+        Color b = Color.of(n.getTitleBackground(), app);
+        if (b != null) {
+            textControl.backgroundColor().set(b);
+            textControl.opaque().set(true);
+        } else {
+            textControl.opaque().set(false);
         }
-        URL url = OtherUtils.class.getResource("/net/thevpc/pnote/extension-to-mimetype.properties");
-        Properties p = new Properties();
-        try (InputStream is = url.openStream()) {
-            p.load(url.openStream());
-        } catch (Exception ex) {
-            //
+        b = Color.of(n.getTitleForeground(), app);
+        if (b != null) {
+            textStyle.foregroundColor().set(b);
         }
-        Properties p2 = new Properties();
-        for (Map.Entry<Object, Object> entry : p.entrySet()) {
-            String k = (String) entry.getKey();
-            String v = (String) entry.getValue();
-            String[] ks = k.trim().split(",");
-            for (String k1 : ks) {
-                p2.put(k1, v);
-            }
+        //do not apply to CheckBox or radio Button!
+        textControl.text().set(Str.of((n.getName())));
+        if (!(textControl instanceof AppToggleControl)) {
+            String iconName = app.service().getNoteIcon(n.toNote());
+            AppImage icon = app.iconSets().icon(iconName,textControl.iconSet().get());
+            textControl.smallIcon().set(icon);
         }
-        return EXT_TO_MIMETYPE = p2;
-    }
-
-    public static String probeContentTypeByName(String path) {
-        String fe = getFileExtension(path).toLowerCase();
-        String a = getExtensionToProperties().getProperty(fe);
-        if (a == null) {
-            return "application/octet-stream";
-        }
-        return a;
-    }
-
-    public static String probeContentType(String path) {
-        String probedContentType = null;
-        File asFile = asFile(path);
-        if (asFile != null) {
-            try {
-                probedContentType = Files.probeContentType(asFile.toPath());
-            } catch (IOException ex) {
-                //
-            }
-        }
-        if (probedContentType == null) {
-            URL asUrl = asURL(path);
-            if (asUrl != null) {
-                try {
-                    URLConnection hc = asUrl.openConnection();
-                    hc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-                    probedContentType = hc.getContentType();
-                } catch (IOException ex) {
-                    //
-                }
-            }
-        }
-        if (probedContentType == null) {
-            probedContentType = probeContentTypeByName(path);
-        }
-        if (probedContentType == null) {
-            probedContentType = "application/octet-stream";
-        }
-        return probedContentType;
-    }
-
-    public static URL asURL(String url) {
-        try {
-            return new URL(url);
-        } catch (Exception ex) {
-        }
-        //this is a file?
-        File file1 = null;
-        try {
-            file1 = new File(url);
-            return file1.toURI().toURL();
-        } catch (Exception ex) {
-        }
-        return null;
-    }
-
-    public static File asFile(String url) {
-        File file1 = null;
-        try {
-            if (url.startsWith("file:")) {
-                if (url.contains(" ")) {//TODO: DIRTY fix me, 
-                    url = url.replaceAll(" ", "%20");
-                }
-                URL u = new URL(url);
-                URI uri = u.toURI();
-
-                if (uri.getAuthority() != null && uri.getAuthority().length() > 0) {
-                    // Hack for UNC Path
-                    uri = (new URL("file://" + url.substring("file:".length()))).toURI();
-                }
-                File file = new File(uri);
-                if (file.exists()) {
-                    return file;
-                }
-            }
-            file1 = new File(url);
-            if (file1.exists()) {
-                return file1;
-            }
-        } catch (Exception ex) {
-        }
-        return null;
-    }
-
-    public static Integer parseInt(String s) {
-        if (s != null) {
-            try {
-                return Integer.parseInt(s);
-            } catch (Exception ex) {
-                //
-            }
-        }
-        return null;
-    }
-
-    public static String getFileName(String s) {
-        if (s == null) {
-            return "";
-        }
-        int i = s.indexOf('?');
-        if (i >= 0) {
-            s = s.substring(0, i);
-        }
-        while (s.endsWith("/") || s.endsWith("\\")) {
-            s = s.substring(0, s.length() - 1);
-        }
-        i = s.lastIndexOf('/');
-        int i2 = s.lastIndexOf('\\');
-        if (i2 > i) {
-            i = i2;
-        }
-        if (i > 0) {
-            return s.substring(i + 1);
-        }
-        return s;
     }
 }

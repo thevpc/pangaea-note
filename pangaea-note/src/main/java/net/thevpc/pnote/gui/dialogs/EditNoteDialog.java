@@ -8,6 +8,13 @@ package net.thevpc.pnote.gui.dialogs;
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
+import net.thevpc.echo.constraints.AllAnchors;
+import net.thevpc.echo.constraints.AllFill;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.Fill;
+import net.thevpc.echo.constraints.Grow;
+import net.thevpc.echo.constraints.Weight;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.api.EditTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteTypeServiceBase;
 import net.thevpc.pnote.api.model.PangaeaNote;
@@ -43,7 +50,8 @@ public class EditNoteDialog {
         Application app = frame.app();
         I18n i18n = app.i18n();
 
-        panel = new VerticalPane(app);
+        panel = new GridPane(1, app);
+        panel.parentConstraints().addAll(AllAnchors.LEFT, AllFill.HORIZONTAL, AllMargins.of(3));
         panel.children().addAll(
                 new Label(Str.i18n("Message.name"), app),
                 nameEditor = new TextField(Str.empty(), app),
@@ -56,6 +64,7 @@ public class EditNoteDialog {
                 readOnlyEditor = new CheckBox(null, Str.i18n("Message.readOnly"), app),
                 jTabbedPane = new TabPane(app)
                         .with(t -> {
+                            t.childConstraints().addAll(Fill.BOTH, Grow.BOTH);
                             t.children().add(titleEditor = new PangaeaNoteTitleFormatPanel(frame));
                             t.children().add(iconsEditor = new PangaeaNoteIconsList(frame));
                             t.children().add(editTypeComponentPanel = new BorderPane(app)
@@ -89,19 +98,13 @@ public class EditNoteDialog {
         }
         editTypeComponent = c;
         editTypeComponentPanel.children().removeAll();
-        editTypeComponentPanel.children().add(editTypeComponent.component());
+        editTypeComponentPanel.children().add(editTypeComponent);
         editTypeComponent.loadFrom(note);
         jTabbedPane.children().get(2).enabled().set(haveOptions);
-//        if (panel != null) {
-//            Window p = SwingUtilities.getWindowAncestor(panel);
-//            if (p != null) {
-//                p.pack();
-//            }
-//        }
     }
 
     protected PangaeaNote getNote() {
-        String txt = nameEditor.text().getOr(x -> x == null ? null : x.value(frame.i18n()));
+        String txt = Applications.rawString(nameEditor.text(),nameEditor);
         note.setName(txt);
         if (txt == null || txt.trim().length() == 0) {
             String ct = note.getContentType();
@@ -140,7 +143,11 @@ public class EditNoteDialog {
             install();
             this.ok = false;
             new Alert(frame.app())
-                    .setTitle(Str.i18n("Message.editNote"))
+                            .with((Alert a)->{
+                                a.title().set(Str.i18n("Message.editNote"));
+                                a.headerText().set(Str.i18n("Message.editNote"));
+                                a.headerIcon().set(Str.of("edit"));
+                            })
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {

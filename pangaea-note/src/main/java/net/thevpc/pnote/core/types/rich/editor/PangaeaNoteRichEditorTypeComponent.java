@@ -8,17 +8,17 @@ package net.thevpc.pnote.core.types.rich.editor;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.ContextMenu;
-import net.thevpc.echo.Panel;
 import net.thevpc.echo.RichHtmlEditor;
 import net.thevpc.echo.api.AppColor;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.api.components.AppContextMenu;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.SelectableElement;
+import net.thevpc.pnote.gui.editor.editorcomponents.source.RichHtmlToolBarHelper;
+import net.thevpc.pnote.gui.editor.editorcomponents.source.TextToolBarHelper;
 import net.thevpc.pnote.gui.search.SearchDialog;
 import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 /**
  * @author vpc
  */
-public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
     private PangaeaNoteFrame frame;
     private RichHtmlEditor textArea;
@@ -45,10 +45,15 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
             return (s != null && s.length() > 0) ? s : null;
         }
     };
+
+    @Override
+    public void requestFocus() {
+        textArea.requestFocus();
+    }
+
 //    private SourceEditorPaneExtension textExtension = new SourceEditorPanePanelTextExtension();
 //    private SourceEditorPaneExtension htmlExtension = new SourceEditorPanePanelHtmlExtension();
-
-    public RichEditor(boolean compactMode, PangaeaNoteFrame frame) {
+    public PangaeaNoteRichEditorTypeComponent(boolean compactMode, PangaeaNoteFrame frame) {
         super(frame.app());
         this.frame = frame;
         this.compactMode = compactMode;
@@ -96,22 +101,14 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
 //                                popup.show(editor, pt.x, pt.y);
 //                            }
 //                        } catch (Exception ex) {
-//                            Logger.getLogger(SourceEditorPanePanel.class.getName()).log(Level.SEVERE, null, ex);
+//                            Logger.getLogger(SourceEditorTypeComponent.class.getName()).log(Level.SEVERE, null, ex);
 //                        }
 //                    }
 //                }
 //        );
         textArea.zoomOnMouseWheel().set(true);
-        if (!compactMode) {
-//            editorBuilder.footer()
-//                    //                .add(new JLabel("example..."))
-//                    //                .add(new JSyntaxPosLabel(e, completion))
-//                    .addGlue()
-//                    .addCaret()
-//                    .end();
-        } else {
-//            setBorder(BorderFactory.createEmptyBorder());
-        }
+        TextToolBarHelper.prepare(frame);
+        RichHtmlToolBarHelper.prepare(frame);
         AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
 //        textExtension.prepareEditor(editorBuilder, compactMode, win);
 //        htmlExtension.prepareEditor(editorBuilder, compactMode, win);
@@ -123,18 +120,17 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
 //            }
 //        });
 //        GuiHelper.installUndoRedoManager(editorBuilder.editor());
-
         children().add(textArea);
         textArea.focused()
                 .onChange(e -> {
-            if (e.newValue()) {
-                frame.selectableElement().set(selectableElement);
-            } else {
-                if (selectableElement == frame.selectableElement().get()) {
-                    frame.selectableElement().set(null);
-                }
-            }
-        });
+                    if (e.newValue()) {
+                        frame.selectableElement().set(selectableElement);
+                    } else {
+                        if (selectableElement == frame.selectableElement().get()) {
+                            frame.selectableElement().set(null);
+                        }
+                    }
+                });
     }
 
 //    public static String getCopiedString(JEditorPane editor) {
@@ -148,7 +144,6 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
 //        }
 //        return "";
 //    }
-
     private void showSearchDialog() {
         SearchDialog dialog = new SearchDialog(frame);
         dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
@@ -165,11 +160,6 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
             });
         }
 
-    }
-
-    @Override
-    public AppComponent component() {
-        return this;
     }
 
     @Override
@@ -190,7 +180,6 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
         return compactMode;
     }
 
-
     @Override
     public void setEditable(boolean b) {
         if (currentNote != null && currentNote.isReadOnly()) {
@@ -203,7 +192,6 @@ public class RichEditor extends BorderPane implements PangaeaNoteEditorTypeCompo
     public boolean isEditable() {
         return textArea.editable().get();
     }
-
 
     @Override
     public void removeHighlights(HighlightType highlightType) {

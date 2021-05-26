@@ -8,19 +8,14 @@ package net.thevpc.pnote.gui;
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.*;
-import net.thevpc.echo.*;
-import net.thevpc.echo.api.AppColor;
-import net.thevpc.echo.api.AppDialogResult;
-import net.thevpc.echo.api.AppUIPlaf;
-import net.thevpc.echo.api.CancelException;
-import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.FileFilter;
-import net.thevpc.echo.Button;
-import net.thevpc.echo.Frame;
-import net.thevpc.echo.Image;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.*;
+import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.api.components.AppMenu;
 import net.thevpc.echo.api.components.AppTreeNode;
 import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.echo.impl.controls.ExtraControls;
 import net.thevpc.nuts.NutsSession;
 import net.thevpc.nuts.NutsWorkspace;
@@ -28,6 +23,7 @@ import net.thevpc.pnote.PangaeaSplashScreen;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.api.model.*;
+import net.thevpc.pnote.core.types.embedded.PangaeaNoteDocumentInfo;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.gui.breadcrumb.PangaeaNodeBreadcrumb;
 import net.thevpc.pnote.gui.dialogs.EditNoteDialog;
@@ -46,21 +42,19 @@ import net.thevpc.pnote.service.search.PangaeaNoteExtSearchResult;
 import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.security.PasswordHandler;
-import net.thevpc.pnote.util.OtherUtils;
 
-//import java.awt.Color;
-//import java.awt.event.KeyEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author vpc
  */
-public class PangaeaNoteFrame extends Frame{
+public class PangaeaNoteFrame extends Frame {
 
     private static boolean DEV_MODE_UI = false;
+    private static String DEFAULT_ICONSET = "svgrepo-color";
     private boolean splash;
     //    private RecentFilesMenu recentFilesMenu;
     private PangaeaNoteDocumentTree tree;
@@ -72,10 +66,40 @@ public class PangaeaNoteFrame extends Frame{
     private PangaeaNote lastSavedDocument;
     private WritableValue<SelectableElement> selectableElement = Props.of("selectableElement").valueOf(SelectableElement.class, null);
     private WritableBoolean mainFrame = Props.of("mainFrame").booleanOf(false);
-    public PangaeaNoteFrame(PangaeaNoteApp papp, boolean splash,Application app) {
-        super(app);
+
+    public PangaeaNoteFrame(String id,PangaeaNoteApp app, boolean splash) {
+        super(id,app);
         this.splash = splash;
+
+        prefSize().set(new Dimension(800, 600));
         mainFrame.onChange(x -> onChangeTitle());
+        String ic0 = app.service().config().getIconSet();
+        this.iconSet().set(ic0 == null ? DEFAULT_ICONSET : ic0);
+        String loc0 = app.service().config().getLocale();
+        this.locale().set(loc0 == null ? Locale.getDefault() : new Locale(loc0));
+        this.iconSet().onChange(
+                () -> {
+                    PangaeaNoteExt d = getDocument();
+                    PangaeaNoteDocumentInfo info = app().service().getDocumentInfo(d.toNote());
+                    info.setIconSet(this.iconSet().get());
+                    d.setContent(app().service().documentInfoToElement(info));
+                    service().config().setIconSet(this.iconSet().get());
+                    service().saveConfig();
+                    app().iconSets().id().set(this.iconSet().get());
+                }
+        );
+        this.locale().onChange(
+                () -> {
+                    PangaeaNoteExt d = getDocument();
+                    PangaeaNoteDocumentInfo info = app().service().getDocumentInfo(d.toNote());
+                    String loc = this.locale().get() == null ? null : this.locale().get().toString();
+                    info.setLocale(loc);
+                    d.setContent(app().service().documentInfoToElement(info));
+                    service().config().setLocale(loc);
+                    service().saveConfig();
+                    app().i18n().locale().set(this.locale().get());
+                }
+        );
     }
 
     public NutsWorkspace getNutsWorkspace() {
@@ -124,36 +148,32 @@ public class PangaeaNoteFrame extends Frame{
         String modPrefix = "";//mainFrame().get() ? "(!!) " : "";
         String modSuffix = modificationsCount > 0 ? " (*)" : "";
         if (currentFilePath == null || currentFilePath.length() == 0) {
-            frameWidget().title().set(Str.of(modPrefix + "Pangaea-Note: " + "<" + app().i18n().getString("Message.noName") + ">" + modSuffix));
+            this.title().set(Str.of(modPrefix + "Pangaea-Note v1.2 : " + "<" + app().i18n().getString("Message.noName") + ">" + modSuffix));
         } else {
-            frameWidget().title().set(Str.of(modPrefix + "Pangaea-Note: " + currentFilePath + modSuffix));
+            this.title().set(Str.of(modPrefix + "Pangaea-Note v1.2 : " + currentFilePath + modSuffix));
         }
-    }
-
-    protected Frame frameWidget() {
-        return this;
     }
 
     public void bindConfig() {
         PangaeaNoteConfig config = service().config();
-        app().iconSets().onChange(x -> {
-            config.setIconSet(app().iconSets().id().get());
-            config.setIconSetSize(app().iconSets().config().get().getWidth());
-            saveConfig();
-        });
-        app().i18n().locale().onChange(x -> {
-            config.setLocale(((Locale) x.newValue()).toString());
-            saveConfig();
-        });
-        frameWidget().displayMode().onChange(x -> {
+//        app().iconSets().onChange(x -> {
+//            config.setIconSet(app().iconSets().id().get());
+//            config.setIconSetSize(app().iconSets().config().get().getWidth());
+//            saveConfig();
+//        });
+//        app().i18n().locale().onChange(x -> {
+//            config.setLocale(((Locale) x.newValue()).toString());
+//            saveConfig();
+//        });
+        this.displayMode().onChange(x -> {
             config.setDisplayMode(((FrameDisplayMode) x.newValue()));
             saveConfig();
         });
-        frameWidget().toolBar().get().visible().onChange(x -> {
+        this.toolBar().get().visible().onChange(x -> {
             config.setDisplayToolBar(((Boolean) x.newValue()));
             saveConfig();
         });
-        frameWidget().statusBar().get().visible().onChange(x -> {
+        this.statusBar().get().visible().onChange(x -> {
             config.setDisplayStatusBar(((Boolean) x.newValue()));
             saveConfig();
         });
@@ -171,28 +191,28 @@ public class PangaeaNoteFrame extends Frame{
 
     public void applyConfigToUI() {
         PangaeaNoteConfig config = service().config();
-        if (app().iconSets().containsKey(config.getIconSet())) {
-            app().iconSets().id().set(config.getIconSet());
-        }
-        if (config.getIconSetSize() > 3) {
-            app().iconSets().config().set(
-                    app().iconSets().config().get().setSize(config.getIconSetSize())
-            );
-        }
-        if (config.getLocale() != null && config.getLocale().length() > 0) {
-            app().i18n().locale().set(new Locale(config.getLocale()));
-        }
+//        if (app().iconSets().containsKey(config.getIconSet())) {
+//            app().iconSets().id().set(config.getIconSet());
+//        }
+//        if (config.getIconSetSize() > 3) {
+//            app().iconSets().config().set(
+//                    app().iconSets().config().get().setSize(config.getIconSetSize())
+//            );
+//        }
+//        if (config.getLocale() != null && config.getLocale().length() > 0) {
+//            app().i18n().locale().set(new Locale(config.getLocale()));
+//        }
         if (config.getPlaf() != null && config.getPlaf().length() > 0) {
             app().toolkit().runUI(() -> app().plaf().set(config.getPlaf()));
         }
         if (config.getDisplayMode() != null) {
-            frameWidget().displayMode().set(config.getDisplayMode());
+            this.displayMode().set(config.getDisplayMode());
         }
         if (config.getDisplayToolBar() != null) {
-            frameWidget().toolBar().get().visible().set(config.getDisplayToolBar());
+            this.toolBar().get().visible().set(config.getDisplayToolBar());
         }
         if (config.getDisplayStatusBar() != null) {
-            frameWidget().statusBar().get().visible().set(config.getDisplayStatusBar());
+            this.statusBar().get().visible().set(config.getDisplayStatusBar());
         }
         updateRecentFilesMenu();
     }
@@ -200,28 +220,28 @@ public class PangaeaNoteFrame extends Frame{
     public void run() {
 //        AppEditorThemes editorThemes = new AppEditorThemes();
         ticSplash();
-        frameWidget().addDefaultMenus();
-        frameWidget().smallIcon().set(new Image(
-                getClass().getResource("/net/thevpc/pnote/icon.png"),app()
+        this.addDefaultMenus();
+        this.smallIcon().set(new Image(
+                getClass().getResource("/net/thevpc/pnote/icon.png"), app()
         ));
-        frameWidget().content().set(new DockPane(app()));
+        this.content().set(new DockPane(app()));
 //                f.toolBar().set(new ToolBarGroup(app));
 //                f.statusBar().set(new ToolBarGroup(app));
 //        app.components().addFolder(pathOf( "/menuBar/File"));
 //        app.components().addFolder(pathOf( "/menuBar/Edit"));
 //        app.components().addFolder(pathOf( "/menuBar/View"));
 //        app.components().addFolder(pathOf( "/menuBar/Help"));
-        app().components().addFolder(pathOf( "/toolBar/Default"));
-        app().components().addFolder(pathOf( "/statusBar/Default"));
+        app().components().addFolder(pathOf("/toolBar/Default"));
+        app().components().addFolder(pathOf("/statusBar/Default"));
 
         ticSplash();
 
-        frameWidget().open();
+        this.open();
         ticSplash();
-        frameWidget().centerOnDefaultMonitor();
+        this.centerOnDefaultMonitor();
         ticSplash();
         onChangeTitle();
-        frameWidget().smallIcon().set(
+        this.smallIcon().set(
                 Image.of(getClass().getResource("/net/thevpc/pnote/icon.png"), app())
         );
 
@@ -259,122 +279,115 @@ public class PangaeaNoteFrame extends Frame{
 
         ticSplash();
         ticSplash();
-        app().components().add(new Spacer(app()).expandX(), pathOf( "/statusBar/Default/*"));
         ticSplash();
-        app().components().add(ExtraControls.createDateLabel(app(), "yyy-MM-dd HH:mm:ss"), pathOf( "/statusBar/Default/calendar"));
+        app().components().add(ExtraControls.createDateLabel(app(), "yyy-MM-dd HH:mm:ss"), pathOf("/statusBar/Default/calendar"));
         ticSplash();
-        app().components().add(ExtraControls.createMemoryMonitorLabel(app()), pathOf( "/statusBar/Default/calendar"));
+        app().components().addSeparator(pathOf("/statusBar/Default/*"));
+        app().components().add(ExtraControls.createMemoryMonitorLabel(app()), pathOf("/statusBar/Default/calendar"));
         ticSplash();
 
-        app().components().addFolder(pathOf( "/menuBar/File"));
+        app().components().addFolder(pathOf("/menuBar/File"));
 
-        app().components().addAll(
-                new Button("NewFile", this::closeDocumentNoDiscard,app())
-                .with((Button b)->{
-                    b.mnemonic().set(KeyEvent.VK_N);
-                    b.accelerator().set("control N");
-                }),
+        app().components().addMulti(
+                new Button("NewFile", this::closeDocumentNoDiscard, app())
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyEvent.VK_N);
+                            b.accelerator().set("control N");
+                        }),
                 pathOf("/menuBar/File/*"), pathOf("/toolBar/Default/NewFile"));
 
 //        newfileAction.mnemonic().set(KeyEvent.VK_N);
 //        newfileAction.accelerator().set("control N");
         ticSplash();
-        Menu f = (Menu) app().components().get(pathOf( "/menuBar/File"));
+        Menu f = (Menu) app().components().get(pathOf("/menuBar/File"));
         f.mnemonic().set(KeyEvent.VK_F);
 
-        app().components().add(new Button("OpenLastFile", this::openLastDiscardNoDiscard,    app())
-                .with((Button b)->{
-                    b.accelerator().set("control shift O");
-                })
-                ,
+        app().components().add(new Button("OpenLastFile", this::openLastDiscardNoDiscard, app())
+                        .with((Button b) -> {
+                            b.accelerator().set("control shift O");
+                        }),
                 pathOf("/menuBar/File/*"));
 
-        app().components().add(new Button("Open", this::openDocumentNoDiscard,    app())
-                .with((Button b)->{
-                    b.mnemonic().set(KeyEvent.VK_O);
-                    b.accelerator().set("control O");
-                })
-                ,
+        app().components().add(new Button("Open", this::openDocumentNoDiscard, app())
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyEvent.VK_O);
+                            b.accelerator().set("control O");
+                        }),
                 pathOf("/menuBar/File/*"));
 
-        app().components().add(new Button("Reload", this::reloadDocumentNoDiscard,    app())
-                .with((Button b)->{
-                    b.mnemonic().set(KeyEvent.VK_R);
-                    b.accelerator().set("control R");
-                })
-                ,
+        app().components().add(new Button("Reload", this::reloadDocumentNoDiscard, app())
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyEvent.VK_R);
+                            b.accelerator().set("control R");
+                        }),
                 pathOf("/menuBar/File/*"));
 
         ticSplash();
-        app().components().addSeparator(pathOf( "/menuBar/File/*"));
+        app().components().addSeparator(pathOf("/menuBar/File/*"));
         updateRecentFilesMenu();
 
-        app().components().addSeparator(pathOf( "/menuBar/File/*"));
+        app().components().addSeparator(pathOf("/menuBar/File/*"));
         ticSplash();
 
-        app().components().add(new Button("Save", this::saveDocument,    app())
-                        .with((Button b)->{
+        app().components().add(new Button("Save", this::saveDocument, app())
+                        .with((Button b) -> {
                             b.mnemonic().set(KeyEvent.VK_S);
                             b.accelerator().set("control S");
-                        })
-                ,
+                        }),
                 pathOf("/menuBar/File/*"));
 
-
         ticSplash();
 
-        app().components().add(new Button("SaveAs", this::saveAsDocument, app()), pathOf( "/menuBar/File/*"));
+        app().components().add(new Button("SaveAs", this::saveAsDocument, app()), pathOf("/menuBar/File/*"));
 
         ticSplash();
-        app().components().addSeparator(pathOf( "/menuBar/File/*"));
+        app().components().addSeparator(pathOf("/menuBar/File/*"));
         ticSplash();
 
-        app().components().add(new Button("NewWindow", () -> app().newFrame(), app()), pathOf( "/menuBar/File/*"));
+        app().components().add(new Button("NewWindow", () -> app().newFrame(), app()), pathOf("/menuBar/File/*"));
 
-        app().components().addSeparator(pathOf( "/menuBar/File/*"));
+        app().components().addSeparator(pathOf("/menuBar/File/*"));
 
-        app().components().add(new Button("CloseDocument", this::closeDocumentNoDiscard, app()), pathOf( "/menuBar/File/*"));
-        app().components().add(new Button("CloseWindow", this::close, app()), pathOf( "/menuBar/File/*"));
+        app().components().add(new Button("CloseDocument", this::closeDocumentNoDiscard, app()), pathOf("/menuBar/File/*"));
+        app().components().add(new Button("CloseWindow", this::close, app()), pathOf("/menuBar/File/*"));
 
         app().components().add(new Button("Exit", this::exitApp, app())
                         .with((Button b) -> {
                             b.mnemonic().set(KeyEvent.VK_X);
                             b.accelerator().set("control X");
-                        })
-                , pathOf( "/menuBar/File/*")
+                        }),
+                pathOf("/menuBar/File/*")
         );
 
-        app().components().addFolder(pathOf( "/menuBar/Edit"));
-        app().components().addSeparator(pathOf( "/toolBar/Default/Separator1"));
-        app().components().addAll(new Button("AddNote", this::addNoteSafe, app())
+        app().components().addFolder(pathOf("/menuBar/Edit"));
+        app().components().addSeparator(pathOf("/toolBar/Default/Separator1"));
+        app().components().addMulti(new Button("AddNote", this::addNoteSafe, app())
                         .with((Button b) -> {
                             b.mnemonic().set(KeyEvent.VK_B);
                             b.accelerator().set("control B");
-                        })
-                ,
-                pathOf( "/menuBar/Edit/AddNote"), pathOf( "/toolBar/Default/*")
+                        }),
+                pathOf("/menuBar/Edit/AddNote"), pathOf("/toolBar/Default/*")
         );
 
-        app().components().addSeparator(pathOf( "/menuBar/Edit/Separator1"));
-        app().components().addAll(new Button("Search", this::searchNote, app())
-                        .with((Button b) ->
-                                {
+        app().components().addSeparator(pathOf("/menuBar/Edit/Separator1"));
+        app().components().addMulti(new Button("Search", this::searchNote, app())
+                        .with((Button b)
+                                        -> {
                                     b.mnemonic().set(KeyEvent.VK_F);
                                     b.accelerator().set("control shift F");
 
                                 }
-                        )
-                ,
-                pathOf( "/menuBar/Edit/Search"), pathOf( "/toolBar/Default/*"));
+                        ),
+                pathOf("/menuBar/Edit/Search"), pathOf("/toolBar/Default/*"));
 
-        app().components().addFolder(pathOf( "/menuBar/Help"));
-        app().components().add(new Button("About", () -> app().showAbout(), app())
-                , pathOf( "/menuBar/Help/*"));
+        app().components().addFolder(pathOf("/menuBar/Help"));
+        app().components().add(new Button("About", () -> app().showAbout(), app()),
+                pathOf("/menuBar/Help/*"));
 
-        app().components().add(new Spacer(app()).expandX(), pathOf( "/toolBar/Default/*"));
+        app().components().add(new Spacer(app()).expandX(), pathOf("/toolBar/Default/*"));
 
         app().components().add(new PangaeaNodeBreadcrumb(PangaeaNoteFrame.this),
-                pathOf( "/toolBar/Default/*")
+                pathOf("/toolBar/Default/*")
         );
 
         ticSplash();
@@ -417,31 +430,31 @@ public class PangaeaNoteFrame extends Frame{
 //        );
         app().plaf().onChange(event -> {
             AppUIPlaf plaf = app().toolkit().getPlaf(event.newValue());
-            if(plaf!=null) {
+            if (plaf != null) {
                 if (plaf.isDark()) {
-                    String iconsetId = app().iconSets().id().get();
+                    String iconsetId = iconSet().get();
                     if (iconsetId != null) {
                         switch (iconsetId) {
                             case "feather-black": {
-                                app().iconSets().id().set("feather-white");
+                                iconSet().set("feather-white");
                                 break;
                             }
                             case "feather-blue": {
-                                app().iconSets().id().set("feather-yellow");
+                                iconSet().set("feather-yellow");
                                 break;
                             }
                         }
                     }
                 } else if (plaf.isLight()) {
-                    String iconsetId = app().iconSets().id().get();
+                    String iconsetId = iconSet().get();
                     if (iconsetId != null) {
                         switch (iconsetId) {
                             case "feather-white": {
-                                app().iconSets().id().set("feather-black");
+                                iconSet().set("feather-black");
                                 break;
                             }
                             case "feather-yellow": {
-                                app().iconSets().id().set("feather-blue");
+                                iconSet().set("feather-blue");
                                 break;
                             }
                         }
@@ -484,34 +497,42 @@ public class PangaeaNoteFrame extends Frame{
     }
 
     private DockPane workspace() {
-        return (DockPane) frameWidget().content().get();
+        return (DockPane) this.content().get();
     }
 
     protected void updateRecentFilesMenu() {
-            AppMenu a = (AppMenu) app().components().addFolder(pathOf( "/menuBar/File/LoadRecent"));
-            a.text().set(Str.i18n("Action.LoadRecent"));
-            List<String> all = service().config().getRecentFiles();
-            ObservableList<AppComponent> ac = a.children();
-            while (ac.size() > 0) {
-                int before = ac.size();
-                a.children().remove(Path.of(ac.get(0).path().get().name()));
-                int after = ac.size();
-                if (after >= before) {
-                    //error
-                    return;
+        AppMenu a = (AppMenu) app().components().addFolder(pathOf("/menuBar/File/LoadRecent"));
+        a.text().set(Str.i18n("Action.LoadRecent"));
+        List<String> all = service().config().getRecentFiles();
+        ObservableList<AppComponent> ac = a.children();
+        while (ac.size() > 0) {
+            int before = ac.size();
+            a.children().remove(Path.of(ac.get(0).path().get().name()));
+            int after = ac.size();
+            if (after >= before) {
+                //error
+                return;
+            }
+        }
+        int index = 0;
+        for (String filePath : all) {
+            Button t = new Button(
+                    null, () -> {
+                ReturnType returnType = openDocument(new File(filePath), false);
+                if (returnType == ReturnType.FAIL) {
+                    List<String> all2 = service().config().getRecentFiles();
+                    if(all2.remove(filePath)){
+                        service().config().setRecentFiles(all2);
+                        service().saveConfig();
+                    }
+                    updateRecentFilesMenu();
                 }
-            }
-            int index = 0;
-            for (String filePath : all) {
-                Button t = new Button(
-                        null, () -> {
-                    openDocument(new File(filePath), false);
-                }, app()
-                );
-                t.text().set(Str.of(filePath));
-                //t.smallIcon().set((AppImage) null);
-                app().components().add(t, pathOf( "/menuBar/File/LoadRecent/" + (index + 1)));
-            }
+            }, app()
+            );
+            t.text().set(Str.of(filePath));
+            //t.smallIcon().set((AppImage) null);
+            app().components().add(t, pathOf("/menuBar/File/LoadRecent/" + (index + 1)));
+        }
     }
 
     protected void ticSplash() {
@@ -559,7 +580,11 @@ public class PangaeaNoteFrame extends Frame{
                 app().getOpenWallet().clear();
                 return "yes".equals(
                         new Alert(app())
-                                .setTitle(Str.i18n("Message.invalidPassword.askRetype"))
+                                .with((Alert a) -> {
+                                    a.title().set(Str.i18n("Message.invalidPassword.askRetype"));
+                                    a.headerText().set(Str.i18n("Message.invalidPassword.askRetype"));
+                                    a.headerIcon().set(Str.of("error"));
+                                })
                                 .setContentText(Str.i18n("Message.invalidPassword.askRetype"))
                                 .withYesNoButtons()
                                 .showDialog(null));
@@ -620,7 +645,11 @@ public class PangaeaNoteFrame extends Frame{
     public ReturnType trySaveChangesOrDiscard() {
         if (isModifiedDocument()) {
             String s = new Alert(app())
-                    .setTitle(Str.i18n("Message.askSaveDocument"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.askSaveDocument"));
+                        a.headerText().set(Str.i18n("Message.askSaveDocument"));
+                        a.headerIcon().set(Str.of("save"));
+                    })
                     .setContentText(Str.i18n("Message.askSaveDocument"))
                     .withYesNoButtons()
                     .showDialog(null);
@@ -656,7 +685,8 @@ public class PangaeaNoteFrame extends Frame{
             throw new IllegalArgumentException("expected Document Note");
         }
         if (tree.getDocument() != null && tree.getDocument().getContent() != null) {
-            String oldPath = tree.getDocument().getContent().asString();
+            PangaeaNoteDocumentInfo oldInfo = service().getDocumentInfo(tree.getDocument().toNote());
+            String oldPath = oldInfo.getPath();
             app().getOpenWallet().clear(oldPath);
         }
         app().toolkit().runUI(() -> {
@@ -664,7 +694,7 @@ public class PangaeaNoteFrame extends Frame{
             snapshotDocument();
             onChangePath(
                     ((PangaeaNoteEmbeddedService) service().getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
-                            .getContentValueAsPath(note.getContent())
+                            .getContentValueAsInfo(note.getContent()).getPath()
             );
         });
         return ReturnType.SUCCESS;
@@ -687,10 +717,28 @@ public class PangaeaNoteFrame extends Frame{
             return ReturnType.FAIL;
         }
         if (n.error == null) {
+            PangaeaNoteDocumentInfo info = service().getDocumentInfo(n);
+            String loc = info.getLocale();
+            if (loc == null) {
+                loc = service().config().getLocale();
+            }
+            if (loc == null) {
+                loc = Locale.getDefault().toString();
+            }
+            locale().set(new Locale(loc));
+            String iconSet = info.getIconSet();
+            if (iconSet == null) {
+                iconSet = service().config().getIconSet();
+            }
+            if (iconSet == null) {
+                iconSet = DEFAULT_ICONSET;
+            }
+            iconSet().set(iconSet);
+
             openNode(n, true);
             return ReturnType.SUCCESS;
         } else {
-            if(n.error.getEx()!=null) {
+            if (n.error.getEx() != null) {
                 app().errors().add(n.error.getEx());
             }
             return ReturnType.FAIL;
@@ -730,10 +778,10 @@ public class PangaeaNoteFrame extends Frame{
                     current.addChild(PangaeaNoteExt.of(c));
                 }
             } else {
-                String extension = OtherUtils.getFileExtension(file);
+                String extension = Applications.getFileExtension(file);
                 PangaeaNoteFileImporter imp = service().resolveFileImporter(extension);
                 try (InputStream is = new FileInputStream(file)) {
-                    PangaeaNote n = imp.loadNote(is, OtherUtils.getFileName(file), extension, service());
+                    PangaeaNote n = imp.loadNote(is, Applications.getFileName(file), extension, service());
                     if (n != null) {
                         current.addChild(PangaeaNoteExt.of(n));
                     }
@@ -763,7 +811,7 @@ public class PangaeaNoteFrame extends Frame{
         if (!service().isDocumentNote(selectedNote.toNote())) {
             return ReturnType.CANCEL;
         }
-        String c = service().getDocumentPath(selectedNote);
+        String c = service().getDocumentInfo(selectedNote.toNote()).getPath();
         if (c == null || c.length() == 0) {
             //openNewDocument(false);
             return ReturnType.CANCEL;
@@ -801,6 +849,11 @@ public class PangaeaNoteFrame extends Frame{
     public ReturnType saveAsDocument() {
         boolean doSecureDocument = false;
         switch (new Alert(app())
+                .with((Alert t) -> {
+                    t.title().set(Str.i18n("Message.askSecureSaveTitle"));
+                    t.headerText().set(Str.i18n("Message.askSecureSaveHeader"));
+                    t.headerIcon().set(Str.of("lock"));
+                })
                 .withYesNoCancelButtons()
                 .setContentText(Str.i18n("Message.askSecureSave"))
                 .showDialog(null)) {
@@ -848,7 +901,7 @@ public class PangaeaNoteFrame extends Frame{
             return saveAsDocument();
         } else {
             try {
-                onChangePath(service().getDocumentPath(getDocument()));
+                onChangePath(service().getDocumentInfo(getDocument().toNote()).getPath());
                 if (service().saveDocument(getDocument().toNote(), wallet())) {
                     snapshotDocument();
                 }
@@ -882,7 +935,7 @@ public class PangaeaNoteFrame extends Frame{
                 sb.insert(0, p.getName());
                 p = p.getParent();
             }
-            dialog.setTitle(Str.i18n("Message.search.searchInNode"), sb);
+            dialog.setTitle(Str.i18nfmt("Message.search.searchInNode", sb));
         }
         SearchQuery s = dialog.showDialog();
         if (s != null) {
@@ -900,11 +953,37 @@ public class PangaeaNoteFrame extends Frame{
         }
     }
 
+    public void strikeThroughNote() {
+        PangaeaNoteExt vn = getSelectedNote();
+        if (vn != null) {
+            PangaeaNote a = vn.toNote();
+            a.setTitleStriked(!a.isTitleStriked());
+            service().updateNoteProperties(vn, a, this);
+            onDocumentChanged();
+            treePane().fireOnSelectedNote(getSelectedNote());
+        }
+    }
+
+    public void boldNote() {
+        PangaeaNoteExt vn = getSelectedNote();
+        if (vn != null) {
+            PangaeaNote a = vn.toNote();
+            a.setTitleBold(!a.isTitleBold());
+            service().updateNoteProperties(vn, a, this);
+            onDocumentChanged();
+            treePane().fireOnSelectedNote(getSelectedNote());
+        }
+    }
+
     public void renameNote() {
         PangaeaNoteExt vn = getSelectedNote();
         if (vn != null) {
             AppDialogResult r = new Alert(app()).withOkCancelButtons()
-                    .setTitle(Str.i18n("Message.renameNote"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.renameNote"));
+                        a.headerText().set(Str.i18n("Message.renameNote"));
+                        a.headerIcon().set(Str.of("edit"));
+                    })
                     .setInputTextFieldContent(Str.i18n("Message.renameNote.label"), Str.of(vn.getName()))
                     .showInputDialog(null);
             if (!r.isBlankValue() && r.isButton("ok")) {
@@ -955,15 +1034,16 @@ public class PangaeaNoteFrame extends Frame{
         PangaeaNote n = a.showDialog();
         if (n != null) {
             AppTreeNode<PangaeaNoteExt> nn = treePane().tree().selection().get();
-            if(nn==null){
-                nn=treePane().tree().root().get();
+            if (nn == null) {
+                nn = treePane().tree().root().get();
             }
 //            PangaeaNoteExt current = getSelectedNoteOrDocument();
             PangaeaNoteExt current = nn.get();
             PangaeaNoteExt cc = new PangaeaNoteExt().copyFrom(n);
             service().prepareChildForInsertion(current, cc);
 //            treePane().updateTree();
-            treePane().setSelectedNote(treePane().addNodeChild(nn,cc,-1));
+            treePane().setSelectedNote(treePane().addNodeChild(nn, cc, -1));
+            noteEditor.requestFocus();
             onDocumentChanged();
         }
     }
@@ -977,19 +1057,23 @@ public class PangaeaNoteFrame extends Frame{
     }
 
     public void deleteSelectedNote() {
-        PangaeaNoteExt n = getSelectedNote();
+        AppTreeNode<PangaeaNoteExt> n = treePane().tree().selection().get();
         if (n != null) {
-            String s = new Alert(app())
-                    .setTitle(Str.i18n("Message.warning"))
-                    .setContentText(Str.i18n("Message.askDeleteNote"))
-                    .withYesNoButtons()
-                    .showDialog(null);
+            if (n != treePane().tree().root().get()) {
+                String s = new Alert(app())
+                        .with((Alert a) -> {
+                            a.title().set(Str.i18n("Message.warning"));
+                            a.headerText().set(Str.i18n("Message.warning"));
+                            a.headerIcon().set(Str.of("delete"));
+                        })
+                        .setContentText(Str.i18n("Message.askDeleteNote"))
+                        .withYesNoButtons()
+                        .showDialog(null);
 
-            if ("yes".equals(s)) {
-                n.delete();
-                onDocumentChanged();
-                treePane().updateTree();
-                treePane().setSelectedNote((AppTreeNode<PangaeaNoteExt>) null);
+                if ("yes".equals(s)) {
+                    treePane().removeNodeChild(n);
+                    onDocumentChanged();
+                }
             }
         }
     }
@@ -1046,17 +1130,17 @@ public class PangaeaNoteFrame extends Frame{
     public AppColor colorForHighlightType(HighlightType t) {
         switch (t) {
             case SEARCH: {
-                return new Color("Objects.Yellow;OptionPane.warningDialog.titlePane.background;Component.warning.focusedBorderColor;FlameGraph.nativeBackground;ToolWindowScrollBarUI.arrow.background.end;Table.dropLineShortColor;#yellow",app());
+                return new Color("Objects.Yellow;OptionPane.warningDialog.titlePane.background;Component.warning.focusedBorderColor;FlameGraph.nativeBackground;ToolWindowScrollBarUI.arrow.background.end;Table.dropLineShortColor;#yellow", app());
             }
             case SEARCH_MAIN: {
-                return new Color("Objects.YellowDark;OptionPane.warningDialog.titlePane.shadow;Component.warning.focusedBorderColor;Desktop.background;Table[Enabled+Selected].textBackground;ToggleButton.onBackground;#orange",app());
+                return new Color("Objects.YellowDark;OptionPane.warningDialog.titlePane.shadow;Component.warning.focusedBorderColor;Desktop.background;Table[Enabled+Selected].textBackground;ToggleButton.onBackground;#orange", app());
             }
             case CARET: {
                 return new Color(
-                        "Button.default.focusColor;OptionPane.questionDialog.titlePane.background;OptionPane.questionDialog.titlePane.background;#green",app());
+                        "Button.default.focusColor;OptionPane.questionDialog.titlePane.background;OptionPane.questionDialog.titlePane.background;#green", app());
             }
         }
-        return new Color("cyan",app());
+        return new Color("cyan", app());
     }
 
     public WritableValue<SelectableElement> selectableElement() {
@@ -1072,7 +1156,7 @@ public class PangaeaNoteFrame extends Frame{
     }
 
     public Path framePath() {
-        return frameWidget().path().get();
+        return this.path().get();
     }
 
     private void closeSplash() {
@@ -1086,25 +1170,37 @@ public class PangaeaNoteFrame extends Frame{
     }
 
     public URLViewerComponent getViewer(String path, URLViewer uviewer) {
-        PangaeaNoteMimeType probedContentType = PangaeaNoteMimeType.of(OtherUtils.probeContentType(path));
-        String extension = OtherUtils.getFileExtension(path);
+        PangaeaNoteMimeType probedContentType = PangaeaNoteMimeType.of(Applications.probeContentType(path));
+        String extension = Applications.getFileExtension(path);
         int bestScore = -1;
-        PangaeaNoteFileViewerManager best = null;
+        SupportSupplier<URLViewerComponent> best = null;
         for (PangaeaNoteFileViewerManager viewer : app().getViewers()) {
-            int s = viewer.getSupport(path, extension, probedContentType, this);
-            if (s > 0 && s > bestScore) {
-                bestScore = s;
-                best = viewer;
+            SupportSupplier<URLViewerComponent> ss = viewer.getSupport(path, extension, probedContentType, uviewer, this);
+            if (ss != null) {
+                int s = ss.getSupportLevel();
+                if (s > 0 && s > bestScore) {
+                    bestScore = s;
+                    best = ss;
+                }
             }
         }
         if (best == null) {
             return new UnsupportedViewerComponent(path, extension, probedContentType, this, uviewer, () -> uviewer.fireSuccessfulLoading(path), uviewer::fireError);
         }
-        return best.createComponent(path, extension, probedContentType, uviewer, this);
+        return best.get();
     }
 
     public I18n i18n() {
         return app().i18n();
     }
 
+    public ToolBar findOrCreateToolBar(String name, Consumer<ToolBar> initializer) {
+        ToolBar editToolBar = (ToolBar) toolBar().get().children().get(name);
+        if (editToolBar == null) {
+            editToolBar = new ToolBar(name, Str.of(name), app());
+            toolBar().get().children().add(editToolBar, name);
+            initializer.accept(editToolBar);
+        }
+        return editToolBar;
+    }
 }

@@ -8,14 +8,16 @@ package net.thevpc.pnote.gui.dialogs;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.Alert;
 import net.thevpc.echo.Panel;
-import net.thevpc.echo.VerticalPane;
 import net.thevpc.echo.api.CancelException;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
-import javax.swing.*;
-import java.awt.*;
+import net.thevpc.echo.GridPane;
+import net.thevpc.echo.constraints.AllFill;
+import net.thevpc.echo.constraints.AllGrow;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.GrowContainer;
 
 /**
  * @author vpc
@@ -31,7 +33,7 @@ public class EnterNewPasswordDialog{
     private PasswordHandler ph;
     private PangaeaNoteFrame frame;
 
-    public EnterNewPasswordDialog(PangaeaNoteFrame frame, String path, PasswordHandler ph) throws HeadlessException {
+    public EnterNewPasswordDialog(PangaeaNoteFrame frame, String path, PasswordHandler ph)  {
         super();
         this.ph = ph;
         this.frame = frame;
@@ -41,12 +43,16 @@ public class EnterNewPasswordDialog{
         passwordComponent2 = new PasswordComponent(frame);
         passwordComponent2.install(frame.app());
 
-        panel=new VerticalPane(frame.app())
+        panel=new GridPane(1,frame.app())
                 .with(p->{
+                    p.parentConstraints().addAll(AllMargins.of(5),AllFill.HORIZONTAL,GrowContainer.HORIZONTAL,AllGrow.HORIZONTAL);
                     p.children().addAll(
                             new net.thevpc.echo.Label(Str.i18n("Message.enter-password"),frame.app()),
-                            new net.thevpc.echo.Label(Str.of(path),frame.app()),
+                            new net.thevpc.echo.TextField(null,Str.of(path),frame.app())
+                            .with((net.thevpc.echo.TextField t)->t.editable().set(false))
+                            ,
                             passwordComponent1,
+                            new net.thevpc.echo.Label(Str.i18n("Message.retype-password"),frame.app()),
                             passwordComponent2
                     );
                 });
@@ -88,7 +94,11 @@ public class EnterNewPasswordDialog{
             install();
             this.ok = false;
             new Alert(frame.app())
-                    .setTitle(Str.i18n("Message.password"))
+                            .with((Alert a)->{
+                                a.title().set(Str.i18n("Message.passwordTitle"));
+                                a.headerText().set(Str.i18n("Message.passwordHeader"));
+                                a.headerIcon().set(Str.of("lock"));
+                            })
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {

@@ -10,8 +10,6 @@ import net.thevpc.echo.Application;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.Label;
-import net.thevpc.echo.Panel;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
@@ -20,10 +18,10 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
  *
  * @author vpc
  */
-public class UnsupportedEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent{
+public class PangaeaNoteUnsupportedEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent{
     Label notSupported;
 
-    public UnsupportedEditorTypeComponent(Application app) {
+    public PangaeaNoteUnsupportedEditorTypeComponent(Application app) {
         super(app);
         notSupported = new Label(Str.i18n("Message.NotSupported"),app);
         children().add(notSupported);
@@ -32,11 +30,6 @@ public class UnsupportedEditorTypeComponent extends BorderPane implements Pangae
     @Override
     public boolean isCompactMode() {
         return true;
-    }
-
-    @Override
-    public AppComponent component() {
-        return this;
     }
 
     @Override

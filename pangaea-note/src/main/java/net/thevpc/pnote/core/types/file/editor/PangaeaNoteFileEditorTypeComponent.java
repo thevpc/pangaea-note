@@ -7,11 +7,6 @@ package net.thevpc.pnote.core.types.file.editor;
 
 import java.util.Objects;
 
-import net.thevpc.echo.BorderPane;
-import net.thevpc.echo.HorizontalPane;
-import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.echo.Panel;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
@@ -22,18 +17,14 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
  *
  * @author vpc
  */
-public class FileEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements PangaeaNoteEditorTypeComponent {
 
-    private URLViewer fileViewer;
     private PangaeaNoteExt currentNote;
     private boolean editable = true;
-    private PangaeaNoteFrame frame;
 
-    public FileEditorTypeComponent(PangaeaNoteFrame frame) {
-        super(frame.app());
-        this.frame = frame;
-        fileViewer = new URLViewer(frame);
-        fileViewer.addViewerListener(new URLViewerListener() {
+    public PangaeaNoteFileEditorTypeComponent(PangaeaNoteFrame frame) {
+        super(frame);
+        this.addViewerListener(new URLViewerListener() {
             @Override
             public void onError(String path, Exception ex) {
             }
@@ -41,7 +32,7 @@ public class FileEditorTypeComponent extends BorderPane implements PangaeaNoteEd
             @Override
             public void onStartLoading(String path) {
                 if (currentNote != null) {
-                    if (!Objects.equals(path, currentNote.getContent())) {
+                    if (!Objects.equals(path, currentNote.getContent().toString())) {
                         currentNote.setContent(frame.service().stringToElement(path));
                         frame.onDocumentChanged();
                     }
@@ -68,18 +59,12 @@ public class FileEditorTypeComponent extends BorderPane implements PangaeaNoteEd
                 }
             }
         });
-        
-        children.add(fileViewer);
     }
+
 
     @Override
     public boolean isCompactMode() {
         return true;
-    }
-
-    @Override
-    public AppComponent component() {
-        return this;
     }
 
     @Override
@@ -94,7 +79,7 @@ public class FileEditorTypeComponent extends BorderPane implements PangaeaNoteEd
     public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         this.currentNote = note;
         String c = win.service().elementToString(note.getContent());
-        fileViewer.load(c);
+        navigate(c);
     }
 
     @Override
@@ -103,11 +88,11 @@ public class FileEditorTypeComponent extends BorderPane implements PangaeaNoteEd
             b = false;
         }
         this.editable = b;
-        fileViewer.setEditable(b);
+        super.setEditable(b);
     }
 
     @Override
     public boolean isEditable() {
-        return editable && fileViewer.isEditable();
+        return editable && super.isEditable();
     }
 }

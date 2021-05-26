@@ -5,23 +5,29 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.urlviewer;
 
-import java.awt.Component;
-import java.awt.HeadlessException;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.Button;
+import net.thevpc.echo.Label;
+import net.thevpc.echo.Menu;
+import net.thevpc.echo.ScrollPane;
+import net.thevpc.echo.TextField;
+import net.thevpc.echo.*;
+import net.thevpc.echo.api.components.AppComponentEvent;
+import net.thevpc.echo.api.components.AppComponentEventListener;
+import net.thevpc.echo.api.components.AppEventType;
+import net.thevpc.echo.constraints.*;
+import net.thevpc.echo.impl.Applications;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
-import net.thevpc.common.i18n.Str;
-import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.Anchor;
-import net.thevpc.echo.constraints.Layout;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.util.OtherUtils;
 
 /**
- *
  * @author vpc
  */
 public class URLViewer extends BorderPane {
@@ -30,7 +36,7 @@ public class URLViewer extends BorderPane {
 
     private ScrollPane scroll;
     private URLViewerComponent subComponent;
-//    private String path;
+    //    private String path;
     private boolean userEditable = true;
     private boolean canEdit;
     private List<URLViewerListener> viewerListeners = new ArrayList<>();
@@ -40,16 +46,18 @@ public class URLViewer extends BorderPane {
     public URLViewer(PangaeaNoteFrame frame) {
         super(frame.app());
         header = new Header(this, frame)
-                .with(h->h.anchor().set(Anchor.TOP))
-                ;
+                .with(h -> h.anchor().set(Anchor.TOP));
         this.frame = frame;
         scroll = new ScrollPane(app())
-                .with(h->h.anchor().set(Anchor.CENTER))
-        ;
+                .with(h -> h.anchor().set(Anchor.CENTER));
         error = new Label(app())
-                .with(h->h.anchor().set(Anchor.BOTTOM))
-        ;
-        children().addAll(header,scroll,error);
+                .with(h -> h.anchor().set(Anchor.BOTTOM));
+        children().addAll(header, scroll, error);
+    }
+
+    @Override
+    public void requestFocus() {
+        header.textField.requestFocus();
     }
 
     public String getSelectedPath() {
@@ -64,7 +72,7 @@ public class URLViewer extends BorderPane {
         subComponent = new UnsupportedViewerComponent("", "", null, frame, this, () -> {
         }, x -> {
         });
-        scroll.child().set(subComponent.component());
+        scroll.child().set(subComponent);
         //scroll.getViewport().setView(subComponent.component());
     }
 
@@ -72,7 +80,7 @@ public class URLViewer extends BorderPane {
         return false;
     }
 
-    public void load(String url) {
+    public void navigate(String url) {
         if (url == null) {
             url = "";
         }
@@ -83,9 +91,10 @@ public class URLViewer extends BorderPane {
             if (subComponent != null) {
                 subComponent.disposeComponent();
             }
+            url=url.trim();
             subComponent = resolveSubComponent(url, contentType);
-            scroll.child().set(subComponent.component());
-            subComponent.setURL(url);
+            subComponent.navigate(url);
+            scroll.child().set(subComponent);
         } else {
             resetContent();
         }
@@ -119,16 +128,20 @@ public class URLViewer extends BorderPane {
     }
 
     public boolean isFolder(String name) {
-        File f = OtherUtils.asFile(name);
+        File f = Applications.asFile(name);
         return f != null && f.isDirectory();
     }
 
     public void fireError(Exception ex) {
         error.text().set(Str.of("ERROR: " + ex.getMessage()));
-        ex.printStackTrace();
+//        ex.printStackTrace();
         for (URLViewerListener viewerListener : viewerListeners) {
             viewerListener.onError(getSelectedPath(), ex);
         }
+    }
+
+    public boolean isEditable() {
+        return subComponent != null && subComponent.isEditable();
     }
 
     public void setEditable(boolean editable) {
@@ -138,14 +151,10 @@ public class URLViewer extends BorderPane {
         }
     }
 
-    public boolean isEditable() {
-        return subComponent != null && subComponent.isEditable();
-    }
-
-    public static class Header extends BorderPane {
+    public static class Header extends GridPane {
 
         private TextField textField;
-        private Application app;
+        //        private Application app;
         private boolean acceptAllFileFilterUsed;
         private List<FileFilter> fileFilters = new ArrayList<>();
         private URLViewer parent;
@@ -156,40 +165,59 @@ public class URLViewer extends BorderPane {
 
         public Header(URLViewer parent, PangaeaNoteFrame win) {
             super(win.app());
+            parentConstraints().addAll(AllMargins.of(3), AllFill.NONE, AllAnchors.LEFT, AllGrow.NONE, GrowContainer.HORIZONTAL);
             this.parent = parent;
-            this.textField = new TextField(app);
-            openFileMenu = new Menu(null,Str.i18n("Message.browse"),app)
-            .with(m->{
-                m.smallIcon().set(Str.of("folder"));
+            PangaeaNoteApp app = win.app();
+            this.textField = new TextField(app)
+                    .with(t -> t.childConstraints().addAll(Grow.HORIZONTAL, Fill.HORIZONTAL))
+            ;
+            ToolBar tb = new ToolBar(win.app());
+            openFileMenu = new Menu(null, Str.i18n("Message.browse"), app)
+                    .with(m -> {
+                        m.smallIcon().set(Str.of("folder"));
+                    });
+
+            //reload if press ENTER or lost focus
+            textField.events().add(event -> {
+                if(event.code()==KeyCode.ENTER){
+                    doReload();
+                }
+            }, AppEventType.KEY_PRESSED);
+            textField.focused().onChange(event -> {
+                if(!textField.focused().get()) {
+                    //doReload();
+                }
             });
+
+//            textField.text().onChange(event -> doReload());
+            tb.children().addAll(goUpButton = new Button(null, () -> goUp(), app)
+                            .with((Button m) -> {
+                                m.text().set(Str.i18n("Message.goUp"));
+                                m.smallIcon().set(Str.of("folder-up"));
+                            }),
+                    goHomeButton = new Button(null, () -> goHome(), app)
+                            .with((Button m) -> {
+                                m.text().set(Str.i18n("Message.goHome"));
+                                m.smallIcon().set(Str.of("home"));
+                            }),
+                    openFileMenu);
             openFileMenu.children().add(
-                    new Button(null,()->onShowDialog(),app)
-                            .with((Button m)->{
+                    new Button(null, () -> onShowDialog(), app)
+                            .with((Button m) -> {
                                 m.text().set(Str.i18n("Message.browse"));
                                 m.smallIcon().set(Str.of("folder"));
                             })
             );
             openFileMenu.children().add(
-                    reloadButton=new Button(null,()->doReload(),app)
-                            .with((Button m)->{
+                    reloadButton = new Button(null, () -> doReload(), app)
+                            .with((Button m) -> {
                                 m.text().set(Str.i18n("Message.reload"));
                                 m.smallIcon().set(Str.of("reload"));
                             })
             );
-            textField.text().onChange(event -> doReload());
             children().addAll(
                     textField,
-                    goUpButton=new Button(null,()->goUp(),app)
-                            .with((Button m)->{
-                                m.text().set(Str.i18n("Message.goHome"));
-                                m.smallIcon().set(Str.of("folder-up"));
-                            }),
-                    goHomeButton=new Button(null,()->goHome(),app)
-                            .with((Button m)->{
-                                m.text().set(Str.i18n("Message.goHome"));
-                                m.smallIcon().set(Str.of("home"));
-                            }),
-                    openFileMenu
+                    tb
             );
             //TextAutoCompleteSupport.setup(textField, new FilePathTextAutoComplete());
         }
@@ -212,7 +240,7 @@ public class URLViewer extends BorderPane {
         private void onShowDialog() throws HeadlessException {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            File f = OtherUtils.asFile(textField.text().get().value());
+            File f = Applications.asFile(textField.text().get().value());
             if (f != null && f.getParentFile() != null) {
                 chooser.setCurrentDirectory(f);
             }
@@ -224,7 +252,7 @@ public class URLViewer extends BorderPane {
             }
             chooser.setAcceptAllFileFilterUsed(acceptAllFileFilterUsed);
             int v = chooser.showOpenDialog(
-                    app == null ? null : (Component) app.mainFrame().get().peer().toolkitComponent()
+                    (Component) app().mainFrame().get().peer().toolkitComponent()
             );
             if (v == JFileChooser.APPROVE_OPTION) {
                 setContentString(chooser.getSelectedFile().getPath());
@@ -244,6 +272,16 @@ public class URLViewer extends BorderPane {
             return textField.text().get().value();
         }
 
+        public void setContentString(String s) {
+            if (s == null) {
+                s = "";
+            }
+            if (!s.equals(getContentString())) {
+                textField.text().set(Str.of(s));
+            }
+            doReload();
+        }
+
         public List<FileFilter> getFileFilters() {
             return fileFilters;
         }
@@ -257,16 +295,6 @@ public class URLViewer extends BorderPane {
         }
 
         public void install(Application app) {
-        }
-
-        public void setContentString(String s) {
-            if (s == null) {
-                s = "";
-            }
-            if (!s.equals(getContentString())) {
-                textField.text().set(Str.of(s));
-            }
-            doReload();
         }
 
         public void goHome() {
@@ -293,9 +321,12 @@ public class URLViewer extends BorderPane {
         }
 
         public void doReload() {
-            parent.load(getContentString());
+            parent.navigate(getContentString());
         }
 
     }
 
+    public Header getHeader() {
+        return header;
+    }
 }

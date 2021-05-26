@@ -8,9 +8,8 @@ package net.thevpc.pnote.gui.components;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.AppFileFilter;
-import net.thevpc.echo.constraints.Layout;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.util.OtherUtils;
 
 //import javax.swing.*;
 //import java.awt.*;
@@ -70,7 +69,7 @@ public class FileComponent extends HorizontalPane {
         FileChooser chooser = new FileChooser(app);
         chooser.acceptFiles().set(getSelectMode() == SelectMode.FILES_ONLY || getSelectMode() == SelectMode.FILES_AND_DIRECTORIES);
         chooser.acceptDirectories().set(getSelectMode() == SelectMode.DIRECTORIES_ONLY || getSelectMode() == SelectMode.FILES_AND_DIRECTORIES);
-        File f = OtherUtils.asFile(getContentString());
+        File f = Applications.asFile(getContentString());
         if (f != null && f.getParentFile() != null) {
             chooser.currentDirectory().set(f.getPath());
         }
@@ -98,7 +97,7 @@ public class FileComponent extends HorizontalPane {
     }
 
     public String getContentString() {
-        return textField.text().get().value(app.i18n());
+        return Applications.rawString(textField.text(),textField);
     }
 
     public List<AppFileFilter> getFileFilters() {

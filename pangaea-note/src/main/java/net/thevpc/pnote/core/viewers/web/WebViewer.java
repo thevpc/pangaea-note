@@ -8,8 +8,9 @@ package net.thevpc.pnote.core.viewers.web;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import net.thevpc.pnote.core.viewers.pdf.*;
 import java.util.function.Consumer;
+
+import net.thevpc.echo.api.SupportSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
@@ -34,19 +35,24 @@ public class WebViewer implements PangaeaNoteFileViewerManager {
     );
 
     @Override
-    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteFrame win) {
+    public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
         if (SUPPORTED_EXTENSIONS.contains(extension) || CONTENT_TYPE_EXTENSIONS.contains(mimeType.getContentType())) {
-            return 10;
+            return new SupportSupplier<URLViewerComponent>() {
+                @Override
+                public int getSupportLevel() {
+                    return 10;
+                }
+
+                @Override
+                public URLViewerComponent get() {
+                    Runnable onSuccess = () -> viewer.fireSuccessfulLoading(path);
+                    Consumer<Exception> onError = viewer::fireError;
+
+                    return new WebViewerComponent(win, viewer, onSuccess, onError);
+                }
+            };
         }
-        return -1;
-    }
-
-    @Override
-    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType probedContentType, URLViewer viewer, PangaeaNoteFrame win) {
-        Runnable onSuccess = () -> viewer.fireSuccessfulLoading(path);
-        Consumer<Exception> onError = viewer::fireError;
-
-        return new WebViewerComponent(win, viewer, onSuccess, onError);
+        return null;
     }
 
 }

@@ -6,8 +6,6 @@
 package net.thevpc.pnote.gui;
 
 import net.thevpc.pnote.core.types.sourcecode.html.PangaeaNoteHtmlService;
-import net.thevpc.pnote.core.types.markdown.PangaeaNoteMarkdownService;
-import net.thevpc.pnote.core.types.ntf.PangaeaNoteNTFService;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.types.rich.PangaeaNoteRichService;
 
@@ -23,8 +21,8 @@ public class PangaeaContentTypes {
     public static boolean isFormattedText(PangaeaNoteMimeType contentType) {
         String c = contentType == null ? "" : contentType.toString();
         return (c.equals(PangaeaNoteHtmlService.HTML.toString())
-                || c.equals(PangaeaNoteNTFService.NUTS_TEXT_FORMAT.toString())
-                || c.equals(PangaeaNoteMarkdownService.MARKDOWN.toString()));
+                || c.equals("text/x-nuts-text-format")
+                || c.equals("text/markdown"));
     }
 
     public static boolean isXmlLike(PangaeaNoteMimeType contentType) {

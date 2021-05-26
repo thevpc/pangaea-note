@@ -94,7 +94,7 @@ public class StrokeUtils {
             }
             return new SloppyStroke(width, sloppiness);
         }
-        System.out.println("unknown "+s);
+//        System.out.println("unknown "+s);
         return new BasicStroke();
     }
 
@@ -132,7 +132,7 @@ public class StrokeUtils {
             sb.append(";sloppiness=").append(b.getSloppiness());
             return sb.toString();
         }
-        System.out.println("unknown "+s);
+//        System.out.println("unknown "+s);
         return "basic:width=1";
     }
 }

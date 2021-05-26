@@ -5,89 +5,52 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-//import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 import net.thevpc.common.i18n.Str;
-import net.thevpc.echo.Application;
-//import net.thevpc.echo.swing.SwingApplicationUtils;
-import net.thevpc.echo.TextField;
+import net.thevpc.echo.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.util.AnyDocumentListener;
 
 /**
- *
  * @author vpc
  */
-public class TextFieldComponent extends JPanel implements FormComponent {
+public class TextFieldComponent extends HorizontalPane implements FormComponent {
 
     private TextField textField;
-//    private AnyDocumentListener listener;
-//    private SwingApplicationUtils.Tracker tracker;
+    private Runnable callback;
 
     public TextFieldComponent(PangaeaNoteFrame win) {
-        textField=new TextField(Str.empty(), win.app());
-//        tracker = new SwingApplicationUtils.Tracker(win.app());
-//        new GridBagLayoutSupport("[txt-===]; insets(2)")
-//                .bind("txt", textField)
-//                .apply(this);
-//        JPopupMenu p = new JPopupMenu();
-//        p.add(new JMenuItem(
-//                tracker.registerStandardAction(
-//                        () -> {
-//                            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-//                            try {
-//                                clip.setContents(new StringSelection(textField.getText()), null);
-//                            } catch (Exception ex) {
-//                                //ex.printStackTrace();
-//                            }
-//                        }, "copy"
-//                )));
-//        p.add(new JMenuItem(
-//                tracker.registerStandardAction(
-//                        () -> {
-//                            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-//                            try {
-//                                Transferable content = clip.getContents(textField);
-//                                String txt = content.getTransferData(
-//                                        new DataFlavor(String.class, "String")).toString();
-//                                textField.setText(txt);
-//                            } catch (Exception ex) {
-//                                //ex.printStackTrace();
-//                            }
-//                        }, "paste"
-//                )));
-//        textField.setComponentPopupMenu(p);
+        super(win.app());
+        textField = new TextField(Str.empty(), win.app());
+        children().add(textField);
+        ContextMenu p = new ContextMenu(app());
+        textField.contextMenu().set(p);
+        p.children().add(new Button("copy", () -> app().clipboard().putString(textField.text().get().value()), app()));
+        p.children().add(new Button("paste", () -> textField.text().set(Str.of(app().clipboard().getString())), app()));
+        textField.text().onChange(x -> textChanged());
+    }
+
+    private void textChanged() {
+        if (callback != null) {
+            callback.run();
+        }
     }
 
     @Override
     public void install(Application app) {
     }
 
-    public TextField getTextField() {
-        return textField;
+    @Override
+    public void setFormChangeListener(Runnable callback) {
+        this.callback = callback;
     }
 
     @Override
     public void uninstall() {
-//        if (listener != null) {
-//            textField.getDocument().removeDocumentListener(listener);
-//            listener = null;
-//        }
-//        tracker.unregisterAll();
+        this.callback=null;
     }
 
     @Override
     public String getContentString() {
-        return new String(textField.text().get().value());
+        return textField.text().get().value();
     }
 
     @Override
@@ -95,17 +58,8 @@ public class TextFieldComponent extends JPanel implements FormComponent {
         textField.text().set(Str.of(s));
     }
 
-    @Override
-    public void setFormChangeListener(Runnable callback) {
-//        if (listener == null) {
-//            listener = new AnyDocumentListener() {
-//                @Override
-//                public void anyChange(DocumentEvent e) {
-//                    callback.run();
-//                }
-//            };
-//            textField.getDocument().addDocumentListener(listener);
-//        }
+    public TextField getTextField() {
+        return textField;
     }
 
     public void setEditable(boolean b) {

@@ -7,14 +7,18 @@ package net.thevpc.pnote.gui.dialogs;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.ParentWrapCount;
+import net.thevpc.echo.constraints.AllAnchors;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.Fill;
+import net.thevpc.echo.constraints.GrowContainer;
+import net.thevpc.echo.constraints.ParentMargin;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  * @author vpc
  */
-public class PangaeaNoteTitleFormatPanel extends VerticalPane {
+public class PangaeaNoteTitleFormatPanel extends GridPane {
 
     private PangaeaNoteFrame frame;
     private ColorButton foregroundEditor;
@@ -25,7 +29,7 @@ public class PangaeaNoteTitleFormatPanel extends VerticalPane {
     private CheckBox strikedEditor;
 
     public PangaeaNoteTitleFormatPanel(PangaeaNoteFrame frame) {
-        super(frame.app());
+        super(1, frame.app());
         this.frame = frame;
         title().set(Str.i18n("PangaeaNoteListSettingsComponent.titleLabel"));
         foregroundEditor = new ColorButton(app());
@@ -36,23 +40,40 @@ public class PangaeaNoteTitleFormatPanel extends VerticalPane {
         strikedEditor = new CheckBox(Str.i18n("Message.titleStriked"), app());
 
         children().addAll(
-                new VerticalPane(app())
-                        .with((VerticalPane v) -> {
-                            v.parentConstraints().add(new ParentWrapCount(2));
-                            v.children().addAll(boldEditor,
+                new GridPane(4, app())
+                        .with((GridPane v) -> {
+                            v.parentConstraints().addAll(
+                                    GrowContainer.HORIZONTAL,
+                                    AllMargins.of(10, 5, 5, 5),
+                                    ParentMargin.of(20, 0, 0, 0),
+                                    AllAnchors.LEFT
+                            );
+                            v.children().addAll(
+                                    boldEditor,
                                     italicEditor,
                                     underlinedEditor,
-                                    strikedEditor);
+                                    strikedEditor//,
+                            );
                         }),
-                new VerticalPane(app())
-                        .with((VerticalPane v) -> {
-                            v.parentConstraints().add(new ParentWrapCount(2));
-                            v.children().addAll(new Label(Str.i18n("Message.titleForegroundColor"), app()),
-                                    foregroundEditor,
+                new GridPane(4, app())
+                        .with((GridPane v) -> {
+                            v.parentConstraints().addAll(
+                                    GrowContainer.HORIZONTAL,
+                                    AllMargins.of(10, 5, 5, 5),
+                                    //                                    new ParentMargin(20, 0, 0, 0),
+                                    AllAnchors.LEFT
+                            );
+                            v.children().addAll(
+                                    new Label(Str.i18n("Message.titleForegroundColor"), app()),
+                                    foregroundEditor.with(c -> {
+                                        c.childConstraints().add(Fill.BOTH);
+                                    }),
                                     new Label(Str.i18n("Message.titleBackgroundColor"), app()),
-                                    backgroundEditor);
+                                    backgroundEditor.with(c -> {
+                                        c.childConstraints().add(Fill.BOTH);
+                                    })
+                            );
                         })
-
         );
     }
 

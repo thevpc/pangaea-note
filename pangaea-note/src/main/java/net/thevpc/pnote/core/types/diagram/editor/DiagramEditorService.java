@@ -10,7 +10,7 @@ public class DiagramEditorService implements PangaeaNoteEditorService {
     public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
         switch (name) {
             case PangaeaNoteDiaService.DIAGRAM_EDITOR:
-                return new JDiagramEditor(compactMode, win);
+                return new PangaeaNoteDiagramEditorTypeComponent(compactMode, win);
         }
         return null;
     }

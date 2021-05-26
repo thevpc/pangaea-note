@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.api;
 
+import net.thevpc.common.i18n.Str;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.PangaeaNoteService;
@@ -15,7 +16,7 @@ import net.thevpc.pnote.service.PangaeaNoteService;
  */
 public interface PangaeaNoteTemplate extends PangaeaNoteTypeServiceBase {
 
-    default String getGroup(){
+    default String getGroup() {
         return "templates";
     }
 
@@ -29,7 +30,7 @@ public interface PangaeaNoteTemplate extends PangaeaNoteTypeServiceBase {
 
     void prepare(PangaeaNote n, PangaeaNoteService win);
 
-    public default String getLabel(PangaeaNoteService win) {
+    public default Str getLabel(PangaeaNoteService win) {
         return null;
     }
 

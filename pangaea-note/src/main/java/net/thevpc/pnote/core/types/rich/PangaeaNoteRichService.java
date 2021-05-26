@@ -8,7 +8,6 @@ package net.thevpc.pnote.core.types.rich;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.text.BadLocationException;
 
 import net.thevpc.echo.RichHtmlEditor;
 import net.thevpc.nuts.NutsElement;

@@ -17,10 +17,9 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
  *
  * @author vpc
  */
-public class UnsupportedViewerComponent implements URLViewerComponent {
+public class UnsupportedViewerComponent extends Label implements URLViewerComponent {
 
     PangaeaNoteFrame frame;
-    Label a;
     private final URLViewer outer;
     private Runnable onSuccess;
     private Consumer<Exception> onError;
@@ -31,6 +30,7 @@ public class UnsupportedViewerComponent implements URLViewerComponent {
     public UnsupportedViewerComponent(
             String path, String extension, PangaeaNoteMimeType probedContentType,
             PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
+        super(Str.of("<<UNSUPPORTED>>"), frame.app());
         this.path = path;
         this.extension = extension;
         this.probedContentType = probedContentType;
@@ -38,20 +38,14 @@ public class UnsupportedViewerComponent implements URLViewerComponent {
         this.frame = frame;
         this.onSuccess = onSuccess;
         this.onError = onError;
-        a=new Label(Str.empty(), frame.app());
     }
 
     @Override
-    public void setURL(String url) {
+    public void navigate(String url) {
         //
         if (onError != null) {
             onError.accept(new IllegalArgumentException("unsupported file format "+probedContentType+" ("+extension+")"));
         }
-    }
-
-    @Override
-    public AppComponent component() {
-        return a;
     }
 
     @Override

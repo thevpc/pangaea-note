@@ -12,14 +12,11 @@ import java.util.function.Consumer;
 import javax.swing.JPanel;
 
 import net.thevpc.echo.BorderPane;
-import net.thevpc.echo.Panel;
 import net.thevpc.echo.UserControl;
-import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.echo.constraints.Layout;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
-import net.thevpc.pnote.util.OtherUtils;
 import org.icepdf.ri.common.ComponentKeyBinding;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
@@ -31,7 +28,7 @@ import org.jodconverter.office.LocalOfficeManager;
  *
  * @author vpc
  */
-public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
+public class LibreOfficeToPdfViewerComponent extends BorderPane implements URLViewerComponent {
 
     PangaeaNoteFrame frame;
 //    JLabel label = new JLabel();
@@ -40,15 +37,14 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
     private Consumer<Exception> onError;
 //    private ImageIcon current;
     private float zoomFactor;
-    private Panel panel;
     private static boolean alreadyInstalled = false;
 
     public LibreOfficeToPdfViewerComponent(PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
+        super(frame.app());
         this.outer = outer;
         this.frame = frame;
         this.onSuccess = onSuccess;
         this.onError = onError;
-        panel = new BorderPane(frame.app());
         if (!alreadyInstalled) {
             try {
                 LocalOfficeManager.install();
@@ -61,8 +57,8 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
     }
 
     @Override
-    public void setURL(String url) {
-        File u = OtherUtils.asFile(url);
+    public void navigate(String url) {
+        File u = Applications.asFile(url);
         if (u != null) {
             File targetFile = null;
             try {
@@ -84,8 +80,8 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
                         new org.icepdf.ri.common.MyAnnotationCallback(
                                 controller.getDocumentViewController()));
                 controller.openDocument(targetFile.getPath());
-                panel.children().removeAll();
-                panel.children().add(new UserControl(null,viewer, frame.app()));
+                children().removeAll();
+                children().add(new UserControl(null,viewer, frame.app()));
                 onSuccess.run();
                 return;
             } catch (Exception ex) {
@@ -96,10 +92,7 @@ public class LibreOfficeToPdfViewerComponent implements URLViewerComponent {
         onError.accept(new IllegalArgumentException("unsupported " + url));
     }
 
-    @Override
-    public AppComponent component() {
-        return panel;
-    }
+
 
     @Override
     public boolean isEditable() {

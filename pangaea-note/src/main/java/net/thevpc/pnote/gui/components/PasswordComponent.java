@@ -7,7 +7,6 @@ package net.thevpc.pnote.gui.components;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
@@ -19,9 +18,9 @@ public class PasswordComponent extends HorizontalPane implements FormComponent {
     private PasswordField pf;
     private Runnable callback;
 
-    public PasswordComponent(PangaeaNoteFrame win) {
-        super(win.app());
-        pf=new PasswordField(win.app());
+    public PasswordComponent(PangaeaNoteFrame frame) {
+        super(frame.app());
+        pf=new PasswordField(frame.app());
         ContextMenu p = new ContextMenu(app());
         pf.contextMenu().set(p);
         p.children().add(new Button("copy",()-> app().clipboard().putString(pf.text().get().value()),app()));

@@ -64,6 +64,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
         super(frame.app());
         this.objectTracker = objectTracker;
         this.frame = frame;
+        parentConstraints().addAll(GrowContainer.HORIZONTAL, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL, AllAnchors.LEFT);
     }
 
     public PangaeaNoteObject getObject() {
@@ -139,73 +140,41 @@ public class PangaeaNoteObjectComponent extends GridPane {
         components.addAll(newComponents);
         relayoutObject();
     }
-    private void prepareConstraints(AppComponent comp,GridBagConstraints c){
-        comp.parentConstraints().clear();
-        comp.anchor().set(
-                (c.anchor==GridBagConstraints.PAGE_START || c.anchor==GridBagConstraints.NORTH)?Anchor.TOP:
-                        (c.anchor==GridBagConstraints.PAGE_END || c.anchor==GridBagConstraints.SOUTH)?Anchor.BOTTOM:
-                                (c.anchor==GridBagConstraints.LINE_START || c.anchor==GridBagConstraints.WEST)?Anchor.LEFT:
-                                        (c.anchor==GridBagConstraints.LINE_END || c.anchor==GridBagConstraints.EAST)?Anchor.RIGHT:
-                                                (c.anchor==GridBagConstraints.NORTHWEST)?Anchor.TOP_LEFT:
-                                                        (c.anchor==GridBagConstraints.NORTHEAST)?Anchor.TOP_RIGHT:
-                                                                (c.anchor==GridBagConstraints.SOUTHWEST)?Anchor.BOTTOM_LEFT:
-                                                                        (c.anchor==GridBagConstraints.SOUTHEAST)?Anchor.BOTTOM_RIGHT:
-                                                                                (c.anchor==GridBagConstraints.CENTER)?Anchor.CENTER:
-                                                                                        Anchor.CENTER
-        );
-        comp.childConstraints().addAll(
-                new Pos(c.gridx,c.gridy),
-                new Span(c.gridwidth,c.gridheight),
-                new Weight(c.weightx,c.weighty),
-                c.fill==GridBagConstraints.BOTH || c.fill==GridBagConstraints.HORIZONTAL ? GrowX.ALWAYS:GrowX.NEVER,
-                c.fill==GridBagConstraints.BOTH || c.fill==GridBagConstraints.VERTICAL ? GrowY.ALWAYS:GrowY.NEVER
-        );
-    }
 
     public void relayoutObject() {
         children().clear();
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.anchor = GridBagConstraints.PAGE_START;
-        c.gridheight = 1;
-        c.gridwidth = 1;
-        c.weightx = 1;
-//        c.weighty = 0;
-        c.insets = new Insets(3, 3, 3, 3);
         int row = 0;
         for (int i = 0; i < components.size(); i++) {
             PangaeaNoteFieldDescriptorPanel cad = components.get(i);
             if (cad.getDescr().getType() == PangaeaNoteFieldType.TEXTAREA) {
-                c.gridy = row;
-                c.gridwidth = 3;
-                c.gridheight = 1;
-                c.gridx = 0;
-                c.weighty = 0;
-                prepareConstraints(cad.getLabel(),c);
-                children().add(cad.getLabel());
+                int row0 = row;
+                children().add(
+                        cad.getLabel()
+                                .with(t -> {
+                                    t.childConstraints().addAll(Pos.of(0, row0), Fill.NONE, Grow.NONE, Span.col(2));
+                                })
+                );
                 row++;
-                c.gridy = row;
-                c.gridx = 0;
-                c.gridwidth = 3;
-                c.gridheight = 2;
-                c.weighty = 4;
-                prepareConstraints(cad.getComponent(),c);
-                children().add(cad.getComponent());
+                int row1 = row;
+                children().add(cad.getComponent()
+                        .with(t -> {
+                            t.childConstraints().addAll(Pos.of(0, row1), Fill.BOTH, Grow.BOTH, Span.of(2, 2));
+                        }
+                        ));
                 row += 2;
             } else {
-                c.weighty = 0;
-                c.gridheight = 1;
-                c.gridy = row;
-                c.weightx = 0;
-                c.gridwidth = 1;
-                c.gridx = 0;
-                prepareConstraints(cad.getLabel(),c);
-                children().add(cad.getLabel());
-                c.weightx = 3;
-                c.gridwidth = 2;
-                c.gridx = 1;
-                prepareConstraints(cad.getComponent(),c);
-                children().add(cad.getComponent());
+                int row0 = row;
+                children().add(
+                        cad.getLabel()
+                                .with(t -> {
+                                    t.childConstraints().addAll(Pos.of(0, row0), Fill.NONE, Grow.NONE);
+                                })
+                );
+                children().add(cad.getComponent()
+                        .with(t -> {
+                            t.childConstraints().addAll(Pos.of(1, row0), Fill.HORIZONTAL, Grow.HORIZONTAL);
+                        }
+                        ));
                 row++;
             }
         }

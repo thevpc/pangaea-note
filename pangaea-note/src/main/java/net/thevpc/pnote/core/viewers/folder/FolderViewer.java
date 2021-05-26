@@ -8,6 +8,8 @@ package net.thevpc.pnote.core.viewers.folder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
+
+import net.thevpc.echo.api.SupportSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
@@ -21,22 +23,26 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 public class FolderViewer implements PangaeaNoteFileViewerManager {
 
     @Override
-    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteFrame win) {
+    public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
         try {
             if (Files.isDirectory(Paths.get(path))) {
-                return 10;
+                return new SupportSupplier<URLViewerComponent>() {
+                    @Override
+                    public int getSupportLevel() {
+                        return 10;
+                    }
+
+                    @Override
+                    public URLViewerComponent get() {
+                        Runnable onSuccess=() -> viewer.fireSuccessfulLoading(path);
+                        Consumer<Exception> onError=viewer::fireError;
+                        return new FolderViewerComponent(win, viewer, onSuccess, onError);
+                    }
+                };
             }
         } catch (Exception ex) {
 
         }
-        return -1;
+        return null;
     }
-
-    @Override
-    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
-        Runnable onSuccess=() -> viewer.fireSuccessfulLoading(path);
-        Consumer<Exception> onError=viewer::fireError;
-        return new FolderViewerComponent(win, viewer, onSuccess, onError);
-    }
-
 }

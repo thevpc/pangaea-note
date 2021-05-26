@@ -1,25 +1,19 @@
 package net.thevpc.pnote.service;
 
+import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.props.Path;
 import net.thevpc.echo.api.CancelException;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.api.model.PangaeaNoteConfig;
-import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.api.model.CypherInfo;
-import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.common.i18n.I18n;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.*;
-import net.thevpc.pnote.api.PangaeaContentTypeReplacer;
-import net.thevpc.pnote.api.PangaeaNoteFileImporter;
-import net.thevpc.pnote.api.PangaeaNoteTemplate;
-import net.thevpc.pnote.api.PangaeaNoteTypeService;
+import net.thevpc.pnote.api.*;
+import net.thevpc.pnote.api.model.*;
+import net.thevpc.pnote.core.types.embedded.PangaeaNoteDocumentInfo;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.core.types.file.PangaeaNoteFileService;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
 import net.thevpc.pnote.core.types.list.PangaeaNoteListService;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.core.types.rich.PangaeaNoteRichService;
-import net.thevpc.pnote.core.types.sh.PangaeaNoteShService;
 import net.thevpc.pnote.gui.PangaeaContentTypes;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
@@ -30,11 +24,8 @@ import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.VNoteSearchFilter;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.api.InvalidSecretException;
-import net.thevpc.pnote.api.PangaeaNoteObfuscator;
 import net.thevpc.pnote.service.security.PangaeaNoteObfuscatorDefault;
 import net.thevpc.pnote.service.security.PasswordHandler;
-import net.thevpc.pnote.util.OtherUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -317,6 +308,7 @@ public class PangaeaNoteService {
     public NutsApplicationContext appContext() {
         return context;
     }
+
     public PangaeaNote unloadNode(PangaeaNote n) {
         n.setLoaded(false);
         for (PangaeaNote c : n.getChildren()) {
@@ -330,7 +322,7 @@ public class PangaeaNoteService {
 
     public String getValidLastOpenPath() {
         String p = config.getLastOpenPath();
-        if (!OtherUtils.isBlank(p)) {
+        if (!Applications.isBlank(p)) {
             File f = new File(p);
             if (f.isDirectory()) {
                 return f.getPath();
@@ -422,16 +414,6 @@ public class PangaeaNoteService {
         return content.isEmpty();
     }
 
-    public String getDocumentPath(PangaeaNoteExt selectedNote) {
-        return ((PangaeaNoteEmbeddedService) getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
-                .getContentValueAsPath(selectedNote.getContent());
-    }
-
-    public String getDocumentPath(PangaeaNote selectedNote) {
-        return ((PangaeaNoteEmbeddedService) getContentTypeService(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT))
-                .getContentValueAsPath(selectedNote.getContent());
-    }
-
     public void addRecentNoteType(String selectedContentTypeId) {
         if (selectedContentTypeId == null || selectedContentTypeId.length() == 0) {
             return;
@@ -497,8 +479,8 @@ public class PangaeaNoteService {
         boolean b = false;
         String root = null;
         if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
-
-            String c = PangaeaNoteEmbeddedService.of(this).getContentValueAsPath(n.getContent());
+            PangaeaNoteDocumentInfo di = getDocumentInfo(n);
+            String c = di.getPath();
             if (c != null && c.trim().length() > 0) {
                 root = c;
             }
@@ -521,7 +503,8 @@ public class PangaeaNoteService {
         }
         boolean saved = false;
         if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
-            String c = PangaeaNoteEmbeddedService.of(this).getContentValueAsPath(n.getContent());
+            PangaeaNoteDocumentInfo di = getDocumentInfo(n);
+            String c = di.getPath();
             if (c != null && c.trim().length() > 0) {
                 c = c.trim();
                 try {
@@ -570,7 +553,7 @@ public class PangaeaNoteService {
                 } catch (Exception ex) {
                     errors.add(new SaveError(n, path, ex));
                 }
-                n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(c));//push back the path
+                n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(di));//push back the path
             } else {
                 errors.add(new SaveError(n, path, new IOException("missing file path for " + n.getName())));
             }
@@ -644,7 +627,8 @@ public class PangaeaNoteService {
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {
         if (!n.isLoaded()) {
             if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(n.getContentType())) {
-                String nodePath = PangaeaNoteEmbeddedService.of(this).getContentValueAsPath(n.getContent());
+                PangaeaNoteDocumentInfo di = getDocumentInfo(n);
+                String nodePath = di.getPath();
                 nodePath = nodePath == null ? "" : nodePath.trim();
                 if (nodePath.length() > 0) {
                     PangaeaNote rawNode = element()
@@ -670,7 +654,7 @@ public class PangaeaNoteService {
                             a.setCypherInfo(new CypherInfo(cypherInfo.getAlgo(), ""));
                         }
                         n.copyFrom(a);
-                        n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(nodePath));
+                        n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(di));
                     }
                 }
             }
@@ -746,7 +730,7 @@ public class PangaeaNoteService {
             n.setContentType(PangaeaNoteFormsService.FORMS.toString());
         }
         if ("text/sh".equals(n.getContentType())) {
-            n.setContentType(PangaeaNoteShService.SH.toString());
+            n.setContentType("application/x-shellscript");
         }
         List<PangaeaNote> ch = n.getChildren();
         if (ch != null) {
@@ -764,7 +748,9 @@ public class PangaeaNoteService {
         PangaeaNote n = new PangaeaNote();
         n.setName("pangaea-note-document");
         n.setContentType(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString());
-        n.setContent(path == null ? null : element().forString(path));
+        PangaeaNoteDocumentInfo info=new PangaeaNoteDocumentInfo();
+        info.setPath(path);
+        n.setContent(PangaeaNoteEmbeddedService.of(this).getContentValueAsElement(info));
         return n;
     }
 
@@ -819,7 +805,7 @@ public class PangaeaNoteService {
             best.changeNoteContentType(toUpdate, oldContentType, newContentType, this);
             return true;
         }
-        throw new IllegalArgumentException("unsupported type refactoring");
+        throw new IllegalArgumentException("unsupported type refactoring from " + oldContentType + " to " + newContentType);
     }
 
     public void updateNoteProperties(PangaeaNoteExt toUpdate, PangaeaNote headerValues, PangaeaNoteFrame frame) {
@@ -869,9 +855,9 @@ public class PangaeaNoteService {
         }
         Set<String> existingNames = parent.getChildren() == null ? new HashSet<>()
                 : parent.getChildren().stream()
-                        .filter(x -> x != child) // !!!
-                        .map(x -> x.getName() == null ? "" : x.getName())
-                        .collect(Collectors.toSet());
+                .filter(x -> x != child) // !!!
+                .map(x -> x.getName() == null ? "" : x.getName())
+                .collect(Collectors.toSet());
         int i = 1;
         while (true) {
             String n = (i == 1) ? base : base + (" " + i);
@@ -898,7 +884,7 @@ public class PangaeaNoteService {
         }
         Set<String> existingNames = note.getChildren() == null ? new HashSet<>()
                 : note.getChildren().stream().map(x -> x.getName() == null ? "" : x.getName())
-                        .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
         int i = 1;
         while (true) {
             String n = (i == 1) ? base : base + (" " + i);
@@ -909,7 +895,12 @@ public class PangaeaNoteService {
         }
     }
 
-    public String getNoteIcon(PangaeaNote note, boolean folder, boolean expanded) {
+    public String getNoteIcon(PangaeaNote note) {
+        return getNoteIcon(note, false);
+    }
+
+    public String getNoteIcon(PangaeaNote note, boolean expanded) {
+        boolean folder = note.getChildren().size() > 0;
         return getContentTypeIcon(
                 normalizeContentType(note.getContentType()),
                 note.getIcon(), note.getFolderIcon(), folder, expanded);
@@ -1091,15 +1082,15 @@ public class PangaeaNoteService {
     public PangaeaNote createNoteFromSnippet(Object snippet) {
         if (snippet instanceof String) {
             String s = (String) snippet;
-            File f = OtherUtils.asFile(s);
+            File f = Applications.asFile(s);
             if (f != null) {
                 return new PangaeaNote().setName(f.getName())
                         .setContentType(PangaeaNoteFileService.FILE.toString())
                         .setContent(stringToElement(s));
             }
-            URL u = OtherUtils.asURL(s);
+            URL u = Applications.asURL(s);
             if (u != null) {
-                return new PangaeaNote().setName(OtherUtils.getFileName(s))
+                return new PangaeaNote().setName(Applications.getFileName(s))
                         .setContentType(PangaeaNoteFileService.FILE.toString())
                         .setContent(stringToElement(s));
             }
@@ -1109,7 +1100,7 @@ public class PangaeaNoteService {
                 try {
                     tempFile = appContext().getWorkspace().io().tmp().createTempFile("temp-snippet-");
                     Files.write(Paths.get(tempFile), s.getBytes());
-                    ct = OtherUtils.probeContentType(tempFile);
+                    ct = Applications.probeContentType(tempFile);
                 } finally {
                     Files.delete(Paths.get(tempFile));
                 }
@@ -1130,6 +1121,18 @@ public class PangaeaNoteService {
                     .setContentType(PangaeaNotePlainTextService.PLAIN.toString());
         }
         return null;
+    }
+
+    public NutsElement documentInfoToElement(PangaeaNoteDocumentInfo info) {
+        if(info==null){
+            info=new PangaeaNoteDocumentInfo();
+        }
+        return element().toElement(info);
+    }
+
+    public PangaeaNoteDocumentInfo getDocumentInfo(PangaeaNote document) {
+        NutsElement c = document.getContent();
+        return PangaeaNoteEmbeddedService.of(this).getContentValueAsInfo(document.getContent());
     }
 
     public static class SaveError {

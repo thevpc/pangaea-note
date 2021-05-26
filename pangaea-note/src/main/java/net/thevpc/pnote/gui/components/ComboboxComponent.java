@@ -5,36 +5,27 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.List;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import net.thevpc.echo.Application;
+import net.thevpc.echo.ComboBox;
+import net.thevpc.echo.HorizontalPane;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
+
+import java.util.List;
 
 /**
  *
  * @author vpc
  */
-public class ComboboxComponent extends JPanel implements FormComponent {
+public class ComboboxComponent extends HorizontalPane implements FormComponent {
 
-    private JComboBox cb = new JComboBox();
+    private ComboBox<String> cb;
     private Runnable callback;
-    private boolean editable = true;
 
-    public ComboboxComponent() {
-        super(new BorderLayout());
-        add(cb);
-
-        cb.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                callOnValueChanged();
-            }
-        });
-
+    public ComboboxComponent(PangaeaNoteFrame frame) {
+        super(frame.app());
+        cb=new ComboBox<>(String.class,frame.app());
+        children().add(cb);
+        cb.selection().onChange((e)->callOnValueChanged());
     }
 
     private void callOnValueChanged() {
@@ -44,17 +35,17 @@ public class ComboboxComponent extends JPanel implements FormComponent {
     }
 
     public void setSelectValues(List<String> values) {
-        cb.setModel(new DefaultComboBoxModel(values.toArray()));
+        cb.values().setAll(values.toArray(new String[0]));
     }
 
     @Override
     public String getContentString() {
-        return (String) cb.getSelectedItem();
+        return cb.selection().get();
     }
 
     @Override
     public void setContentString(String s) {
-        cb.setSelectedItem(s);
+        cb.selection().set(s);
     }
 
     public void uninstall() {
@@ -71,13 +62,12 @@ public class ComboboxComponent extends JPanel implements FormComponent {
 
     @Override
     public void setEditable(boolean b) {
-        this.editable = b;
-        cb.setEnabled(b);
+        cb.enabled().set(b);
     }
 
     @Override
     public boolean isEditable() {
-        return editable;
+        return cb.enabled().get();
     }
 
 }

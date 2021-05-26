@@ -7,11 +7,11 @@ package net.thevpc.pnote.gui;
 
 //import java.awt.Color;
 
+import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.Props;
+import net.thevpc.common.props.WritableBoolean;
 import net.thevpc.common.props.WritableList;
-import net.thevpc.echo.AppState;
-import net.thevpc.echo.Application;
-import net.thevpc.echo.Color;
+import net.thevpc.echo.*;
 import net.thevpc.echo.iconset.NoIconSet;
 import net.thevpc.echo.impl.DefaultApplication;
 import net.thevpc.nuts.NutsApplicationContext;
@@ -33,13 +33,14 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * @author vpc
  */
-public class PangaeaNoteApp extends DefaultApplication{
+public class PangaeaNoteApp extends DefaultApplication {
 
     private NutsApplicationContext appContext;
     private PangaeaNoteService service;
@@ -49,12 +50,15 @@ public class PangaeaNoteApp extends DefaultApplication{
     private List<PangaeaNoteAppExtensionListener> appExtensionsListeners = new ArrayList<>();
     private List<PangaeaNoteEditorService> editorServices = new ArrayList<>();
     private List<PangaeaNoteFileViewerManager> viewers = new ArrayList<>();
+    private WritableBoolean hideDisabled = Props.of("hideDisabled").booleanOf(false);
     private OpenWallet openWallet = new OpenWallet();
+    private AtomicInteger windowIndex = new AtomicInteger(1);
 //    private Application app;
 
     public PangaeaNoteApp(NutsApplicationContext appContext) {
         super("swing");
         this.appContext = appContext;
+        this.executorService().set(appContext.getWorkspace().concurrent().executorService());
         this.service = new PangaeaNoteService(appContext, null, this);
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
             {
@@ -75,7 +79,6 @@ public class PangaeaNoteApp extends DefaultApplication{
     }
 
 
-
     public void installEditorService(PangaeaNoteEditorService s) {
         editorServices.add(s);
         s.onInstall(this);
@@ -90,14 +93,16 @@ public class PangaeaNoteApp extends DefaultApplication{
     }
 
     public void newFrame() {
-        newFrame(true, false);
+        newFrame(false);
     }
 
-    private PangaeaNoteFrame newFrame(boolean withSplash, boolean main) {
-        PangaeaNoteFrame w = new PangaeaNoteFrame(this, withSplash,app());
+    private PangaeaNoteFrame newFrame(boolean withSplash) {
+        boolean main=(app().mainFrame().get() == null);
+        String id = main ? "mainFrame" : "frame-" + windowIndex.getAndAdd(1);
+        PangaeaNoteFrame w = new PangaeaNoteFrame(id,this, withSplash);
         w.mainFrame().set(main);
-        if(main) {
-            app().mainFrame().set(w.frameWidget());
+        if (main) {
+            app().mainFrame().set(w);
         }
         windows.add(w);
         w.app().state().onChange(event -> {
@@ -132,6 +137,18 @@ public class PangaeaNoteApp extends DefaultApplication{
 
 
     public void showAbout() {
+        Alert alert=new Alert(this)
+                .with(a->{
+                    a.headerIcon().set(new Image(getClass().getResource("/net/thevpc/pnote/icon.png"),app()));
+                    a.withOkOnlyButton();
+                    a.title().set(Str.i18n("About.title"));
+                    a.headerText().set(Str.i18n("About.header"));
+                    a.setContent(new PangaeaAboutPane(this));
+                    a.prefSize().set(new Dimension(500,400));
+                })
+                ;
+        alert.showDialog(null);
+
 //        JSplashScreen ss = new JSplashScreen(new ImageIcon(PangaeaSplashScreen.class.getResource("/net/thevpc/pnote/splash-screen.png")), null);
 //        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, "https://github.com/thevpc/pangaea-note",
 //                Animators.linear(
@@ -206,7 +223,7 @@ public class PangaeaNoteApp extends DefaultApplication{
             //}
         });
         app().start();
-        newFrame(true,true);
+        newFrame(true);
         app().waitFor();
 //        try {
 //            waitings.acquire();
@@ -270,5 +287,9 @@ public class PangaeaNoteApp extends DefaultApplication{
 
     public Application app() {
         return this;
+    }
+
+    public WritableBoolean hideDisabled() {
+        return hideDisabled;
     }
 }

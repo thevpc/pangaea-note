@@ -83,8 +83,8 @@ public class PangaeaNoteIconsList extends BorderPane {
         IconSets iconSets = frame.app().iconSets();
         IconSetConfig c = iconSets.config().get();
         return ((icon == null || icon.length() == 0) ? new Image(c.getWidth(), c.getHeight(), null, app())
-                : iconSets.icon(icon).get() == null ? null :
-                iconSets.icon(icon).get()
+                : iconSets.icon(icon,iconSet().get()) == null ? null :
+                iconSets.icon(icon,iconSet().get())
         );
     }
 
@@ -95,16 +95,16 @@ public class PangaeaNoteIconsList extends BorderPane {
 //    protected SimpleItem createIconValue(String id) {
 //        if (id.startsWith("content-type.")) {
 //            return new SimpleItem(false, id,
-//                    win.app().i18n().getString(id),
+//                    win.getApplication().i18n().getString(id),
 //                    id, 0);
 //        }
 //        if (id.startsWith("datatype.")) {
 //            return new SimpleItem(false, id,
-//                    win.app().i18n().getString(id),
+//                    win.getApplication().i18n().getString(id),
 //                    id, 0);
 //        }
 //        return new SimpleItem(false, id,
-//                win.app().i18n().getString("Icon." + id),
+//                win.getApplication().i18n().getString("Icon." + id),
 //                id, 0);
 //    }
 

@@ -5,74 +5,69 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import net.thevpc.echo.Application;
-import net.thevpc.pnote.gui.util.AnyDocumentListener;
-import net.thevpc.pnote.gui.util.GuiHelper;
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.*;
+import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
  * @author vpc
  */
-public class URLComponent extends JPanel implements FormComponent {
+public class URLComponent extends HorizontalPane implements FormComponent {
+    private TextField textField;
+    private Runnable callback;
 
-    private JTextField jtf = new JTextField();
-    private AnyDocumentListener listener;
-
-    public URLComponent() {
-        super(new BorderLayout());
-        add(jtf);
-//        GuiHelper.installUndoRedoManager(jtf);
+    public URLComponent(PangaeaNoteFrame win) {
+        super(win.app());
+        textField = new TextField(Str.empty(), win.app());
+        children().add(textField);
+        ContextMenu p = new ContextMenu(app());
+        textField.contextMenu().set(p);
+        p.children().add(new Button("copy", () -> app().clipboard().putString(textField.text().get().value()), app()));
+        p.children().add(new Button("paste", () -> textField.text().set(Str.of(app().clipboard().getString())), app()));
+        textField.text().onChange(x -> textChanged());
     }
 
-    @Override
-    public String getContentString() {
-        return jtf.getText();
-    }
-
-    @Override
-    public void setContentString(String s) {
-        jtf.setText(s);
-    }
-
-    public void uninstall() {
-        if (listener != null) {
-            jtf.getDocument().removeDocumentListener(listener);
-            listener = null;
+    private void textChanged() {
+        if (callback != null) {
+            callback.run();
         }
     }
 
+    @Override
     public void install(Application app) {
-    }
-
-    public JTextField getTextField() {
-        return jtf;
     }
 
     @Override
     public void setFormChangeListener(Runnable callback) {
-        if (listener == null) {
-            listener = new AnyDocumentListener() {
-                @Override
-                public void anyChange(DocumentEvent e) {
-                    callback.run();
-                }
-            };
-            jtf.getDocument().addDocumentListener(listener);
-        }
+        this.callback = callback;
     }
 
     @Override
+    public void uninstall() {
+        this.callback=null;
+    }
+
+    @Override
+    public String getContentString() {
+        return textField.text().get().value();
+    }
+
+    @Override
+    public void setContentString(String s) {
+        textField.text().set(Str.of(s));
+    }
+
+    public TextField getTextField() {
+        return textField;
+    }
+
     public void setEditable(boolean b) {
-        jtf.setEditable(b);
+        textField.editable().set(b);
     }
 
-    @Override
     public boolean isEditable() {
-        return jtf.isEditable();
+        return textField.editable().get();
     }
+
 }

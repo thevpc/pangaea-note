@@ -110,28 +110,11 @@
             <artifactId>echo-jfx</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>net.thevpc.echo</groupId>
-            <artifactId>echo-swing-mydoggy</artifactId>
-            <version>1.0.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.thevpc.echo</groupId>
-            <artifactId>echo-swing-swingx</artifactId>
-            <version>1.0.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.thevpc.hl.ide</groupId>
-            <artifactId>hl4swing</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jopendocument</groupId>
-            <artifactId>jOpenDocument</artifactId>
-            <version>1.3</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jopendocument</groupId>-->
+<!--            <artifactId>jOpenDocument</artifactId>-->
+<!--            <version>1.3</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jodconverter</groupId>
             <artifactId>jodconverter-local</artifactId>

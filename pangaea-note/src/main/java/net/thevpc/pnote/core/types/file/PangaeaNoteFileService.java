@@ -19,7 +19,7 @@ import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
-import net.thevpc.pnote.core.types.file.editor.FileEditorTypeComponent;
+import net.thevpc.pnote.core.types.file.editor.PangaeaNoteFileEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
@@ -43,7 +43,7 @@ public class PangaeaNoteFileService extends AbstractPangaeaNoteTypeService {
             public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
                 switch (name) {
                     case PangaeaNoteTypes.EDITOR_FILE:
-                        return new FileEditorTypeComponent(win);
+                        return new PangaeaNoteFileEditorTypeComponent(win);
                 }
                 return null;
             }

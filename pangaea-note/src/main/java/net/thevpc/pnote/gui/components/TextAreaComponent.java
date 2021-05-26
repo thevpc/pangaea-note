@@ -8,10 +8,7 @@ package net.thevpc.pnote.gui.components;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.util.AnyDocumentListener;
-import net.thevpc.pnote.gui.util.GuiHelper;
 
 /**
  *

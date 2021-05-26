@@ -6,9 +6,6 @@
 package net.thevpc.pnote.core.types.embedded.editor;
 
 import net.thevpc.echo.BorderPane;
-import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.echo.Panel;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
@@ -37,12 +34,6 @@ public class PangaeaNoteDocumentEditorTypeComponent extends BorderPane implement
     public boolean isCompactMode() {
         return compactMode;
     }
-    
-
-    @Override
-    public AppComponent component() {
-        return this;
-    }
 
     @Override
     public void uninstall() {
@@ -52,7 +43,7 @@ public class PangaeaNoteDocumentEditorTypeComponent extends BorderPane implement
     public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
         try {
             this.currentNote = note;
-            String path = PangaeaNoteEmbeddedService.of(win.service()).getContentValueAsPath(note.getContent());
+//            String path = PangaeaNoteEmbeddedService.of(win.service()).getContentValueAsInfo(note.getContent()).getPath();
 //            if (path == null || path.length() == 0) {
 //                error.setText("missing file");
 //            } else {

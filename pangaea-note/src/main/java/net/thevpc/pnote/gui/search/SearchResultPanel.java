@@ -9,6 +9,7 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.api.model.PangaeaNoteExt;
@@ -79,14 +80,14 @@ public class SearchResultPanel extends BorderPane {
             bar = new ProgressBar<>(Integer.class, app())
                     .with(u -> u.anchor().set(Anchor.BOTTOM));
             model.setColumnIdentifiers(new Object[]{
-                    frame.app().i18n().getString("Message.search.position"),
-                    frame.app().i18n().getString("Message.search.note"),
-                    frame.app().i18n().getString("Message.search.matchingText"),});
+                    Applications.rawString(Str.i18n("Message.search.position"),this),
+                            Applications.rawString(Str.i18n("Message.search.note"),this),
+                                    Applications.rawString(Str.i18n("Message.search.matchingText"),this)});
             frame.app().i18n().locale().onChange((x) -> {
                 model.setColumnIdentifiers(new Object[]{
-                        frame.app().i18n().getString("Message.search.position"),
-                        frame.app().i18n().getString("Message.search.note"),
-                        frame.app().i18n().getString("Message.search.matchingText"),});
+                        Applications.rawString(Str.i18n("Message.search.position"), this),
+                        Applications.rawString(Str.i18n("Message.search.note"), this),
+                        Applications.rawString(Str.i18n("Message.search.matchingText"), this)});
             });
             table.setModel(model);
             table.addMouseListener(new MouseAdapter() {

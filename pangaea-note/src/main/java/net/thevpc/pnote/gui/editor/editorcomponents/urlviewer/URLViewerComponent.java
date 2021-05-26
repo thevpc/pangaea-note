@@ -13,17 +13,15 @@ import javax.swing.JComponent;
  *
  * @author vpc
  */
-public interface URLViewerComponent {
+public interface URLViewerComponent extends AppComponent{
 
-    void setURL(String url);
-
-    AppComponent component();
+    void navigate(String url);
 
     boolean isEditable();
 
     void save();
 
-    public void setEditable(boolean editable);
+    void setEditable(boolean editable);
 
     void disposeComponent();
 }

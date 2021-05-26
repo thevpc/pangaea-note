@@ -12,8 +12,6 @@ import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.Button;
 import net.thevpc.echo.ContextMenu;
 import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.echo.Panel;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
@@ -25,16 +23,16 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
  *
  * @author vpc
  */
-public class EmptyNoteEditorTypeComponent extends BorderPane/*GradientPanel*/ implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*GradientPanel*/ implements PangaeaNoteEditorTypeComponent {
 
     private PangaeaNoteFrame frame;
-    UpdateLocale updateLocale = new UpdateLocale();
+//    UpdateLocale updateLocale = new UpdateLocale();
 
-    public EmptyNoteEditorTypeComponent(PangaeaNoteFrame frame) {
+    public PangaeaNoteEmptyNoteEditorTypeComponent(PangaeaNoteFrame frame) {
         super(frame.app());
         this.frame = frame;
         PangaeaNoteApp app = frame.app();
-        app.i18n().locale().onChange(updateLocale);
+//        app.i18n().locale().onChange(updateLocale);
 
 
         ContextMenu treePopupMenu = new ContextMenu(app);
@@ -126,18 +124,13 @@ public class EmptyNoteEditorTypeComponent extends BorderPane/*GradientPanel*/ im
 //    }
 
     @Override
-    public AppComponent component() {
-        return this;
-    }
-
-    @Override
     public boolean isCompactMode() {
         return true;
     }
 
     @Override
     public void uninstall() {
-        frame.app().i18n().locale().listeners().remove(updateLocale);
+//        frame.app().i18n().locale().events().remove(updateLocale);
     }
 
     @Override

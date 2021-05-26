@@ -23,15 +23,20 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
  */
 public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPangaeaNoteTypeService {
 
-    public AbstractPangaeaNoteSourceCodeService(PangaeaNoteMimeType contentType, String... mimetypes) {
+    private String[] extensions;
+    private String contentSelector;
+
+    public AbstractPangaeaNoteSourceCodeService(PangaeaNoteMimeType contentType, String contentSelector,String[] mimetypes, String[] extensions) {
         super(contentType, mimetypes);
+        this.extensions = extensions;
+        this.contentSelector = contentSelector==null?"sources":contentSelector;
     }
 
     @Override
     public ContentTypeSelector getContentTypeSelector() {
-        return new ContentTypeSelector(getContentType(), "sources", 0);
+        return new ContentTypeSelector(getContentType(), contentSelector, 0);
     }
-
+    
     @Override
     public String normalizeEditorType(String editorType) {
         return PangaeaNoteTypes.EDITOR_SOURCE;
@@ -48,4 +53,17 @@ public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPanga
         return service().stringToElement("");
     }
 
+     @Override
+    public int getFileNameSupport(String fileName, String extension, String probedContentType) {
+        int a = super.getFileNameSupport(fileName, extension, probedContentType);
+        if (a > 0) {
+            return a;
+        }
+        for (String e : extensions) {
+            if (extension.equals(e)) {
+                return 10;
+            }
+        }
+        return -1;
+    }
 }

@@ -6,7 +6,6 @@
 package net.thevpc.pnote.core.types.plain;
 
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.refactor.AnythingToPlainContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -21,12 +20,10 @@ public class PangaeaNotePlainTextService extends AbstractPangaeaNoteSourceCodeSe
     public static final PangaeaNoteMimeType PLAIN = PangaeaNoteMimeType.of("text/plain");
 
     public PangaeaNotePlainTextService() {
-        super(PLAIN, "application/x-desktop");
-    }
-
-    @Override
-    public ContentTypeSelector getContentTypeSelector() {
-        return new ContentTypeSelector(getContentType(), "simple-documents", 0);
+        super(PLAIN, "simple-documents",
+                new String[]{"application/x-desktop"},
+                new String[]{"txt", "text", "log"}
+        );
     }
 
     @Override

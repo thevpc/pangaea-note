@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
@@ -30,7 +32,6 @@ import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.PangaeaNoteService;
-import net.thevpc.pnote.util.OtherUtils;
 
 /**
  *
@@ -344,7 +345,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
                     if (iconString.isEmpty()) {
                         iconString = null;
                     } else {
-                        Integer iconIndex = OtherUtils.parseInt(iconString);
+                        Integer iconIndex = Applications.parseInt(iconString);
                         if (iconIndex == null) {
                             iconIndex = iconString.hashCode();
                         }

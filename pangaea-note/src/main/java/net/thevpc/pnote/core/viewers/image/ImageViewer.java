@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import net.thevpc.echo.api.SupportSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
@@ -28,16 +30,24 @@ public class ImageViewer implements PangaeaNoteFileViewerManager {
     );
 
     @Override
-    public int getSupport(String path, String extension, PangaeaNoteMimeType mimeType, PangaeaNoteFrame win) {
-        return SUPPORTED_EXTENSIONS.contains(extension) ? 2 : -1;
-    }
+    public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
+        if(SUPPORTED_EXTENSIONS.contains(extension)) {
+            return new SupportSupplier<URLViewerComponent>() {
+                @Override
+                public int getSupportLevel() {
+                    return 2;
+                }
 
-    @Override
-    public URLViewerComponent createComponent(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
-        Runnable onSuccess = () -> viewer.fireSuccessfulLoading(path);
-        Consumer<Exception> onError = viewer::fireError;
+                @Override
+                public URLViewerComponent get() {
+                    Runnable onSuccess = () -> viewer.fireSuccessfulLoading(path);
+                    Consumer<Exception> onError = viewer::fireError;
 
-        return new ImageViewerComponent(win, viewer, onSuccess, onError);
+                    return new ImageViewerComponent(win, viewer, onSuccess, onError);
+                }
+            };
+        }
+        return null;
     }
 
 }

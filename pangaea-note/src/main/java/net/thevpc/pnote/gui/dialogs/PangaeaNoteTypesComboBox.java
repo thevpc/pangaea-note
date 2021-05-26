@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.ComboBox;
 import net.thevpc.echo.SimpleItem;
+import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.util.OtherUtils;
 
 /**
  *
@@ -35,7 +36,7 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
             List<SimpleItem> recent = new ArrayList<>();
             for (String id : rct) {
                 if (frame.service().isValidContentTypeExt(id)) {
-                    recent.add(new SimpleItem(false, "recent-" + id, frame.app().i18n().getString("content-type." + id),
+                    recent.add(new SimpleItem(false, "recent-" + id, Str.i18n("content-type." + id),
                                     frame.service().getContentTypeIcon(PangaeaNoteMimeType.of(id)), 0
                             )
                     );
@@ -72,7 +73,7 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
 //        );
 //    }
     protected final SimpleItem createNoteTypeFamilyNameGroup(String id) {
-        return new SimpleItem(true, id, frame.app().i18n().getString("content-type." + id), null, 0);
+        return new SimpleItem(true, id, Str.i18n("content-type." + id), null, 0);
     }
 
     private List<SimpleItem> createTypeListNamedValue() {
@@ -89,7 +90,7 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
             }
             li.add(
                     new SimpleItem(false, contentTypeSelector.getContentType().toString(),
-                            frame.app().i18n().getString("content-type." + contentTypeSelector.getContentType().toString()),
+                            Str.i18n("content-type." + contentTypeSelector.getContentType().toString()),
                             frame.service().getContentTypeIcon(contentTypeSelector.getContentType()),
                             contentTypeSelector.getOrder()
                     )
@@ -98,7 +99,7 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
 
         for (PangaeaNoteTemplate template : frame.service().getTemplates()) {
             String g = template.getGroup();
-            if (OtherUtils.isBlank(g)) {
+            if (Applications.isBlank(g)) {
                 g = "templates";
             }
             List<SimpleItem> li = selectors.get(g);
@@ -106,9 +107,9 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
                 li = new ArrayList<>();
                 selectors.put(g, li);
             }
-            String s = template.getLabel(frame.service());
+            Str s = template.getLabel(frame.service());
             if (s == null) {
-                s = frame.app().i18n().getString("content-type." + template.getContentType().toString());
+                s = Str.i18n("content-type." + template.getContentType().toString());
             }
             SimpleItem n = new SimpleItem(false, template.getContentType().toString(), s, frame.service().getContentTypeIcon(template.getContentType()),
                     template.getOrder()

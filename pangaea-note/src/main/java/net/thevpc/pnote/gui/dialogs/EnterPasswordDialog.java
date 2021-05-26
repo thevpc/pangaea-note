@@ -9,10 +9,16 @@ import java.awt.HeadlessException;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.Alert;
+import net.thevpc.echo.GridPane;
 import net.thevpc.echo.Label;
 import net.thevpc.echo.Panel;
+import net.thevpc.echo.TextField;
 import net.thevpc.echo.VerticalPane;
 import net.thevpc.echo.api.CancelException;
+import net.thevpc.echo.constraints.AllFill;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.Grow;
+import net.thevpc.echo.constraints.GrowContainer;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.components.PasswordComponent;
 import net.thevpc.pnote.service.security.PasswordHandler;
@@ -36,15 +42,20 @@ public class EnterPasswordDialog {
         this.frame = frame;
         passwordComponent = new PasswordComponent(frame);
         passwordComponent.install(frame.app());
-        panel=new VerticalPane(frame.app())
-        .with(p->{
-            p.children().addAll(
-                    new Label(Str.i18n("Message.enter-password"),frame.app()),
-                    new Label(Str.of(path),frame.app()),
+        panel = new GridPane(1, frame.app())
+                .with(p -> {
+                    p.parentConstraints().addAll(AllMargins.of(5), AllFill.HORIZONTAL,GrowContainer.HORIZONTAL);
+                    p.children().addAll(
+                            new Label(Str.i18n("Message.enter-password"), frame.app()),
+                            new TextField(frame.app())
+                                    .with((TextField t) -> {
+                                        t.editable().set(false);
+                                        t.text().set(Str.of(path));
+                                        t.childConstraints().add(Grow.HORIZONTAL);
+                                    }),
                             passwordComponent
-
-            );
-        });
+                    );
+                });
 //        passwordComponent.setMinimumSize(new Dimension(50, 30));
 //        GridBagLayoutSupport gbs = GridBagLayoutSupport.load(EnterPasswordDialog.class.getResource(
 //                "/net/thevpc/pnote/forms/EnterPassword.gbl-form"
@@ -79,7 +90,11 @@ public class EnterPasswordDialog {
             install();
             this.ok = false;
             new Alert(frame.app())
-                    .setTitle(Str.i18n("Message.password"))
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.password"));
+                        a.headerText().set(Str.i18n("Message.password"));
+                        a.headerIcon().set(Str.of("unlock"));
+                    })
                     .setContent(panel)
                     .withOkCancelButtons(
                             (a) -> {

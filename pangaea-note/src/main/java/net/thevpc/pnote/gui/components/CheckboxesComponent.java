@@ -9,7 +9,6 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.*;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class CheckboxesComponent extends HorizontalPane implements FormComponent
     public void setSelectValues(List<String> newValues) {
         while (checkBoxes.size() > newValues.size()) {
             CheckBox c = checkBoxes.remove(checkBoxes.size() - 1);
-            c.listeners().remove(itemListener);
+            c.events().remove(itemListener);
             children().remove(c);
         }
         for (int i = 0; i < checkBoxes.size(); i++) {
