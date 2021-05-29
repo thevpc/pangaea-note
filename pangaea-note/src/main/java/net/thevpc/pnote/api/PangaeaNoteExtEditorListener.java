@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.api;
 
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
@@ -13,6 +13,6 @@ import net.thevpc.pnote.api.model.PangaeaNoteExt;
  */
 public interface PangaeaNoteExtEditorListener {
 
-    void onNavigateTo(PangaeaNoteExt other);
+    void onNavigateTo(PangaeaNote other);
     
 }

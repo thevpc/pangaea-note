@@ -7,6 +7,7 @@ package net.thevpc.pnote.gui.components;
 
 import net.thevpc.echo.Application;
 import net.thevpc.echo.ComboBox;
+import net.thevpc.echo.ContextMenu;
 import net.thevpc.echo.HorizontalPane;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
@@ -52,7 +53,7 @@ public class ComboboxComponent extends HorizontalPane implements FormComponent {
         callback = null;
     }
 
-    public void install(Application app) {
+    public void install(Application app, ContextMenu contextMenu) {
     }
 
     @Override

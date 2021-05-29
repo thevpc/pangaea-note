@@ -7,8 +7,8 @@ package net.thevpc.pnote.api;
 
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.i18n.Str;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -26,9 +26,9 @@ public abstract class AbstractPangaeaNoteTemplate implements PangaeaNoteTemplate
         this.icon = icon;
     }
 
-    protected String str(String s, PangaeaNoteService service) {
+    protected String str(String s, PangaeaNoteApp app) {
         String prefix = "content-type." + getContentType() + ".";
-        I18n i18n = service.i18n();
+        I18n i18n = app.i18n();
         return i18n.getString(prefix + "" + s);
     }
 
@@ -43,7 +43,7 @@ public abstract class AbstractPangaeaNoteTemplate implements PangaeaNoteTemplate
     }
 
     @Override
-    public Str getLabel(PangaeaNoteService win) {
+    public Str getLabel(PangaeaNoteApp app) {
         return Str.i18n("content-type." + getContentType().toString());
     }
 

@@ -6,19 +6,20 @@
 package net.thevpc.pnote.gui.search;
 
 import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.Label;
+import net.thevpc.echo.Panel;
 import net.thevpc.echo.*;
-import net.thevpc.pnote.service.search.SearchQuery;
-
-import java.awt.HeadlessException;
 import net.thevpc.echo.constraints.AllAnchors;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.echo.constraints.AllPaddings;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.service.search.SearchQuery;
+
+import java.awt.*;
 
 /**
- *
  * @author vpc
  */
 public class SearchDialog {
@@ -30,7 +31,7 @@ public class SearchDialog {
     private ComboBox queryEditor;
     private CheckBox matchCaseEditor;
     private CheckBox wholeWordEditor;
-    private ComboBox modeEditor;
+    private ComboBox<SimpleItem> modeEditor;
 
     private boolean ok = false;
     private Str titleId = Str.i18n("Message.search");
@@ -117,7 +118,7 @@ public class SearchDialog {
                                 a.getDialog().closeDialog();
                             }
                     )
-                    .showDialog(null);
+                    .showDialog(frame);
             try {
                 return get();
             } catch (Exception ex) {
@@ -128,26 +129,24 @@ public class SearchDialog {
 
     public SearchQuery get() {
         if (ok) {
-//            String s = (String) queryEditor.getSelectedItem();
-//            if (s != null && s.length() > 0) {
-//                SearchQuery.Strategy mm = SearchQuery.Strategy.valueOf((String) modeEditor.getSelectedItem());
-//                SearchQuery q = new SearchQuery(
-//                        s,
-//                        matchCaseEditor.isSelected(),
-//                        wholeWordEditor.isSelected(),
-//                        mm
-//                );
-//                return q;
-//            }
+            String s = queryEditor.text().get().value();
+            if (s != null && s.length() > 0) {
+                SearchQuery.Strategy mm = SearchQuery.Strategy.valueOf(modeEditor.selection().get().getId());
+                SearchQuery q = new SearchQuery(
+                        s,
+                        matchCaseEditor.selected().get(),
+                        wholeWordEditor.selected().get(),
+                        mm
+                );
+                return q;
+            }
         }
         return null;
     }
 
     public void setSearchText(String selectedText) {
-        if (selectedText == null) {
-            selectedText = "";
-        }
-//        queryEditor.setSelectedItem(selectedText);
+        queryEditor.text().set(Str.of(selectedText));
+        queryEditor.lastWasEdit().set(true);
     }
 
 }

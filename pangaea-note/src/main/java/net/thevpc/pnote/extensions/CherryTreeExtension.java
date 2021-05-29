@@ -28,7 +28,6 @@ import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.core.types.rich.PangaeaNoteRichService;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.util.OtherUtils;
@@ -58,7 +57,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
 
     @Override
     public void onLoad(PangaeaNoteApp app) {
-        app.service().installFileImporter(this);
+        app.installFileImporter(this);
     }
 
     @Override
@@ -67,7 +66,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
     }
 
     @Override
-    public PangaeaNote loadNote(InputStream stream, String preferredName, String fileExtension, PangaeaNoteService service) {
+    public PangaeaNote loadNote(InputStream stream, String preferredName, String fileExtension, PangaeaNoteApp service) {
         if("ctd".equals(fileExtension)) {
             try {
                 DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -110,19 +109,19 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                 b.setErrorHandler(new ErrorHandler() {
                     @Override
                     public void warning(SAXParseException exception) throws SAXException {
-                        session.getWorkspace().log().of(PangaeaNoteService.class).with().session(session)
+                        session.getWorkspace().log().of(PangaeaNoteApp.class).with().session(session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
                     }
 
                     @Override
                     public void error(SAXParseException exception) throws SAXException {
-                        session.getWorkspace().log().of(PangaeaNoteService.class).with().session(session)
+                        session.getWorkspace().log().of(PangaeaNoteApp.class).with().session(session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
                     }
 
                     @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
-                        session.getWorkspace().log().of(PangaeaNoteService.class).with().session(session)
+                        session.getWorkspace().log().of(PangaeaNoteApp.class).with().session(session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
                     }
                 });
@@ -198,7 +197,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
 
     }
 
-    public PangaeaNote parseCherryTreeXmlNote(Element e, PangaeaNoteService service) {
+    public PangaeaNote parseCherryTreeXmlNote(Element e, PangaeaNoteApp app) {
         switch (e.getTagName()) {
             case "node": {
                 PangaeaNote nn = new PangaeaNote();
@@ -239,8 +238,8 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                             //
                                         }
                                         if (x > 0) {
-                                            x = (x - 1) % service.getAllIcons().size();
-                                            nn.setIcon((String) (service.getAllIcons().toArray()[x]));
+                                            x = (x - 1) % app.getAllIcons().size();
+                                            nn.setIcon((String) (app.getAllIcons().toArray()[x]));
                                         }
                                     }
                                     break;
@@ -352,7 +351,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                     if (c instanceof Element) {
                         Element e2 = (Element) c;
                         if (e2.getTagName().equals("node")) {
-                            nn.getChildren().add(parseCherryTreeXmlNote(e2, service));
+                            nn.getChildren().add(parseCherryTreeXmlNote(e2, app));
                         } else if (e2.getTagName().equals("rich_text")) {
                             String link = e.getAttribute("link");
                             if (!Applications.isBlank(link)) {
@@ -380,7 +379,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                 }
                 if (nn.getContentType().equals(PangaeaNoteRichService.RICH_HTML.toString())) {
                     nn.setContent(
-                            service.stringToElement(
+                            app.stringToElement(
                             "<html><head>"
                             + (noteContentStyle.isEmpty() ? "" : ("<style>" + buildStyle(noteContentStyle) + "</style>"))
                             + "</head><body>"
@@ -413,7 +412,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                     );
                 } else {
                     nn.setContent(
-                            service.stringToElement(richTexts.stream().map(x -> x.getText()).collect(Collectors.joining()))
+                            app.stringToElement(richTexts.stream().map(x -> x.getText()).collect(Collectors.joining()))
                     );
                 }
                 return nn;

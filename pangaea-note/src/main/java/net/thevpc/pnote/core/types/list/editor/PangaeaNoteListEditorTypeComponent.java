@@ -8,7 +8,7 @@ package net.thevpc.pnote.core.types.list.editor;
 import net.thevpc.echo.ScrollPane;
 import net.thevpc.echo.*;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
@@ -40,13 +40,13 @@ public class PangaeaNoteListEditorTypeComponent extends BorderPane implements Pa
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
-        this.componentList.setNote(note, win);
+    public void setNote(PangaeaNote note) {
+        this.componentList.setNote(note, frame);
     }
 
-    public boolean setSelectedName(String name, boolean sel) {
-        return this.componentList.setSelectedName(name, sel);
-    }
+//    public boolean setSelectedName(String name, boolean sel) {
+//        return this.componentList.setSelectedName(name, sel);
+//    }
 
     public boolean isCompactMode() {
         return compactMode;

@@ -9,9 +9,9 @@ import java.util.Objects;
 
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerListener;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
@@ -19,7 +19,7 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
  */
 public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements PangaeaNoteEditorTypeComponent {
 
-    private PangaeaNoteExt currentNote;
+    private PangaeaNote currentNote;
     private boolean editable = true;
 
     public PangaeaNoteFileEditorTypeComponent(PangaeaNoteFrame frame) {
@@ -33,7 +33,7 @@ public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements Pan
             public void onStartLoading(String path) {
                 if (currentNote != null) {
                     if (!Objects.equals(path, currentNote.getContent().toString())) {
-                        currentNote.setContent(frame.service().stringToElement(path));
+                        currentNote.setContent(frame.app().stringToElement(path));
                         frame.onDocumentChanged();
                     }
                 }
@@ -43,7 +43,7 @@ public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements Pan
             public void onSuccessfulLoading(String path) {
                 if (currentNote != null) {
                     if (!Objects.equals(path, currentNote.getContent().toString())) {
-                        currentNote.setContent(frame.service().stringToElement(path));
+                        currentNote.setContent(frame.app().stringToElement(path));
                         frame.onDocumentChanged();
                     }
                 }
@@ -53,14 +53,13 @@ public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements Pan
             public void onReset() {
                 if (currentNote != null) {
                     if (!Objects.equals("", currentNote.getContent().toString())) {
-                        currentNote.setContent(frame.service().stringToElement(""));
+                        currentNote.setContent(frame.app().stringToElement(""));
                         frame.onDocumentChanged();
                     }
                 }
             }
         });
     }
-
 
     @Override
     public boolean isCompactMode() {
@@ -76,9 +75,9 @@ public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements Pan
 //        fileViewer.setEditable(fileViewer.isSupportedEdit());
 //    }
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
         this.currentNote = note;
-        String c = win.service().elementToString(note.getContent());
+        String c = frame().app().elementToString(note.getContent());
         navigate(c);
     }
 

@@ -7,9 +7,8 @@ package net.thevpc.pnote.core.types.embedded.editor;
 
 import net.thevpc.echo.BorderPane;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
@@ -17,7 +16,7 @@ import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
  */
 public class PangaeaNoteDocumentEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
-    private PangaeaNoteExt currentNote;
+    private PangaeaNote currentNote;
     private boolean editable = true;
     private PangaeaNoteFrame frame;
     private boolean compactMode;
@@ -40,7 +39,7 @@ public class PangaeaNoteDocumentEditorTypeComponent extends BorderPane implement
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
         try {
             this.currentNote = note;
 //            String path = PangaeaNoteEmbeddedService.of(win.service()).getContentValueAsInfo(note.getContent()).getPath();

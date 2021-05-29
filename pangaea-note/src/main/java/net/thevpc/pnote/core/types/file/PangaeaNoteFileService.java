@@ -14,9 +14,8 @@ import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
-import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.core.types.file.editor.PangaeaNoteFileEditorTypeComponent;
@@ -36,8 +35,8 @@ public class PangaeaNoteFileService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        super.onInstall(service, app);
+    public void onInstall(PangaeaNoteApp app) {
+        super.onInstall(app);
         app.installEditorService(new PangaeaNoteEditorService() {
             @Override
             public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
@@ -65,8 +64,8 @@ public class PangaeaNoteFileService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
-        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", getContentAsString(note.getContent())).iterator()
+    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
+        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", getContentAsString(note.getContent())).iterator()
         );
     }
 
@@ -74,13 +73,13 @@ public class PangaeaNoteFileService extends AbstractPangaeaNoteTypeService {
 
         
     @Override
-    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
-        return service().isEmptyContent(content);
+    public boolean isEmptyContent(NutsElement content) {
+        return app().isEmptyContent(content);
     }
 
     @Override
     public NutsElement createDefaultContent() {
-        return service().stringToElement("");
+        return app().stringToElement("");
     }
     
 }

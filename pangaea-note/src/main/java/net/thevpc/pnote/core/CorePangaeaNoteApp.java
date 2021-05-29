@@ -30,16 +30,6 @@ import java.util.Map;
 
 public class CorePangaeaNoteApp {
 
-    public static final String[] SOURCE_CONTENT_TYPES = {
-            "text/java;text/x-java",
-            "text/x-csrc;text/x-c++hdr",
-            "text/x-c++src",
-            "text/javascript",
-            "application/x-shellscript;ext=sh,zsh,tsh",
-            "text/markdown;group=simple-documents",
-            "text/x-nuts-text-format;group=simple-documents;ext=ntf",
-            "application/x-hadra"
-    };
     private PangaeaNoteAppExtension e = new PangaeaNoteAppExtension() {
         @Override
         public void onLoad(PangaeaNoteApp app) {
@@ -72,15 +62,15 @@ public class CorePangaeaNoteApp {
     }
 
     public void onLoad(PangaeaNoteApp app) {
-        app.service().installNoteTypeService(new PangaeaNotePlainTextService());
-        app.service().installNoteTypeService(new PangaeaNoteRichService());
+        app.installNoteTypeService(new PangaeaNotePlainTextService());
+        app.installNoteTypeService(new PangaeaNoteRichService());
 
-        app.service().installNoteTypeService(new PangaeaNoteListService());
-        app.service().installNoteTypeService(new PangaeaNoteFormsService());
-        app.service().installNoteTypeService(new PangaeaNoteFileService());
-        app.service().installNoteTypeService(new PangaeaNoteEmbeddedService());
+        app.installNoteTypeService(new PangaeaNoteListService());
+        app.installNoteTypeService(new PangaeaNoteFormsService());
+        app.installNoteTypeService(new PangaeaNoteFileService());
+        app.installNoteTypeService(new PangaeaNoteEmbeddedService());
 
-        for (String sourceContentType : SOURCE_CONTENT_TYPES) {
+        for (String sourceContentType : PangaeaNoteApp.SOURCE_CONTENT_TYPES) {
             List<String> extraList = new ArrayList<>();
             List<String> extList = new ArrayList<>();
             PangaeaNoteMimeType contentType = null;
@@ -104,7 +94,7 @@ public class CorePangaeaNoteApp {
                     }
                 }
             }
-            app.service().installNoteTypeService(new DefaultPangaeaNoteSourceCodeService(
+            app.installNoteTypeService(new DefaultPangaeaNoteSourceCodeService(
                             contentType,
                             group,
                             extraList.toArray(new String[0]),
@@ -113,12 +103,12 @@ public class CorePangaeaNoteApp {
             );
         }
 
-        app.service().installNoteTypeService(new PangaeaNoteHtmlService());
+        app.installNoteTypeService(new PangaeaNoteHtmlService());
         if (false) {
-            app.service().installNoteTypeService(new PangaeaNoteDiaService());
+            app.installNoteTypeService(new PangaeaNoteDiaService());
         }
 
-        app.service().installTypeReplacer(new EmptySourceContentTypeReplacer());
+        app.installTypeReplacer(new EmptySourceContentTypeReplacer());
         app.installEditorService(new SourceEditorService());
 
         app.installViewer(new NoteEditorToViewer());

@@ -11,9 +11,9 @@ package net.thevpc.pnote.api.model;
  */
 public interface ObservableNoteListener {
 
-    void onAdded(PangaeaNoteExt child,PangaeaNoteExt parent);
+    void onAdded(PangaeaNote child,PangaeaNote parent);
 
-    void onRemoved(PangaeaNoteExt child,PangaeaNoteExt parent);
+    void onRemoved(PangaeaNote child,PangaeaNote parent);
 
-    void onChanged(PangaeaNoteExt note,String prop, Object oval, Object nval);
+    void onChanged(PangaeaNote note,String prop, Object oval, Object nval);
 }

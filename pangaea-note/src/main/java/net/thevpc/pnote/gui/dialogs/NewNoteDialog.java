@@ -98,16 +98,16 @@ public class NewNoteDialog {
 //        if (PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString().equals(selectedContentTypeId)) {
 //            n.setContent(PangaeaNoteEmbeddedService.of(win.service()).getContentValueAsElement(typeFileValue.getContentString()));
 //        } else {
-        PangaeaNoteTemplate z = frame.service().getTemplate(ct);
+        PangaeaNoteTemplate z = frame.app().getTemplate(ct);
         if (z != null) {
             n.setIcon(z.getIcon());
-            z.prepare(n, frame.service());
+            z.prepare(n, frame.app());
         } else {
-            NutsElement dv = frame.service().getContentTypeService(ct).createDefaultContent();
+            NutsElement dv = frame.app().getContentTypeService(ct).createDefaultContent();
             n.setContent(dv);
         }
 //        }
-        frame.service().addRecentNoteType(selectedContentTypeId);
+        frame.app().addRecentNoteType(selectedContentTypeId);
         return n;
     }
 
@@ -137,7 +137,7 @@ public class NewNoteDialog {
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.addNewNote"));
                         a.headerText().set(Str.i18n("Message.addNewNote"));
-                        a.headerIcon().set(Str.of("add"));
+                        a.headerIcon().set(Str.of("edit-plus"));
                     })
                     .setContent(panel)
                     .withOkCancelButtons(

@@ -11,20 +11,18 @@ import net.thevpc.diagram4j.actions.*;
 import net.thevpc.diagram4j.model.*;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.AppFont;
-import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.Anchor;
 import net.thevpc.echo.constraints.Layout;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
 import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
 import net.thevpc.pnote.core.types.diagram.ser.JDiagramBoundsMapper;
 import net.thevpc.pnote.core.types.diagram.ser.JDiagramGeometryMapper;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import org.icepdf.ri.common.utility.annotation.BorderPanel;
 
 import java.util.Set;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  * @author vpc
@@ -35,7 +33,7 @@ public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements
     private PangaeaNoteFrame frame;
     private JDiagramCanvas canvas;
     private ToolBar toolbar;
-    private PangaeaNoteExt note;
+    private PangaeaNote note;
 
     public PangaeaNoteDiagramEditorTypeComponent(boolean compactMode, PangaeaNoteFrame frame) {
         super(frame.app());
@@ -278,17 +276,17 @@ public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements
         //
     }
 
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
         this.note = note;
         NutsElement cnt = note.getContent();
-        PangaeaNoteDiaService service = (PangaeaNoteDiaService) win.service().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
+        PangaeaNoteDiaService service = (PangaeaNoteDiaService) frame.app().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
         canvas.setDiagram(service.elementToDiagram(cnt));
     }
 
     protected void updateNoteFromDiagram() {
         if (note != null) {
             JDiagramModel d = canvas.getDiagram().getModel();
-            PangaeaNoteDiaService service = (PangaeaNoteDiaService) frame.service().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
+            PangaeaNoteDiaService service = (PangaeaNoteDiaService) frame.app().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
             note.setContent(service.diagramToElement(d));
         }
     }

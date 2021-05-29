@@ -11,44 +11,44 @@ import java.util.List;
 
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NutsElement;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteField;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObject;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.StringToPatternPortionImpl;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavigator<PangaeaNoteExt> {
+public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavigator<PangaeaNote> {
 
-    private PangaeaNoteService service;
+    private PangaeaNoteApp app;
     private PangaeaNoteObjectDocument document;
-    private PangaeaNoteExt note;
+    private PangaeaNote note;
 
-    public PangaeaNoteObjectDocumentTextNavigator(PangaeaNoteService service, PangaeaNoteExt note, NutsElement source) {
-        this.service = service;
+    public PangaeaNoteObjectDocumentTextNavigator(PangaeaNoteApp app, PangaeaNote note, NutsElement source) {
+        this.app = app;
         this.note = note;
-        PangaeaNoteFormsService s = (PangaeaNoteFormsService) service.getContentTypeService(PangaeaNoteFormsService.FORMS);
+        PangaeaNoteFormsService s = (PangaeaNoteFormsService) app.getContentTypeService(PangaeaNoteFormsService.FORMS);
         document
                 = source == null ? new PangaeaNoteObjectDocument()
                         : s.getContentAsObject(source);
     }
 
     @Override
-    public Iterator<DocumentTextPart<PangaeaNoteExt>> iterator() {
-        List<DocumentTextPart<PangaeaNoteExt>> all = new ArrayList<>();
+    public Iterator<DocumentTextPart<PangaeaNote>> iterator() {
+        List<DocumentTextPart<PangaeaNote>> all = new ArrayList<>();
         if (document.getDescriptor().getFields() != null) {
             for (PangaeaNoteFieldDescriptor value : document.getDescriptor().getFields()) {
                 if (!Applications.isBlank(value.getName())) {
                     //String key, String text, T object, String stringValue
-                    all.add(new StringToPatternPortionImpl<PangaeaNoteExt>("fieldDescriptor", value.getName(), note, value, value.getName()));
+                    all.add(new StringToPatternPortionImpl<PangaeaNote>("fieldDescriptor", value.getName(), note, value, value.getName()));
                 }
             }
         }

@@ -5,12 +5,11 @@
  */
 package net.thevpc.pnote.core.types.forms.refactor;
 
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.api.PangaeaContentTypeReplacer;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -24,7 +23,7 @@ public class FormsToAnythingContentTypeReplacer implements PangaeaContentTypeRep
     }
 
     @Override
-    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteService service, PangaeaNoteFrame frame) {
+    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaNoteFormsService.FORMS.equals(oldContentType)) {
             return 10;
         }
@@ -32,13 +31,12 @@ public class FormsToAnythingContentTypeReplacer implements PangaeaContentTypeRep
     }
 
     @Override
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteService service) {
+    public void changeNoteContentType(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaNoteFormsService.FORMS.equals(oldContentType)) {
-            toUpdate.setContent(
-                    service.getContentTypeService(newContentType).createDefaultContent()
+            toUpdate.setContent(app.getContentTypeService(newContentType).createDefaultContent()
             );
             toUpdate.setContentType(newContentType.toString());
-            toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
+            toUpdate.setEditorType(app.normalizeEditorType(newContentType, toUpdate.getEditorType()));
         }
 
     }

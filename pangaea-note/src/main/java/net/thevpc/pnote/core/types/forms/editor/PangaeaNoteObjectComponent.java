@@ -5,18 +5,16 @@
  */
 package net.thevpc.pnote.core.types.forms.editor;
 
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.thevpc.echo.Dimension;
 
 import net.thevpc.echo.GridPane;
-import net.thevpc.echo.Panel;
-import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.ScrollPane;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteField;
@@ -35,6 +33,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
     private PangaeaNoteObjectExt currentValue;
     private List<PangaeaNoteFieldDescriptorPanel> components = new ArrayList<>();
     private PangaeaNoteObjectTracker objectTracker;
+    private PangaeaNoteFormsEditorTypeComponent.FormsDataItem parentDataItem;
     private PangaeaNoteFrame frame;
     private PangaeaNoteObjectTracker dynamicObjectTrackerAdapter = new PangaeaNoteObjectTracker() {
         @Override
@@ -60,9 +59,10 @@ public class PangaeaNoteObjectComponent extends GridPane {
 
     };
 
-    public PangaeaNoteObjectComponent(PangaeaNoteObjectTracker objectTracker, PangaeaNoteFrame frame) {
+    public PangaeaNoteObjectComponent(PangaeaNoteFormsEditorTypeComponent.FormsDataItem parent, PangaeaNoteObjectTracker objectTracker, PangaeaNoteFrame frame) {
         super(frame.app());
         this.objectTracker = objectTracker;
+        this.parentDataItem = parent;
         this.frame = frame;
         parentConstraints().addAll(GrowContainer.HORIZONTAL, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL, AllAnchors.LEFT);
     }
@@ -93,10 +93,10 @@ public class PangaeaNoteObjectComponent extends GridPane {
                             r.updateDescriptor(field);
                             newComponents.add(r);
                         } else {
-                            newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
+                            newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, this, field, dynamicObjectTrackerAdapter));
                         }
                     } else {
-                        newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
+                        newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, this, field, dynamicObjectTrackerAdapter));
                     }
                 } else {
 
@@ -125,10 +125,10 @@ public class PangaeaNoteObjectComponent extends GridPane {
                     r.updateDescriptor(field);
                     newComponents.add(r);
                 } else {
-                    newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
+                    newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, this, field, dynamicObjectTrackerAdapter));
                 }
             } else {
-                newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, field, dynamicObjectTrackerAdapter));
+                newComponents.add(new PangaeaNoteFieldDescriptorPanel(frame, this, field, dynamicObjectTrackerAdapter));
             }
         }
 
@@ -146,7 +146,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
         int row = 0;
         for (int i = 0; i < components.size(); i++) {
             PangaeaNoteFieldDescriptorPanel cad = components.get(i);
-            if (cad.getDescr().getType() == PangaeaNoteFieldType.TEXTAREA) {
+            if (cad.getFormComponent().isLargeComponent()) {
                 int row0 = row;
                 children().add(
                         cad.getLabel()
@@ -156,8 +156,9 @@ public class PangaeaNoteObjectComponent extends GridPane {
                 );
                 row++;
                 int row1 = row;
-                children().add(cad.getComponent()
+                children().add(new ScrollPane(cad.getComponent())
                         .with(t -> {
+                            t.prefSize().set(new Dimension(400, 200));
                             t.childConstraints().addAll(Pos.of(0, row1), Fill.BOTH, Grow.BOTH, Span.of(2, 2));
                         }
                         ));
@@ -231,4 +232,8 @@ public class PangaeaNoteObjectComponent extends GridPane {
         }
     }
 
+    public PangaeaNoteFormsEditorTypeComponent.FormsDataItem getParentDataItem() {
+        return parentDataItem;
+    }
+    
 }

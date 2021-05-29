@@ -14,7 +14,7 @@ import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -30,7 +30,7 @@ public class NoteURLViewerComponent extends PangaeaNoteEditor implements URLView
     private String contentType;
 
     public NoteURLViewerComponent(String contentType, PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
-        super(frame,true);
+        super(frame, true);
         this.outer = outer;
         this.frame = frame;
         this.contentType = contentType;
@@ -39,7 +39,7 @@ public class NoteURLViewerComponent extends PangaeaNoteEditor implements URLView
     }
 
     public void navigate(String url) {
-        frame.service().executorService().submit(
+        frame.app().executorService().get().submit(
                 () -> {
                     InputStream is = null;
                     try {
@@ -66,12 +66,11 @@ public class NoteURLViewerComponent extends PangaeaNoteEditor implements URLView
     }
 
     public void setContent(String content, String contentType) {
-        PangaeaNoteExt d = PangaeaNoteExt.of(frame.service().newDocument());
-        PangaeaNoteExt n = PangaeaNoteExt.of(new PangaeaNote().setContentType(contentType).setContent(frame.service().stringToElement(content)));
-        d.addChild(n);
+        PangaeaNote d = frame.app().newDocument();
+        PangaeaNote n = new PangaeaNote().setContentType(contentType).setContent(frame.app().stringToElement(content));
+        ((PangaeaNoteApp) app()).addChild(d, n, -1);
         super.setNote(n);
     }
-
 
     @Override
     public boolean isEditable() {

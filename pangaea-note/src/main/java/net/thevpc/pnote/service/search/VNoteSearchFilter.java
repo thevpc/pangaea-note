@@ -6,9 +6,9 @@
 package net.thevpc.pnote.service.search;
 
 import java.util.stream.Stream;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
+import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
@@ -18,5 +18,5 @@ import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
  */
 public interface VNoteSearchFilter {
 
-    Stream<StringSearchResult<PangaeaNoteExt>> search(PangaeaNoteExt note, SearchProgressMonitor monitor, PangaeaNoteService service, PangaeaNoteFrame frame);
+    Stream<StringSearchResult<PangaeaNote>> search(PangaeaNote note, SearchProgressMonitor monitor, PangaeaNoteApp app, PangaeaNoteFrame frame);
 }

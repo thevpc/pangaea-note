@@ -13,10 +13,8 @@ import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.core.types.diagram.editor.DiagramEditorService;
 import net.thevpc.diagram4j.model.JDiagramModel;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -46,8 +44,8 @@ public class PangaeaNoteDiaService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        super.onInstall(service, app);
+    public void onInstall(PangaeaNoteApp app) {
+        super.onInstall(app);
         app.installEditorService(new DiagramEditorService());
     }
 
@@ -56,17 +54,17 @@ public class PangaeaNoteDiaService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
+    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
         String content = getContentAsString(note.getContent());
         content = extractTextFromDiagram(content);
         return Arrays.asList(
-                new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", content).iterator()
+                new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", content).iterator()
         );
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement element, PangaeaNoteFrame frame) {
-        String content = service().elementToString(element);
+    public boolean isEmptyContent(NutsElement element) {
+        String content = app().elementToString(element);
         if (content == null || content.trim().length() == 0) {
             return true;
         }
@@ -74,14 +72,14 @@ public class PangaeaNoteDiaService extends AbstractPangaeaNoteTypeService {
     }
 
     public NutsElement diagramToElement(JDiagramModel elem) {
-        return service().element().toElement(elem);
+        return app().element().toElement(elem);
     }
 
     public JDiagramModel elementToDiagram(NutsElement elem) {
         if (elem.isNull() || elem.isString()) {
             return new JDiagramModel();
         }
-        JDiagramModel a = service().element().convert(elem, JDiagramModel.class);
+        JDiagramModel a = app().element().convert(elem, JDiagramModel.class);
         if (a == null) {
             return new JDiagramModel();
         }

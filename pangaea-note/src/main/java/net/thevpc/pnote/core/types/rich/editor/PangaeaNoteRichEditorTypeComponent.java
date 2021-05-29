@@ -10,15 +10,13 @@ import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.ContextMenu;
 import net.thevpc.echo.RichHtmlEditor;
 import net.thevpc.echo.api.AppColor;
-import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.api.components.AppContextMenu;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.SelectableElement;
 import net.thevpc.pnote.gui.editor.editorcomponents.source.RichHtmlToolBarHelper;
-import net.thevpc.pnote.gui.editor.editorcomponents.source.TextToolBarHelper;
+import net.thevpc.echo.util.ClipboardHelper;
 import net.thevpc.pnote.gui.search.SearchDialog;
 import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
@@ -27,6 +25,7 @@ import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 import java.util.stream.Stream;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  * @author vpc
@@ -35,7 +34,7 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
 
     private PangaeaNoteFrame frame;
     private RichHtmlEditor textArea;
-    private PangaeaNoteExt currentNote;
+    private PangaeaNote currentNote;
 
     private boolean compactMode;
     private SelectableElement selectableElement = new SelectableElement() {
@@ -64,7 +63,7 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
         textArea.text().onChange(t -> {
             if (currentNote != null) {
                 frame.onDocumentChanged();
-                currentNote.setContent(frame.service().stringToElement(
+                currentNote.setContent(frame.app().stringToElement(
                         textArea.text().get().value()
                 ));
             }
@@ -107,7 +106,7 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
 //                }
 //        );
         textArea.zoomOnMouseWheel().set(true);
-        TextToolBarHelper.prepare(frame);
+        ClipboardHelper.prepareToolBar(frame);
         RichHtmlToolBarHelper.prepare(frame);
         AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
 //        textExtension.prepareEditor(editorBuilder, compactMode, win);
@@ -168,9 +167,9 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
         this.currentNote = note;
-        textArea.text().set(Str.of(win.service().elementToString(note.getContent())));
+        textArea.text().set(Str.of(frame.app().elementToString(note.getContent())));
         setEditable(!note.isReadOnly());
 //        UndoManager um = GuiHelper.getUndoRedoManager(editorBuilder.editor());
 //        um.discardAllEdits();

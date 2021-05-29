@@ -5,13 +5,9 @@
  */
 package net.thevpc.pnote.gui.components;
 
-import net.thevpc.common.i18n.Str;
-import net.thevpc.common.props.PropertyEvent;
-import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,79 +16,32 @@ import java.util.Set;
  *
  * @author vpc
  */
-public class CheckboxesComponent extends HorizontalPane implements FormComponent {
+public class CheckboxesComponent extends CheckBoxGroup<String> implements FormComponent {
 
-    private List<CheckBox> checkBoxes = new ArrayList<>();
     private Runnable callback;
-    private PropertyListener itemListener;
-    private boolean editable = true;
 
     public CheckboxesComponent(PangaeaNoteFrame win) {
-        super(win.app());
-        itemListener = new PropertyListener() {
-            @Override
-            public void propertyUpdated(PropertyEvent event) {
-                callOnValueChanged();
+        super(String.class, win.app());
+        selection().onChange(()->{
+            if(callback!=null){
+                callback.run();
             }
-        };
-    }
-
-    private void callOnValueChanged() {
-        if (callback != null) {
-            callback.run();
-        }
+        });
     }
 
     public void setSelectValues(List<String> newValues) {
-        while (checkBoxes.size() > newValues.size()) {
-            CheckBox c = checkBoxes.remove(checkBoxes.size() - 1);
-            c.events().remove(itemListener);
-            children().remove(c);
-        }
-        for (int i = 0; i < checkBoxes.size(); i++) {
-            CheckBox c = checkBoxes.get(i);
-            String s = newValues.get(i);
-            if (s == null) {
-                s = "";
-            }
-            s = s.trim();
-            c.text().set(Str.of(s));
-        }
-        for (int i = checkBoxes.size(); i < newValues.size(); i++) {
-            String s = newValues.get(i);
-            if (s == null) {
-                s = "";
-            }
-            s = s.trim();
-            CheckBox cv = createCheckBox();
-            cv.text().set(Str.of(s));
-            cv.enabled().set(isEditable());
-            cv.onChange(itemListener);
-            checkBoxes.add(cv);
-            children().add(cv);
-        }
-    }
-
-    protected CheckBox createCheckBox() {
-        CheckBox c = new CheckBox(Str.of("value"),app());
-        ContextMenu p = new ContextMenu(app());
-        p.children().add(new Button("copy",
-                ()->{app().clipboard().putString(c.text().get().value());},
-                app()));
-        c.contextMenu().set(new ContextMenu(app()));
-        return c;
+        super.values().setCollection(newValues);
     }
 
     @Override
     public String getContentString() {
+        
         StringBuilder sb = new StringBuilder();
-        for (CheckBox cb : checkBoxes) {
-            if (cb.selected().get()) {
+        for (String val : selection()) {
                 if (sb.length() > 0) {
                     sb.append("\n");
                 }
-                sb.append(cb.text().get());
-            }
+                sb.append(val);
         }
         return (sb.toString());
     }
@@ -106,9 +55,7 @@ public class CheckboxesComponent extends HorizontalPane implements FormComponent
                 values.add(v);
             }
         }
-        for (CheckBox cb : checkBoxes) {
-            cb.selected().set(values.contains(cb.text().get().value().trim()));
-        }
+        selection().setCollection(values);
     }
 
     @Override
@@ -116,7 +63,7 @@ public class CheckboxesComponent extends HorizontalPane implements FormComponent
         callback = null;
     }
 
-    public void install(Application app) {
+    public void install(Application app, ContextMenu contextMenu) {
     }
 
     @Override
@@ -126,14 +73,13 @@ public class CheckboxesComponent extends HorizontalPane implements FormComponent
 
     @Override
     public void setEditable(boolean b) {
-        for (CheckBox checkBoxe : checkBoxes) {
-            checkBoxe.enabled().set(isEditable());
-        }
+        editable().set(b);
+        enabled().set(b);
     }
 
     @Override
     public boolean isEditable() {
-        return editable;
+        return enabled().get();
     }
 
 }

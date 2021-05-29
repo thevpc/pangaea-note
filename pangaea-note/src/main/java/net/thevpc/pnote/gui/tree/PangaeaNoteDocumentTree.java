@@ -16,7 +16,6 @@ import net.thevpc.echo.model.AppTreeMutator;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.api.model.ObservableNoteSelectionListener;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
@@ -24,10 +23,11 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import net.thevpc.common.props.WritableValue;
 
 import javax.swing.*;
 import javax.swing.tree.TreeModel;
+import net.thevpc.echo.api.components.AppMenu;
+import net.thevpc.echo.api.components.AppTree;
 
 /**
  * @author vpc
@@ -35,7 +35,7 @@ import javax.swing.tree.TreeModel;
 public class PangaeaNoteDocumentTree extends BorderPane {
 
     private final EnableOnAnyTreeSelection enableIfSelection;
-    Tree<PangaeaNoteExt> tree;
+    Tree<PangaeaNote> tree;
     PangaeaNoteApp app;
     private ContextMenu treePopupMenu;
     private List<ObservableNoteSelectionListener> listeners = new ArrayList<>();
@@ -47,40 +47,48 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         this.frame = frame;
         this.app = frame.app();
 //        model = new ObservableNoteTreeModel(PangaeaNoteExt.of(this.win.service().newDocument()), this.win.service());
-        tree = new Tree<>(PangaeaNoteExt.class, app);
+        tree = new Tree<>(PangaeaNote.class, app);
         enableIfSelection = new EnableOnAnyTreeSelection();
 
         tree.rootVisible().set(false);
-        tree.childrenFactory().set(PangaeaNoteExt::getChildren);
-        tree.mutator().set(new AppTreeMutator<PangaeaNoteExt>() {
+        tree.nodeFactory().set(new TreeNodeFactory<PangaeaNote>() {
             @Override
-            public void addChild(AppTreeNode<PangaeaNoteExt> parent, Object child, int index) {
+            public TreeNode<PangaeaNote> createNode(PangaeaNote value, AppTree<PangaeaNote> tree) {
+                TreeNode<PangaeaNote> t = new TreeNode<>(value, tree);
+                value.guiNode = t;
+                return t;
+            }
+        });
+        tree.childrenFactory().set(PangaeaNote::getChildren);
+        tree.mutator().set(new AppTreeMutator<PangaeaNote>() {
+            @Override
+            public void addChild(AppTreeNode<PangaeaNote> parent, Object child, int index) {
                 addNodeChild(parent, child, index);
             }
 
             @Override
-            public void removeChild(AppTreeNode<PangaeaNoteExt> parent, int childIndex) {
-                removeNodeChild(parent,childIndex);
+            public void removeChild(AppTreeNode<PangaeaNote> parent, int childIndex) {
+                removeNodeChild(parent, childIndex);
             }
 
             @Override
-            public AppTreeNode<PangaeaNoteExt> copy(AppTreeNode<PangaeaNoteExt> node) {
-                PangaeaNoteExt n = node.get();
+            public AppTreeNode<PangaeaNote> copy(AppTreeNode<PangaeaNote> node) {
+                PangaeaNote n = node.get();
                 n = n.copy();
                 return tree.nodeOf(n);
             }
         });
         tree.root().set(
-                tree.nodeOf(PangaeaNoteExt.of(this.frame.service().newDocument()))
+                tree.nodeOf(this.frame.app().newDocument())
         );
         tree.selection().onChange(
                 x -> {
-                    AppTreeNode<PangaeaNoteExt> n = tree.selection().get();
+                    AppTreeNode<PangaeaNote> n = tree.selection().get();
                     fireOnSelectedNote(n == null ? null : n.get());
                 }
         );
         tree.itemRenderer().set(new SimpleDefaultTreeCellRendererImpl(frame));
-        treePopupMenu = new ContextMenu("TreeContextMenu",Str.i18n("TreeContextMenu"),app);
+        treePopupMenu = new ContextMenu("TreeContextMenu", Str.i18n("TreeContextMenu"), app);
         tree.contextMenu().set(treePopupMenu);
         treePopupMenu.children().add(new Button("AddChildNote", () -> frame.addNote(), app));
         treePopupMenu.children().add(new Button("AddNoteBefore", () -> frame.addNoteBefore(), app).with(enableIfSelection));
@@ -91,15 +99,19 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         treePopupMenu.children().add(new Button("StrikeNote", () -> frame.strikeThroughNote(), app).with(enableIfSelection));
         treePopupMenu.children().add(new Button("BoldNote", () -> frame.boldNote(), app).with(enableIfSelection));
         treePopupMenu.children().addSeparator();
+        AppMenu importMenu = (AppMenu) treePopupMenu.children().addFolder(Path.of("Import"));
+        importMenu.text().set(Str.i18n("Import"));
+        importMenu.icon().unset();
+
         treePopupMenu.children().add(new Button("Import.Any", () -> frame.importFileInto(), app), Path.of("/Import/*"));
         treePopupMenu.children().add(new Button("Import.PangaeaNote", ()
                 -> frame.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString()),
-                 app), Path.of("/Import/*"));
+                app), Path.of("/Import/*"));
 
-        for (PangaeaNoteFileImporter fileImporter : frame.service().getFileImporters()) {
+        for (PangaeaNoteFileImporter fileImporter : frame.app().getFileImporters()) {
             treePopupMenu.children().add(new Button("Import." + fileImporter.getName(), ()
                     -> frame.importFileInto(fileImporter.getSupportedFileExtensions()),
-                     app), Path.of("/Import/*"));
+                    app), Path.of("/Import/*"));
         }
         treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("DeleteNote", () -> frame.deleteSelectedNote(), app).with(enableIfSelection));
@@ -107,7 +119,7 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         treePopupMenu.children().add(new Button("SearchNote", () -> frame.searchNote(), app));
         treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("NoteProperties", () -> frame.editNote(), app).with(enableIfSelection));
-        PangaeaNoteExt sn = getSelectedNote();
+        PangaeaNote sn = getSelectedNote();
 //        for (TreeAction action : actions) {
 //            action.onSelectedNote(sn);
 //        }
@@ -123,27 +135,27 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         return this;
     }
 
-    public void fireNoteChanged(PangaeaNoteExt note) {
+    public void fireNoteChanged(PangaeaNote note) {
         updateTree();
     }
 
-    public void fireOnSelectedNote(PangaeaNoteExt note) {
+    public void fireOnSelectedNote(PangaeaNote note) {
         for (ObservableNoteSelectionListener listener : listeners) {
             listener.onSelectionChanged(note);
         }
     }
 
-    public PangaeaNoteExt getDocument() {
-        return (PangaeaNoteExt) tree.root().get().get();
+    public PangaeaNote getDocument() {
+        return (PangaeaNote) tree.root().get().get();
     }
 
     public void updateTree() {
     }
 
-    public PangaeaNoteExt getSelectedNoteOrDocument() {
-        AppTreeNode<PangaeaNoteExt> p = tree.selection().get();
+    public PangaeaNote getSelectedNoteOrDocument() {
+        AppTreeNode<PangaeaNote> p = tree.selection().get();
         if (p != null) {
-            PangaeaNoteExt c = p.get();
+            PangaeaNote c = p.get();
             if (c != null) {
                 return c;
             }
@@ -151,10 +163,10 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         return tree.root().get().get();
     }
 
-    public PangaeaNoteExt getSelectedNote() {
-        AppTreeNode<PangaeaNoteExt> p = tree.selection().get();
+    public PangaeaNote getSelectedNote() {
+        AppTreeNode<PangaeaNote> p = tree.selection().get();
         if (p != null) {
-            PangaeaNoteExt c = p.get();
+            PangaeaNote c = p.get();
             if (c != null) {
                 return c;
             }
@@ -162,15 +174,15 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         return null;
     }
 
-    public void setSelectedNote(AppTreeNode<PangaeaNoteExt> sel) {
+    public void setSelectedNote(AppTreeNode<PangaeaNote> sel) {
         tree.selection().set(sel);
     }
 
-    public void setSelectedNote(PangaeaNoteExt note) {
-        List<PangaeaNoteExt> elems = new ArrayList<>();
+    public void setSelectedNote(PangaeaNote note) {
+        List<PangaeaNote> elems = new ArrayList<>();
         while (note != null) {
             elems.add(0, note);
-            note = note.getParent();
+            note = app.getParent(note);
         }
         if (elems.isEmpty()) {
             elems.add(getDocument());
@@ -178,83 +190,80 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         tree.selection().set(tree.findNode(elems.toArray()));
     }
 
-    public void setDocumentNote(PangaeaNoteExt e) {
-        tree.root().set(tree.nodeOf(e));
+    public void setDocumentNote(PangaeaNote e) {
+        if(e.guiNode==null){
+            e.guiNode=tree.nodeOf(e);
+        }
+        tree.root().set(e.guiNode);
     }
 
-    public AppTreeNode<PangaeaNoteExt> addNodeChild(AppTreeNode<PangaeaNoteExt> parent, Object child, int index) {
+    public AppTreeNode<PangaeaNote> addNodeChild(AppTreeNode<PangaeaNote> parent, Object child, int index) {
         if (child instanceof TreeNode) {
             child = ((TreeNode<?>) child).get();
         }
-        PangaeaNoteExt nc = null;
-        if (child instanceof PangaeaNoteExt) {
-            nc = (PangaeaNoteExt) child;
+        PangaeaNote nc = null;
+        if (child instanceof PangaeaNote) {
+            nc = (PangaeaNote) child;
         } else if (child instanceof String) {
-            PangaeaNote nc0 = frame.service().createNoteFromSnippet(child);
+            PangaeaNote nc0 = frame.app().createNoteFromSnippet(child);
             if (nc0 != null) {
-                nc = PangaeaNoteExt.of(nc0);
+                nc = nc0;
             }
         }
         if (nc != null) {
-            if (index < 0) {
-                index = parent.get().getChildren().size();
-            }
-            parent.get().addChild(index, nc);
-            TreeNode<PangaeaNoteExt> v = tree.nodeOf(nc);
-            parent.children().add(index, v);
+            app.addChild(parent.get(), nc, index);
+            TreeNode<PangaeaNote> v = app.treeNodeOf(nc);
             return v;
         }
         return null;
     }
 
-    public void removeNodeChild(AppTreeNode<PangaeaNoteExt> node) {
-        AppTreeNode<PangaeaNoteExt> p = node.parent().get();
-        if (p != null) {
-            int index = p.children().findFirstIndexOf(node);
-            if (index >= 0) {
-                removeNodeChild(p, index);
-                if (node == tree().selection().get()) {
-                    tree().selection().set(null);
-                }
-            }
-        }
+    public void removeNodeChild(AppTreeNode<PangaeaNote> node) {
+        PangaeaNote parentNote = node.parent().get().get();
+        app().removeChildNote(parentNote,this.app.indexOfNote(parentNote, node.get()));
     }
+
+    @Override
+    public PangaeaNoteApp app() {
+        return (PangaeaNoteApp)super.app();
+    }
+    
 
     public void dumpAll() {
-        dump(tree.root().get().get(),"[PangaeaNote    ] ");
-        dump(tree.root().get()      ,"[PangaeaTreeNote] ");
-        dump(((JTree)(tree.peer().toolkitComponent())).getModel(),((JTree)(tree.peer().toolkitComponent())).getModel().getRoot(),"[JTree          ] ");
+        dump(tree.root().get().get(), "[PangaeaNote    ] ");
+        dump(tree.root().get(), "[PangaeaTreeNote] ");
+        dump(((JTree) (tree.peer().toolkitComponent())).getModel(), ((JTree) (tree.peer().toolkitComponent())).getModel().getRoot(), "[JTree          ] ");
     }
 
-    public void removeNodeChild(AppTreeNode<PangaeaNoteExt> parent, int childIndex) {
+    public void removeNodeChild(AppTreeNode<PangaeaNote> parent, int childIndex) {
 //        dumpAll();
-        parent.children().removeAt(childIndex);
-        parent.get().removeChild(childIndex);
+        app.removeChildNote(parent.get(), childIndex);
     }
 
-    private void dump(TreeModel m, Object a,String prefix){
-        AppTreeNode<PangaeaNoteExt> n=(AppTreeNode<PangaeaNoteExt>)a;
-        System.out.println(prefix+""+n.get().getName());
+    private void dump(TreeModel m, Object a, String prefix) {
+        AppTreeNode<PangaeaNote> n = (AppTreeNode<PangaeaNote>) a;
+        System.out.println(prefix + "" + n.get().getName());
         int s = m.getChildCount(a);
         for (int i = 0; i < s; i++) {
-            dump(m,m.getChild(a,i),   prefix+"\t");
+            dump(m, m.getChild(a, i), prefix + "\t");
         }
     }
 
-    private void dump(AppTreeNode<PangaeaNoteExt> e,String prefix){
-        System.out.println(prefix+""+e.get().getName());
-        for (WritableIndexedNode<PangaeaNoteExt> child : e.children()) {
-            dump((AppTreeNode<PangaeaNoteExt>) child,prefix+"\t");
-        }
-    }
-    private void dump(PangaeaNoteExt e,String prefix){
-        System.out.println(prefix+""+e.getName());
-        for (PangaeaNoteExt child : e.getChildren()) {
-            dump(child,prefix+"\t");
+    private void dump(AppTreeNode<PangaeaNote> e, String prefix) {
+        System.out.println(prefix + "" + e.get().getName());
+        for (WritableIndexedNode<PangaeaNote> child : e.children()) {
+            dump((AppTreeNode<PangaeaNote>) child, prefix + "\t");
         }
     }
 
-    public Tree<PangaeaNoteExt> tree() {
+    private void dump(PangaeaNote e, String prefix) {
+        System.out.println(prefix + "" + e.getName());
+        for (PangaeaNote child : e.getChildren()) {
+            dump(child, prefix + "\t");
+        }
+    }
+
+    public Tree<PangaeaNote> tree() {
         return tree;
     }
 

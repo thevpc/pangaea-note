@@ -7,6 +7,7 @@ package net.thevpc.pnote.gui.components;
 
 import java.util.List;
 import net.thevpc.echo.Application;
+import net.thevpc.echo.ContextMenu;
 
 /**
  *
@@ -14,7 +15,7 @@ import net.thevpc.echo.Application;
  */
 public interface FormComponent {
 
-    public void install(Application app);
+    void install(Application app, ContextMenu contextMenu);
 
     default void setSelectValues(List<String> values) {
     }
@@ -26,9 +27,21 @@ public interface FormComponent {
     String getContentString();
 
     void setContentString(String s);
-    
+
+    default void setContentType(String s) {
+
+    }
+
+    default String getContentType() {
+        return null;
+    }
+
     void setEditable(boolean b);
-    
+
     boolean isEditable();
+
+    default boolean isLargeComponent(){
+        return false;
+    }
 
 }

@@ -13,33 +13,29 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
  *
  * @author vpc
  */
-public class PasswordComponent extends HorizontalPane implements FormComponent {
+public class PasswordComponent extends PasswordField implements FormComponent {
 
-    private PasswordField pf;
     private Runnable callback;
 
     public PasswordComponent(PangaeaNoteFrame frame) {
         super(frame.app());
-        pf=new PasswordField(frame.app());
         ContextMenu p = new ContextMenu(app());
-        pf.contextMenu().set(p);
-        p.children().add(new Button("copy",()-> app().clipboard().putString(pf.text().get().value()),app()));
-        p.children().add(new Button("paste",()-> pf.text().set(Str.of(app().clipboard().getString())),app()));
-        pf.text().onChange(x->textChanged());
-        children().addAll(pf);
+        contextMenu().set(p);
+        p.children().add(new Button("copy", () -> app().clipboard().putString(text().get().value()), app()));
+        p.children().add(new Button("paste", () -> text().set(Str.of(app().clipboard().getString())), app()));
+        text().onChange(x -> textChanged());
     }
 
     private void textChanged() {
-        if(callback!=null){
+        if (callback != null) {
             callback.run();
         }
     }
 
     @Override
-    public void install(Application app) {
+    public void install(Application app, ContextMenu contextMenu) {
 //        showPassword.setText(app.i18n().getString("Message.showPassword"));
     }
-
 
     @Override
     public void uninstall() {
@@ -47,25 +43,25 @@ public class PasswordComponent extends HorizontalPane implements FormComponent {
 
     @Override
     public String getContentString() {
-        return new String(pf.text().get().value());
+        return text().get().value();
     }
 
     @Override
     public void setContentString(String s) {
-        pf.text().set(Str.of(s));
+        text().set(Str.of(s));
     }
 
     @Override
     public void setFormChangeListener(Runnable callback) {
-        this.callback=callback;
+        this.callback = callback;
     }
 
     public void setEditable(boolean b) {
-        pf.editable().set(b);
+        editable().set(b);
     }
 
     public boolean isEditable() {
-        return pf.editable().get();
+        return editable().get();
     }
 
 }

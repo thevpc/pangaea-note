@@ -10,7 +10,6 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.core.special.DataPane;
 import net.thevpc.pnote.core.special.DataPaneRenderer;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
@@ -22,6 +21,7 @@ import net.thevpc.pnote.util.OtherUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  * @author vpc
@@ -145,13 +145,13 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
-        componentList.setNote(note, win);
+    public void setNote(PangaeaNote note) {
+        componentList.setNote(note, frame);
         setEditable(!note.isReadOnly());
         refreshView();
     }
 
-    private static class FormsDataItem extends BorderPane {
+    public static class FormsDataItem extends BorderPane {
 
         private PangaeaNoteObjectComponent e;
         private ToolBar bar;
@@ -161,22 +161,46 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
         public FormsDataItem(PangaeaNoteFrame win, FormsDataPane formsDataPane0) {
             super(win.app());
             this.formsDataPane = formsDataPane0;
-            e = new PangaeaNoteObjectComponent(formsDataPane0.dynamicObjectTrackerAdapter, win)
+            e = new PangaeaNoteObjectComponent(this, formsDataPane0.dynamicObjectTrackerAdapter, win)
                     .with(v -> v.anchor().set(Anchor.CENTER));
             bar = new ToolBar(win.app()).with(v -> v.anchor().set(Anchor.TOP));
 
 //            bar.children().add(new Button("addToObjectList", () -> formsDataPane.onAddObjectAt(pos), app()));
             bar.children().add(new Spacer(app()).expandX());
-            bar.children().add(new Button("duplicateInObjectList", () -> formsDataPane.onDuplicateObjectAt(pos), app()));
-            bar.children().addSeparator();
-            bar.children().add(new Button("moveUpInObjectList", () -> formsDataPane.onMoveUpAt(pos), app()));
-            bar.children().add(new Button("moveDownInObjectList", () -> formsDataPane.onMoveDownAt(pos), app()));
-            bar.children().add(new Button("moveFirstInObjectList", () -> formsDataPane.onMoveFirstAt(pos), app()));
-            bar.children().add(new Button("moveLastInObjectList", () -> formsDataPane.onMoveLastAt(pos), app()));
-            bar.children().addSeparator();
-            bar.children().add(new Button("removeInObjectList", () -> formsDataPane.onRemoveObjectAt(pos), app()));
+//            bar.children().add(new Button("duplicateInObjectList", () -> formsDataPane.onDuplicateObjectAt(pos), app()));
+//            bar.children().addSeparator();
+//            bar.children().add(new Button("moveUpInObjectList", () -> formsDataPane.onMoveUpAt(pos), app()));
+//            bar.children().add(new Button("moveDownInObjectList", () -> formsDataPane.onMoveDownAt(pos), app()));
+//            bar.children().add(new Button("moveFirstInObjectList", () -> formsDataPane.onMoveFirstAt(pos), app()));
+//            bar.children().add(new Button("moveLastInObjectList", () -> formsDataPane.onMoveLastAt(pos), app()));
+//            bar.children().addSeparator();
+//            bar.children().add(new Button("removeInObjectList", () -> formsDataPane.onRemoveObjectAt(pos), app()));
             children().add(bar);
             children().add(e);
+        }
+
+        public void onMoveUp() {
+            formsDataPane.onMoveUpAt(pos);
+        }
+
+        public void onMoveDown() {
+            formsDataPane.onMoveDownAt(pos);
+        }
+
+        public void onMoveFirst() {
+            formsDataPane.onMoveFirstAt(pos);
+        }
+
+        public void onMoveLast() {
+            formsDataPane.onMoveLastAt(pos);
+        }
+
+        public void onDuplicateObject() {
+            formsDataPane.onDuplicateObjectAt(pos);
+        }
+
+        public void onRemoveObject() {
+            formsDataPane.onRemoveObjectAt(pos);
         }
 
         public void setEditable(boolean b) {
@@ -201,7 +225,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
 
     private static class FormsDataPane extends DataPane<PangaeaNoteObjectExt> {
 
-        private PangaeaNoteExt currentNote;
+        private PangaeaNote currentNote;
         private PangaeaNoteFrame frame;
         private PangaeaNoteObjectDocument dynamicDocument;
         private PangaeaNoteObjectTracker dynamicObjectTrackerAdapter = new PangaeaNoteObjectTracker() {
@@ -261,13 +285,13 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
         }
 
         public void onFieldValueChangedImpl() {
-            PangaeaNoteFormsService s = (PangaeaNoteFormsService) frame.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
+            PangaeaNoteFormsService s = (PangaeaNoteFormsService) frame.app().getContentTypeService(PangaeaNoteFormsService.FORMS);
             currentNote.setContent(s.getContentAsElement(this.dynamicDocument));
             frame.onDocumentChanged();
         }
 
         public void onListValuesChangedImpl() {
-            PangaeaNoteFormsService s = (PangaeaNoteFormsService) frame.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
+            PangaeaNoteFormsService s = (PangaeaNoteFormsService) frame.app().getContentTypeService(PangaeaNoteFormsService.FORMS);
             currentNote.setContent(s.getContentAsElement(this.dynamicDocument));
             frame.onDocumentChanged();
             values().setAll(createAllList().toArray(new PangaeaNoteObjectExt[0]));
@@ -398,8 +422,8 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
             return all;
         }
 
-        public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
-            PangaeaNoteFormsService s = (PangaeaNoteFormsService) win.service().getContentTypeService(PangaeaNoteFormsService.FORMS);
+        public void setNote(PangaeaNote note, PangaeaNoteFrame win) {
+            PangaeaNoteFormsService s = (PangaeaNoteFormsService) win.app().getContentTypeService(PangaeaNoteFormsService.FORMS);
             this.currentNote = note;
             this.dynamicDocument = s.getContentAsObject(note.getContent());
             this.values().setAll(createAllList().toArray(new PangaeaNoteObjectExt[0]));

@@ -13,12 +13,10 @@ import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.echo.constraints.Fill;
 import net.thevpc.echo.constraints.Grow;
-import net.thevpc.echo.constraints.Weight;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.api.EditTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteTypeServiceBase;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
@@ -36,16 +34,16 @@ public class EditNoteDialog {
 
     private boolean ok = false;
     private PangaeaNote note;
-    private PangaeaNoteExt vn;
+    private PangaeaNote vn;
     private PangaeaNoteFrame frame;
     private EditTypeComponent editTypeComponent;
     private Panel editTypeComponentPanel;
     private TabPane jTabbedPane;
 
-    public EditNoteDialog(PangaeaNoteFrame frame, PangaeaNoteExt vn) {
+    public EditNoteDialog(PangaeaNoteFrame frame, PangaeaNote vn) {
         this.frame = frame;
         this.vn = vn;
-        this.note = vn.toNote();
+        this.note = vn;
 
         Application app = frame.app();
         I18n i18n = app.i18n();
@@ -58,7 +56,7 @@ public class EditNoteDialog {
                 new Label(Str.i18n("Message.noteType"), app),
                 typeEditor = new PangaeaNoteTypesComboBox(frame)
                         .with(v -> {
-                            v.setSelectedContentType(frame.service().normalizeContentType(note.getContentType()), note.getEditorType());
+                            v.setSelectedContentType(frame.app().normalizeContentType(note.getContentType()), note.getEditorType());
                             v.selection().onChange(e -> onNoteTypeChanged());
                         }),
                 readOnlyEditor = new CheckBox(null, Str.i18n("Message.readOnly"), app),
@@ -84,9 +82,9 @@ public class EditNoteDialog {
 
     private void onNoteTypeChanged() {
         PangaeaNoteMimeType ct = PangaeaNoteMimeType.of(typeEditor.getSelectedContentTypeId());
-        PangaeaNoteTypeServiceBase s = frame.service().findContentTypeService(ct);
+        PangaeaNoteTypeServiceBase s = frame.app().findContentTypeService(ct);
         if (s == null) {
-            s = frame.service().getTemplate(ct);
+            s = frame.app().getTemplate(ct);
         }
         EditTypeComponent c = null;
         if (s != null) {
@@ -118,7 +116,7 @@ public class EditNoteDialog {
         if (editTypeComponent != null) {
             editTypeComponent.loadTo(note);
         }
-        frame.service().addRecentNoteType(note.getContentType());
+        frame.app().addRecentNoteType(note.getContentType());
         return note;
     }
 
@@ -163,7 +161,7 @@ public class EditNoteDialog {
             try {
                 PangaeaNote n = get();
                 if (n != null) {
-                    frame.service().updateNoteProperties(vn, n, frame);
+                    frame.app().updateNoteProperties(vn, n, frame);
                     frame.onDocumentChanged();
                 }
                 return n;

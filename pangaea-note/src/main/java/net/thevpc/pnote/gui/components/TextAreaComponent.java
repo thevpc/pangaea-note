@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.gui.components;
 
-
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
@@ -14,58 +13,68 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
  *
  * @author vpc
  */
-public class TextAreaComponent extends BorderPane implements FormComponent {
-    TextArea textArea;
+public class TextAreaComponent extends TextArea implements FormComponent {
+
     Runnable callback;
+
     public TextAreaComponent(PangaeaNoteFrame win) {
         super(win.app());
-
-        children.add(new ScrollPane(textArea=new TextArea(Str.empty(),app())));
-        this.prefSize().set(new Dimension(200, 100));
-//        setMinimumSize(new Dimension(100, 100));
-//        GuiHelper.installUndoRedoManager(textArea);
         ContextMenu p = new ContextMenu(app());
-        textArea.contextMenu().set(p);
-        p.children().add(new Button("copy",()-> app().clipboard().putString(textArea.text().get().value()),app()));
-        p.children().add(new Button("paste",()-> textArea.text().set(Str.of(app().clipboard().getString())),app()));
-        textArea.text().onChange(x->textChanged());
+        contextMenu().set(p);
+        p.children().add(new Button("copy", () -> app().clipboard().putString(text().get().value()), app()));
+        p.children().add(new Button("paste", () -> text().set(Str.of(app().clipboard().getString())), app()));
+        text().onChange(x -> textChanged());
     }
 
+    public boolean isLargeComponent() {
+        return true;
+    }
 
     @Override
     public String getContentString() {
-        return textArea.text().get().value();
+        return text().get().value();
     }
 
     @Override
     public void setContentString(String s) {
-        textArea.text().set(Str.of(s));
+        text().set(Str.of(s));
     }
 
+    @Override
+    public void setContentType(String contentType) {
+        if (contentType == null || contentType.length() == 0) {
+            contentType = "text/plain";
+        }
+        textContentType().set(contentType);
+    }
+
+    @Override
     public void uninstall() {
-        callback=null;
+        callback = null;
     }
 
-    public void install(Application app) {
+    @Override
+    public void install(Application app, ContextMenu contextMenu) {
     }
+
     private void textChanged() {
-            if(callback!=null){
-                callback.run();
-            }
+        if (callback != null) {
+            callback.run();
+        }
     }
 
     @Override
     public void setFormChangeListener(Runnable callback) {
-        this.callback=callback;
+        this.callback = callback;
     }
 
     @Override
     public void setEditable(boolean b) {
-        textArea.editable().set(b);
+        editable().set(b);
     }
 
     @Override
     public boolean isEditable() {
-        return textArea.editable().get();
+        return editable().get();
     }
 }

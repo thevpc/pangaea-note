@@ -5,19 +5,20 @@
  */
 package net.thevpc.pnote.gui.editor.editorcomponents.empty;
 
+import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.Path;
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.Button;
 import net.thevpc.echo.ContextMenu;
-import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.api.components.AppMenu;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
@@ -34,21 +35,23 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*Gradien
         PangaeaNoteApp app = frame.app();
 //        app.i18n().locale().onChange(updateLocale);
 
-
         ContextMenu treePopupMenu = new ContextMenu(app);
         contextMenu().set(treePopupMenu);
+        AppMenu importMenu = (AppMenu) treePopupMenu.children().addFolder(Path.of("Import"));
+        importMenu.text().set(Str.i18n("Import"));
+        importMenu.icon().unset();
+
         treePopupMenu.children().add(new Button("AddChildNote", () -> frame.addNote(), app));
         treePopupMenu.children().addSeparator();
-        treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("Import.Any", () -> frame.importFileInto(), app), Path.of("/Import/*"));
-        treePopupMenu.children().add(new Button("Import.PangaeaNote", () ->
-                frame.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString())
-                , app), Path.of("/Import/*"));
+        treePopupMenu.children().add(new Button("Import.PangaeaNote", ()
+                -> frame.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString()),
+                app), Path.of("/Import/*"));
 
-        for (PangaeaNoteFileImporter fileImporter : frame.service().getFileImporters()) {
-            treePopupMenu.children().add(new Button("Import." + fileImporter.getName(), () ->
-                    frame.importFileInto(fileImporter.getSupportedFileExtensions())
-                    , app), Path.of("/Import/*"));
+        for (PangaeaNoteFileImporter fileImporter : frame.app().getFileImporters()) {
+            treePopupMenu.children().add(new Button("Import." + fileImporter.getName(), ()
+                    -> frame.importFileInto(fileImporter.getSupportedFileExtensions()),
+                    app), Path.of("/Import/*"));
         }
         treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("SearchNote", () -> frame.searchNote(), app));
@@ -122,7 +125,6 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*Gradien
 //        g2d.setColor(color);
 //        g2d.drawString(text, tx, ty);
 //    }
-
     @Override
     public boolean isCompactMode() {
         return true;
@@ -134,7 +136,7 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*Gradien
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
     }
 
     @Override

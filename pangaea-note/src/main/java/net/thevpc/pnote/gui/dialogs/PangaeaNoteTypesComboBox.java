@@ -35,9 +35,9 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
         if (rct != null) {
             List<SimpleItem> recent = new ArrayList<>();
             for (String id : rct) {
-                if (frame.service().isValidContentTypeExt(id)) {
+                if (frame.app().isValidContentTypeExt(id)) {
                     recent.add(new SimpleItem(false, "recent-" + id, Str.i18n("content-type." + id),
-                                    frame.service().getContentTypeIcon(PangaeaNoteMimeType.of(id)), 0
+                                    frame.app().getContentTypeIcon(PangaeaNoteMimeType.of(id)), 0
                             )
                     );
                 }
@@ -79,8 +79,8 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
     private List<SimpleItem> createTypeListNamedValue() {
         List<SimpleItem> availableTypes = new ArrayList<>();
         LinkedHashMap<String, List<SimpleItem>> selectors = new LinkedHashMap<>();
-        for (PangaeaNoteMimeType s : frame.service().getBaseContentTypes()) {
-            PangaeaNoteTypeService cs = frame.service().getContentTypeService(s);
+        for (PangaeaNoteMimeType s : frame.app().getBaseContentTypes()) {
+            PangaeaNoteTypeService cs = frame.app().getContentTypeService(s);
             ContentTypeSelector contentTypeSelector = cs.getContentTypeSelector();
             String g = contentTypeSelector.getGroup();
             List<SimpleItem> li = selectors.get(g);
@@ -91,13 +91,13 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
             li.add(
                     new SimpleItem(false, contentTypeSelector.getContentType().toString(),
                             Str.i18n("content-type." + contentTypeSelector.getContentType().toString()),
-                            frame.service().getContentTypeIcon(contentTypeSelector.getContentType()),
+                            frame.app().getContentTypeIcon(contentTypeSelector.getContentType()),
                             contentTypeSelector.getOrder()
                     )
             );
         }
 
-        for (PangaeaNoteTemplate template : frame.service().getTemplates()) {
+        for (PangaeaNoteTemplate template : frame.app().getTemplates()) {
             String g = template.getGroup();
             if (Applications.isBlank(g)) {
                 g = "templates";
@@ -107,11 +107,11 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
                 li = new ArrayList<>();
                 selectors.put(g, li);
             }
-            Str s = template.getLabel(frame.service());
+            Str s = template.getLabel(frame.app());
             if (s == null) {
                 s = Str.i18n("content-type." + template.getContentType().toString());
             }
-            SimpleItem n = new SimpleItem(false, template.getContentType().toString(), s, frame.service().getContentTypeIcon(template.getContentType()),
+            SimpleItem n = new SimpleItem(false, template.getContentType().toString(), s, frame.app().getContentTypeIcon(template.getContentType()),
                     template.getOrder()
             );
             li.add(n);
@@ -131,13 +131,13 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
                     return true;
                 }
             }
-            PangaeaNoteMimeType ct = frame.service().normalizeContentType(v.getId());
+            PangaeaNoteMimeType ct = frame.app().normalizeContentType(v.getId());
             if (ct.equals(contentType)) {
                 String[] ss = v.getId().split(":");
                 if (ss.length == 1) {
                     return true;
                 }
-                if (editorType == null || frame.service().normalizeEditorType(ct, editorType).equals(ss[1])) {
+                if (editorType == null || frame.app().normalizeEditorType(ct, editorType).equals(ss[1])) {
                     return true;
                 }
             }

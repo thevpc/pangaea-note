@@ -12,7 +12,6 @@ import net.thevpc.echo.constraints.Anchor;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
@@ -22,6 +21,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  * @author vpc
@@ -49,7 +49,7 @@ public class SearchResultPanel extends BorderPane {
 
     public interface SearchResultPanelItem {
 
-        void appendResult(StringSearchResult<PangaeaNoteExt> x);
+        void appendResult(StringSearchResult<PangaeaNote> x);
 
         boolean isSearching();
 
@@ -97,13 +97,13 @@ public class SearchResultPanel extends BorderPane {
                     if (e.getClickCount() == 2) {
                         int r = table.rowAtPoint(e.getPoint());
                         if (r >= 0) {
-                            StringSearchResult<PangaeaNoteExt> searchResult = (StringSearchResult<PangaeaNoteExt>) table.getModel().getValueAt(r, 2);
-                            PangaeaNoteExt n = searchResult.getObject();
+                            StringSearchResult<PangaeaNote> searchResult = (StringSearchResult<PangaeaNote>) table.getModel().getValueAt(r, 2);
+                            PangaeaNote n = searchResult.getObject();
                             frame.treePane().setSelectedNote(n);
                             PangaeaNoteEditorTypeComponent comp = frame.noteEditor().editorComponent();
                             comp.removeHighlights(HighlightType.SEARCH_MAIN);
                             comp.removeHighlights(HighlightType.SEARCH);
-                            for (StringSearchResult<PangaeaNoteExt> rr : findResults(n)) {
+                            for (StringSearchResult<PangaeaNote> rr : findResults(n)) {
                                 if (rr == searchResult) {
                                     comp.highlight(rr.getStart(), rr.getEnd(), HighlightType.SEARCH_MAIN);
                                     comp.moveTo(rr.getStart());
@@ -129,10 +129,10 @@ public class SearchResultPanel extends BorderPane {
             );
         }
 
-        public List<StringSearchResult<PangaeaNoteExt>> findResults(PangaeaNoteExt n) {
-            List<StringSearchResult<PangaeaNoteExt>> ok = new ArrayList<>();
+        public List<StringSearchResult<PangaeaNote>> findResults(PangaeaNote n) {
+            List<StringSearchResult<PangaeaNote>> ok = new ArrayList<>();
             for (int i = 0; i < model.getRowCount(); i++) {
-                StringSearchResult<PangaeaNoteExt> r = (StringSearchResult<PangaeaNoteExt>) model.getValueAt(i, 2);
+                StringSearchResult<PangaeaNote> r = (StringSearchResult<PangaeaNote>) model.getValueAt(i, 2);
                 if (r.getObject() == n) {
                     ok.add(r);
                 }
@@ -140,7 +140,7 @@ public class SearchResultPanel extends BorderPane {
             return ok;
         }
 
-        public void appendResult(StringSearchResult<PangaeaNoteExt> x) {
+        public void appendResult(StringSearchResult<PangaeaNote> x) {
             frame.app().runUI(() -> {
                 model.addRow(new Object[]{
                         String.valueOf(x.getRow()) + ":" + String.valueOf(x.getColumn()),

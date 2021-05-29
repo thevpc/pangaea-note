@@ -27,7 +27,7 @@ public class PangaeaNoteIconsList extends BorderPane {
         this.frame = frame;
         list=new ChoiceList<>(String.class, frame.app());
         list.values().add("");
-        for (String icon : frame.service().getAllIcons()) {
+        for (String icon : frame.app().getAllIcons()) {
             list.values().add(icon);
         }
         list.itemRenderer().set(context -> {
@@ -39,7 +39,7 @@ public class PangaeaNoteIconsList extends BorderPane {
         list.parentConstraints().addAll(Layout.FLOW);
         children().add(new ScrollPane(list));
         list().selection().onChange(ee -> {
-            smallIcon().set(getSelectedIcon());
+            icon().set(getSelectedIcon());
         });
 
     }

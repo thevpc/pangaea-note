@@ -14,10 +14,10 @@ import net.thevpc.echo.api.AppFont;
 import net.thevpc.echo.api.AppImage;
 import net.thevpc.echo.api.components.AppTextControl;
 import net.thevpc.echo.api.components.AppToggleControl;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 import java.util.List;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  * @author vpc
@@ -121,7 +121,7 @@ public class OtherUtils {
         return out.toString();
     }
 
-    public static void applyTitle(PangaeaNoteExt n, AppTextControl textControl, boolean selected) {
+    public static void applyTitle(PangaeaNote n, AppTextControl textControl, boolean selected) {
         if (n == null) {
             return;
         }
@@ -147,9 +147,9 @@ public class OtherUtils {
         //do not apply to CheckBox or radio Button!
         textControl.text().set(Str.of((n.getName())));
         if (!(textControl instanceof AppToggleControl)) {
-            String iconName = app.service().getNoteIcon(n.toNote());
+            String iconName = app.getNoteIcon(n);
             AppImage icon = app.iconSets().icon(iconName,textControl.iconSet().get());
-            textControl.smallIcon().set(icon);
+            textControl.icon().set(icon);
         }
     }
 }

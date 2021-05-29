@@ -5,12 +5,11 @@
  */
 package net.thevpc.pnote.core.types.list.refactor;
 
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.api.PangaeaContentTypeReplacer;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.list.PangaeaNoteListService;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -22,7 +21,7 @@ public class NoteListToAnythingContentTypeReplacer implements PangaeaContentType
     }
 
     @Override
-    public int getSupportLevel(PangaeaNoteExt toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteService service, PangaeaNoteFrame frame) {
+    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaNoteListService.LIST.equals(oldContentType)) {
             return 10;
         }
@@ -30,11 +29,11 @@ public class NoteListToAnythingContentTypeReplacer implements PangaeaContentType
     }
 
     @Override
-    public void changeNoteContentType(PangaeaNoteExt toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteService service) {
+    public void changeNoteContentType(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaNoteListService.LIST.equals(oldContentType)) {
-            toUpdate.setContent(service.getContentTypeService(newContentType).createDefaultContent());
+            toUpdate.setContent(app.getContentTypeService(newContentType).createDefaultContent());
             toUpdate.setContentType(newContentType.toString());
-            toUpdate.setEditorType(service.normalizeEditorType(newContentType, toUpdate.getEditorType()));
+            toUpdate.setEditorType(app.normalizeEditorType(newContentType, toUpdate.getEditorType()));
         }
 
     }

@@ -23,7 +23,7 @@ public class NoteEditorToViewer implements PangaeaNoteFileViewerManager {
 
     @Override
     public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
-        PangaeaNoteTypeService sp = win.service().getContentTypeServiceByFileName(path, mimeType.getContentType());
+        PangaeaNoteTypeService sp = win.app().getContentTypeServiceByFileName(path, mimeType.getContentType());
         if(sp!=null){
             return new SupportSupplier<URLViewerComponent>() {
                 @Override

@@ -1,12 +1,12 @@
 package net.thevpc.pnote.api;
 
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.service.PangaeaNoteService;
 
 import java.io.InputStream;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 public interface PangaeaNoteFileImporter {
     String getName();
     String[] getSupportedFileExtensions();
-    PangaeaNote loadNote(InputStream file, String preferredName, String fileExtension, PangaeaNoteService service);
+    PangaeaNote loadNote(InputStream file, String preferredName, String fileExtension, PangaeaNoteApp app);
 }

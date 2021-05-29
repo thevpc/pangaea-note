@@ -7,13 +7,12 @@ import net.thevpc.echo.api.AppFont;
 import net.thevpc.echo.api.AppImage;
 import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.constraints.Anchor;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.core.special.DataPane;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
 import net.thevpc.pnote.util.OtherUtils;
 
-import javax.swing.*;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 class PangaeaNoteListEditorItem extends BorderPane {
 
@@ -37,10 +36,10 @@ class PangaeaNoteListEditorItem extends BorderPane {
         icon=new ImageView(app);
         checkBox = new CheckBox(null, null, app)
                 .with((CheckBox c) -> {
-                    c.selected().set(editor.getNote() != null && parent.isSelectedIndex(editor.getNote().getName()));
+                    c.selected().set(parent.isSelectedIndex(editor.getNote()));
                     c.selected().onChange(e -> {
                         if (editor.getNote() != null) {
-                            parent.setSelectedName(editor.getNote().getName(), c.selected().get());
+                            parent.setSelectedName(editor.getNote(), c.selected().get());
                         }
                     });
                 });
@@ -62,20 +61,19 @@ class PangaeaNoteListEditorItem extends BorderPane {
                 ,
                 new Spacer(app).expandX()
         );
-//            header.children().add(new Button("addToObjectList", () -> parent.onAddObjectAt(pos), app));
-        header.children().add(new Button("NoteProperties", () -> parent.onEditAt(pos), app));
-        header.children().addSeparator();
-        header.children().add(new Button("duplicateInObjectList", () -> parent.onDuplicateObjectAt(pos), app));
-        header.children().addSeparator();
-        header.children().add(new Button("moveUpInObjectList", () -> parent.onMoveUpAt(pos), app));
-        header.children().add(new Button("moveDownInObjectList", () -> parent.onMoveDownAt(pos), app));
-        header.children().add(new Button("moveFirstInObjectList", () -> parent.onMoveFirstAt(pos), app));
-        header.children().add(new Button("moveLastInObjectList", () -> parent.onMoveLastAt(pos), app));
-        header.children().addSeparator();
-        header.children().add(new Button("removeInObjectList", () -> parent.onRemoveObjectAt(pos), app));
+        
+//        header.children().add(new Button("NoteProperties", () -> parent.onEditAt(pos), app));
+//        header.children().addSeparator();
+//        header.children().add(new Button("duplicateInObjectList", () -> parent.onDuplicateObjectAt(pos), app));
+//        header.children().addSeparator();
+//        header.children().add(new Button("moveUpInObjectList", () -> parent.onMoveUpAt(pos), app));
+//        header.children().add(new Button("moveDownInObjectList", () -> parent.onMoveDownAt(pos), app));
+//        header.children().add(new Button("moveFirstInObjectList", () -> parent.onMoveFirstAt(pos), app));
+//        header.children().add(new Button("moveLastInObjectList", () -> parent.onMoveLastAt(pos), app));
+//        header.children().addSeparator();
+//        header.children().add(new Button("removeInObjectList", () -> parent.onRemoveObjectAt(pos), app));
 
         ContextMenu _contextMenu = new ContextMenu(app);
-//            contextMenu.children().add(new Button("addToObjectList", () -> parent.onAddObjectAt(pos), app));
         _contextMenu.children().add(new Button("NoteProperties", () -> parent.onEditAt(pos), app));
         _contextMenu.children().addSeparator();
         _contextMenu.children().add(new Button("duplicateInObjectList", () -> parent.onDuplicateObjectAt(pos), app));
@@ -98,28 +96,37 @@ class PangaeaNoteListEditorItem extends BorderPane {
                         .with(p -> p.anchor().set(Anchor.CENTER))
         );
     }
+    boolean isSelectableItem(){
+        return parent.isSelectableItems();
+    }
 
-    public void setValue(PangaeaNoteExt value, int pos) {
+    public void setValue(PangaeaNote value, int pos) {
         this.pos = pos;
         String s = value.getName();
         if (s == null || s.length() == 0) {
             s = "no-name";
         }
 
-        String iconName = ((PangaeaNoteApp)app()).service().getNoteIcon(value.toNote());
+        String iconName = ((PangaeaNoteApp)app()).getNoteIcon(value);
         AppImage image = app().iconSets().icon(iconName,iconSet().get());
         icon.image().set(image);
 
         checkBox.text().set(Str.empty());
-        checkBox.selected().set(parent.isSelectedIndex(value.getName()));
+        checkBox.selected().set(parent.isSelectedIndex(value));
         OtherUtils.applyTitle(value,label,false);
-        label.text().set(Str.of((pos + 1) + " - " + s));
-        label.smallIcon().set((Str)null);
-        label.smallIcon().set((AppImage) null);
+        String prefix;
+        if(parent.isShowNumbers()){
+            prefix = (pos + 1) + " - ";
+        }else{
+            prefix ="";
+        }
+        label.text().set(Str.of(prefix + s));
+        label.icon().set((Str)null);
+        label.icon().set((AppImage) null);
         boolean inTab = parent.paneLayout().get() instanceof DataPane.Tabs;
         label.visible().set(!inTab);
         icon.visible().set(!inTab);
-        checkBox.visible().set(true);
+        checkBox.visible().set(isSelectableItem());
         editor.setNote(value);
     }
 
@@ -131,7 +138,7 @@ class PangaeaNoteListEditorItem extends BorderPane {
 //            }
     }
 
-    public PangaeaNoteExt getValue() {
+    public PangaeaNote getValue() {
         return editor.getNote();
     }
 

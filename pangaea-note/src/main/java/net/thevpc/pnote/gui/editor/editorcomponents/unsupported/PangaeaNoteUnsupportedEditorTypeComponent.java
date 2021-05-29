@@ -8,11 +8,9 @@ package net.thevpc.pnote.gui.editor.editorcomponents.unsupported;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.Application;
 import net.thevpc.echo.BorderPane;
-import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.Label;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
@@ -37,7 +35,7 @@ public class PangaeaNoteUnsupportedEditorTypeComponent extends BorderPane implem
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note,PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
         notSupported.text().set(Str.of("Not supported "+note.getContentType()));
     }
 

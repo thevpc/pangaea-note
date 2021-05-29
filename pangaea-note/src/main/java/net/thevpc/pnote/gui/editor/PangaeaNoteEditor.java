@@ -9,7 +9,6 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.Panel;
 import net.thevpc.echo.constraints.Anchor;
-import net.thevpc.echo.constraints.Layout;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.gui.editor.editorcomponents.empty.PangaeaNoteEmptyNoteEditorTypeComponent;
@@ -20,17 +19,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.thevpc.common.props.PropertyEvent;
-import net.thevpc.common.props.PropertyListener;
 import net.thevpc.echo.Application;
+import net.thevpc.echo.BreadCrumb;
+import net.thevpc.echo.api.components.AppChoiceItemContext;
+import net.thevpc.echo.api.components.AppChoiceItemRenderer;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtensionHandler;
 import net.thevpc.pnote.api.PangaeaNoteExtEditorListener;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
-import javax.swing.*;
+import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -40,7 +40,7 @@ public class PangaeaNoteEditor extends BorderPane {
 
     private Map<String, PangaeaNoteEditorTypeComponent> components = new LinkedHashMap<String, PangaeaNoteEditorTypeComponent>();
     private PangaeaNoteEditorTypeComponent currentEditor;
-    private PangaeaNoteExt currentNote;
+    private PangaeaNote currentNote;
     private Panel container;
     private String editorTypeI18nPrefix = "EditorType";
     private List<PangaeaNoteExtEditorListener> listeners = new ArrayList<>();
@@ -69,6 +69,11 @@ public class PangaeaNoteEditor extends BorderPane {
         showEditor("empty");
 
 //        app.i18n().locale().onChange(editorOnLocalChangePropertyListenerImpl);
+    }
+
+    @Override
+    public PangaeaNoteApp app() {
+        return (PangaeaNoteApp) super.app();
     }
 
     public void uninstall() {
@@ -119,9 +124,11 @@ public class PangaeaNoteEditor extends BorderPane {
     }
 
     public void showEditor(String name) {
+        if (currentEditor != null) {
+            container.children().remove(currentEditor);
+        }
         String okName = getEditorName(name);
         this.currentEditor = getEditor(okName);
-        container.children().clear();
         container.children().add(currentEditor);
     }
 
@@ -149,18 +156,18 @@ public class PangaeaNoteEditor extends BorderPane {
 //                x -> app.i18n().getString(editorTypeI18nPrefix + "." + x)
 //        );
 //    }
-    public PangaeaNoteExt getNote() {
+    public PangaeaNote getNote() {
         return currentNote;
     }
 
-    public void setNote(PangaeaNoteExt note) {
+    public void setNote(PangaeaNote note) {
         this.currentNote = note;
         if (note == null) {
             showEditor("empty");
         } else {
-            PangaeaNoteMimeType contentType = frame.service().normalizeContentType(note.getContentType());
-            String editorType = frame.service().normalizeEditorType(contentType, note.getEditorType());
-            getEditor(editorType).setNote(note, frame);//TODO FIX ME
+            PangaeaNoteMimeType contentType = frame.app().normalizeContentType(note.getContentType());
+            String editorType = frame.app().normalizeEditorType(contentType, note.getEditorType());
+            getEditor(editorType).setNote(note);
             showEditor(editorType);
         }
     }
@@ -174,7 +181,6 @@ public class PangaeaNoteEditor extends BorderPane {
 //        public void propertyUpdated(PropertyEvent e) {
 //        }
 //    }
-
     public boolean isEditable() {
         return editable;
     }

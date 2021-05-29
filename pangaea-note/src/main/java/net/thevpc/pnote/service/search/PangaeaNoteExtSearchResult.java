@@ -8,8 +8,8 @@ package net.thevpc.pnote.service.search;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 
 /**
  *
@@ -17,23 +17,23 @@ import net.thevpc.pnote.api.model.PangaeaNoteExt;
  */
 public class PangaeaNoteExtSearchResult {
 
-    private PangaeaNoteExt rootNote;
-    private Stream<StringSearchResult<PangaeaNoteExt>> stream;
+    private PangaeaNote rootNote;
+    private Stream<StringSearchResult<PangaeaNote>> stream;
 
-    public PangaeaNoteExtSearchResult(PangaeaNoteExt rootNote, Stream<StringSearchResult<PangaeaNoteExt>> stream) {
+    public PangaeaNoteExtSearchResult(PangaeaNote rootNote, Stream<StringSearchResult<PangaeaNote>> stream) {
         this.rootNote = rootNote;
         this.stream = stream;
     }
 
-    public PangaeaNoteExt getRootNote() {
+    public PangaeaNote getRootNote() {
         return rootNote;
     }
 
-    public List<StringSearchResult<PangaeaNoteExt>> list() {
+    public List<StringSearchResult<PangaeaNote>> list() {
         return stream.collect(Collectors.toList());
     }
 
-    public Stream<StringSearchResult<PangaeaNoteExt>> stream() {
+    public Stream<StringSearchResult<PangaeaNote>> stream() {
         return stream;
     }
 

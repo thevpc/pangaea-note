@@ -16,10 +16,8 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 
@@ -45,28 +43,13 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
         return new ContentTypeSelector(getContentType(), "composed-documents", 0);
     }
 
-    @Override
-    public void onPostUpdateChildNoteProperties(PangaeaNoteExt toUpdate, PangaeaNote before) {
-        String oldName = before.getName();
-        String newName = toUpdate.getName();
-        PangaeaNoteListModel oldModel = elementToContent(toUpdate.getParent().getContent());
-        if (oldModel == null) {
-            oldModel = new PangaeaNoteListModel();
-        }
-        if (oldModel.getSelectedNames().contains(oldName)) {
-            oldModel.getSelectedNames().remove(oldName);
-            oldModel.getSelectedNames().add(newName);
-            toUpdate.getParent().setContent(contentToElement(oldModel));
-        }
-    }
-
     public String normalizeEditorType(String editorType) {
         return PangaeaNoteTypes.EDITOR_NOTE_LIST;
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
-        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", ""/**
+    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
+        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", ""/**
          * nothing here*
          */
         ).iterator()
@@ -79,9 +62,9 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        super.onInstall(service, app);
-        service.installTypeReplacer(new NoteListToAnythingContentTypeReplacer());
+    public void onInstall(PangaeaNoteApp app) {
+        super.onInstall(app);
+        app().installTypeReplacer(new NoteListToAnythingContentTypeReplacer());
 
         app.installEditorService(new PangaeaNoteEditorService() {
             @Override
@@ -111,12 +94,12 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
-        return service().isEmptyContent(content);
+    public boolean isEmptyContent(NutsElement content) {
+        return app().isEmptyContent(content);
     }
 
     public NutsElement contentToElement(PangaeaNoteListModel value) {
-        return service().element().toElement(value);
+        return app().element().toElement(value);
     }
 
     public PangaeaNoteListModel elementToContent(NutsElement s) {
@@ -126,7 +109,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
         if (!s.isObject()) {
             return new PangaeaNoteListModel();
         } else {
-            return service().element().convert(s, PangaeaNoteListModel.class);
+            return app().element().convert(s, PangaeaNoteListModel.class);
         }
     }
 

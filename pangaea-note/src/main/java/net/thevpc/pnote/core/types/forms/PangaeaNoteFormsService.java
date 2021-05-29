@@ -11,26 +11,25 @@ import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
-import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
+import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
+import net.thevpc.pnote.core.types.forms.templates.UrlCardTemplate;
+import net.thevpc.pnote.core.types.forms.refactor.FormsToAnythingContentTypeReplacer;
+import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.types.forms.editor.PangaeaNoteFormsEditorTypeComponent;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
-import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
+import net.thevpc.pnote.core.types.forms.search.PangaeaNoteObjectDocumentTextNavigator;
 import net.thevpc.pnote.core.types.forms.templates.BankAccountTemplate;
 import net.thevpc.pnote.core.types.forms.templates.CreditCardAccountTemplate;
 import net.thevpc.pnote.core.types.forms.templates.EthernetConnectionTemplate;
 import net.thevpc.pnote.core.types.forms.templates.UrlBookmarkTemplate;
-import net.thevpc.pnote.core.types.forms.templates.UrlCardTemplate;
 import net.thevpc.pnote.core.types.forms.templates.WifiConnectionTemplate;
-import net.thevpc.pnote.core.types.forms.refactor.FormsToAnythingContentTypeReplacer;
-import net.thevpc.pnote.core.types.forms.search.PangaeaNoteObjectDocumentTextNavigator;
-import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
 /**
@@ -55,15 +54,15 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        super.onInstall(service, app);
-        service.installTypeReplacer(new FormsToAnythingContentTypeReplacer());
-        service.register(new UrlCardTemplate());
-        service.register(new EthernetConnectionTemplate());
-        service.register(new WifiConnectionTemplate());
-        service.register(new UrlBookmarkTemplate());
-        service.register(new BankAccountTemplate());
-        service.register(new CreditCardAccountTemplate());
+    public void onInstall(PangaeaNoteApp app) {
+        super.onInstall(app);
+        app.installTypeReplacer(new FormsToAnythingContentTypeReplacer());
+        app.register(new UrlCardTemplate());
+        app.register(new EthernetConnectionTemplate());
+        app.register(new WifiConnectionTemplate());
+        app.register(new UrlBookmarkTemplate());
+        app.register(new BankAccountTemplate());
+        app.register(new CreditCardAccountTemplate());
         app.installEditorService(new PangaeaNoteEditorService() {
             @Override
             public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
@@ -87,8 +86,8 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
-        return Arrays.asList(new PangaeaNoteObjectDocumentTextNavigator(service(), note, note.getContent()).iterator()
+    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
+        return Arrays.asList(new PangaeaNoteObjectDocumentTextNavigator(app(), note, note.getContent()).iterator()
         );
     }
 
@@ -101,18 +100,18 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     public NutsElement getContentAsElement(PangaeaNoteObjectDocument dynamicDocument) {
-        return service().element().toElement(dynamicDocument);
+        return app().element().toElement(dynamicDocument);
     }
 
     public PangaeaNoteObjectDocument getContentAsObject(NutsElement s) {
         if (s != null && s.isString()) {
-            return service().element().parse(s.asString(), PangaeaNoteObjectDocument.class);
+            return app().element().parse(s.asString(), PangaeaNoteObjectDocument.class);
         }
-        return service().element().convert(s, PangaeaNoteObjectDocument.class);
+        return app().element().convert(s, PangaeaNoteObjectDocument.class);
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
+    public boolean isEmptyContent(NutsElement content) {
         PangaeaNoteObjectDocument a = getContentAsObject(content);
         if (a == null) {
             return true;

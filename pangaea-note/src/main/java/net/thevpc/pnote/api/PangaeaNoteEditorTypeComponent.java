@@ -7,18 +7,17 @@ package net.thevpc.pnote.api;
 
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
  * @author vpc
  */
-public interface PangaeaNoteEditorTypeComponent extends AppComponent{
+public interface PangaeaNoteEditorTypeComponent extends AppComponent {
 
     void uninstall();
 
-    void setNote(PangaeaNoteExt note, PangaeaNoteFrame win);
+    void setNote(PangaeaNote note);
 
     void setEditable(boolean b);
 
@@ -32,8 +31,6 @@ public interface PangaeaNoteEditorTypeComponent extends AppComponent{
 
     default void removeHighlights(HighlightType highlightType) {
     }
-
-
 
     default void highlight(int fromm, int too, HighlightType hightlightType) {
     }

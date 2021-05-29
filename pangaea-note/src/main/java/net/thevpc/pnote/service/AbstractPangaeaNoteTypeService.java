@@ -9,12 +9,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.thevpc.echo.Application;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
  *
@@ -24,7 +22,6 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
 
     private Set<String> supportedMimeTypes = new HashSet<String>();
     private PangaeaNoteMimeType contentType;
-    private PangaeaNoteService service;
     private PangaeaNoteApp app;
 
     public AbstractPangaeaNoteTypeService(PangaeaNoteMimeType contentType, String... mimetypes) {
@@ -34,8 +31,7 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        this.service = service;
+    public void onInstall(PangaeaNoteApp app) {
         this.app = app;
     }
 
@@ -56,25 +52,24 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
     }
 
     public NutsElement getContentAsElement(String s) {
-        return service.stringToElement(s);
+        return app.stringToElement(s);
     }
 
     public String getContentAsString(NutsElement s) {
-        return service.elementToString(s);
+        return app.elementToString(s);
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content, PangaeaNoteFrame frame) {
+    public boolean isEmptyContent(NutsElement content) {
         if (content == null) {
             return true;
         }
         return content.isEmpty();
     }
 
-    protected PangaeaNoteService service() {
-        return service;
+    public PangaeaNoteApp app() {
+        return app;
     }
-    
-    
 
+    
 }

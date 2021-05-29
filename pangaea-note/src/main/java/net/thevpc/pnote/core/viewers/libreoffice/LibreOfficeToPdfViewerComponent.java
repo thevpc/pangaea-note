@@ -62,7 +62,7 @@ public class LibreOfficeToPdfViewerComponent extends BorderPane implements URLVi
         if (u != null) {
             File targetFile = null;
             try {
-                targetFile = new File(frame.service().appContext().getWorkspace().io().tmp().createTempFile("a.pdf"));
+                targetFile = new File(frame.app().appContext().getWorkspace().io().tmp().createTempFile("a.pdf"));
                 File sourceFile = u;
                 LocalConverter.builder()
                         .build()

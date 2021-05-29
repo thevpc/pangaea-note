@@ -12,8 +12,6 @@ import net.thevpc.echo.Menu;
 import net.thevpc.echo.ScrollPane;
 import net.thevpc.echo.TextField;
 import net.thevpc.echo.*;
-import net.thevpc.echo.api.components.AppComponentEvent;
-import net.thevpc.echo.api.components.AppComponentEventListener;
 import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
@@ -91,7 +89,7 @@ public class URLViewer extends BorderPane {
             if (subComponent != null) {
                 subComponent.disposeComponent();
             }
-            url=url.trim();
+            url = url.trim();
             subComponent = resolveSubComponent(url, contentType);
             subComponent.navigate(url);
             scroll.child().set(subComponent);
@@ -140,6 +138,10 @@ public class URLViewer extends BorderPane {
         }
     }
 
+    public PangaeaNoteFrame frame() {
+        return frame;
+    }
+
     public boolean isEditable() {
         return subComponent != null && subComponent.isEditable();
     }
@@ -169,50 +171,49 @@ public class URLViewer extends BorderPane {
             this.parent = parent;
             PangaeaNoteApp app = win.app();
             this.textField = new TextField(app)
-                    .with(t -> t.childConstraints().addAll(Grow.HORIZONTAL, Fill.HORIZONTAL))
-            ;
+                    .with(t -> t.childConstraints().addAll(Grow.HORIZONTAL, Fill.HORIZONTAL));
             ToolBar tb = new ToolBar(win.app());
             openFileMenu = new Menu(null, Str.i18n("Message.browse"), app)
                     .with(m -> {
-                        m.smallIcon().set(Str.of("folder"));
+                        m.icon().set(Str.of("folder"));
                     });
 
             //reload if press ENTER or lost focus
             textField.events().add(event -> {
-                if(event.code()==KeyCode.ENTER){
+                if (event.code() == KeyCode.ENTER) {
                     doReload();
                 }
             }, AppEventType.KEY_PRESSED);
             textField.focused().onChange(event -> {
-                if(!textField.focused().get()) {
+                if (!textField.focused().get()) {
                     //doReload();
                 }
             });
 
 //            textField.text().onChange(event -> doReload());
             tb.children().addAll(goUpButton = new Button(null, () -> goUp(), app)
-                            .with((Button m) -> {
-                                m.text().set(Str.i18n("Message.goUp"));
-                                m.smallIcon().set(Str.of("folder-up"));
-                            }),
+                    .with((Button m) -> {
+                        m.text().set(Str.i18n("Message.goUp"));
+                        m.icon().set(Str.of("folder-up"));
+                    }),
                     goHomeButton = new Button(null, () -> goHome(), app)
                             .with((Button m) -> {
                                 m.text().set(Str.i18n("Message.goHome"));
-                                m.smallIcon().set(Str.of("home"));
+                                m.icon().set(Str.of("home"));
                             }),
                     openFileMenu);
             openFileMenu.children().add(
                     new Button(null, () -> onShowDialog(), app)
                             .with((Button m) -> {
                                 m.text().set(Str.i18n("Message.browse"));
-                                m.smallIcon().set(Str.of("folder"));
+                                m.icon().set(Str.of("folder"));
                             })
             );
             openFileMenu.children().add(
                     reloadButton = new Button(null, () -> doReload(), app)
                             .with((Button m) -> {
                                 m.text().set(Str.i18n("Message.reload"));
-                                m.smallIcon().set(Str.of("reload"));
+                                m.icon().set(Str.of("reload"));
                             })
             );
             children().addAll(

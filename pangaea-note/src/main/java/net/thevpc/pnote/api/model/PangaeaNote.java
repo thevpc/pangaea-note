@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import net.thevpc.echo.impl.TreeNode;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.gui.util.PangaeaNoteError;
 
@@ -21,8 +22,6 @@ import net.thevpc.pnote.gui.util.PangaeaNoteError;
  * @author vpc
  */
 public class PangaeaNote implements Cloneable {
-
-    
 
     private String version;
     private Instant creationTime;
@@ -39,6 +38,12 @@ public class PangaeaNote implements Cloneable {
     private String contentType;
     private String editorType;
     private NutsElement content;
+
+    /**
+     * any structured information that can be used by parent notes and that are
+     * related to this note
+     */
+    private NutsElement childData;
     private boolean readOnly;
     private Set<String> tags = new HashSet<String>();
     private List<PangaeaNote> children = new ArrayList<>();
@@ -46,6 +51,8 @@ public class PangaeaNote implements Cloneable {
     private CypherInfo cypherInfo;
     private transient boolean loaded;
     public transient PangaeaNoteError error;
+    public transient TreeNode<PangaeaNote> guiNode;
+//    public transient PangaeaNoteFrame guiFrame;
 
     public String getFolderIcon() {
         return folderIcon;
@@ -173,6 +180,7 @@ public class PangaeaNote implements Cloneable {
         hash = 17 * hash + Objects.hashCode(this.children);
         hash = 17 * hash + Objects.hashCode(this.properties);
         hash = 17 * hash + Objects.hashCode(this.cypherInfo);
+        hash = 17 * hash + Objects.hashCode(this.childData);
         return hash;
     }
 
@@ -286,7 +294,7 @@ public class PangaeaNote implements Cloneable {
         } catch (CloneNotSupportedException ex) {
             throw new IllegalArgumentException("Impossible");
         }
-
+        n2.guiNode=null;
         n2.setTags(this.getTags() == null ? null : new HashSet<>(this.getTags()));
         n2.setCypherInfo(getCypherInfo() == null ? null : getCypherInfo().copy());
         n2.setProperties(getProperties() == null ? null : new LinkedHashMap<>(getProperties()));
@@ -362,6 +370,14 @@ public class PangaeaNote implements Cloneable {
         this.titleBackground = titleBackground;
     }
 
+    public NutsElement getChildData() {
+        return childData;
+    }
+
+    public void setChildData(NutsElement childData) {
+        this.childData = childData;
+    }
+
     public void copyFrom(PangaeaNote a) {
         this.version = a.version;
         this.creationTime = a.creationTime;
@@ -385,6 +401,7 @@ public class PangaeaNote implements Cloneable {
         this.cypherInfo = a.cypherInfo == null ? null : a.cypherInfo.copy();
         this.loaded = a.loaded;
         this.error = a.error;
+        this.childData = a.childData;
         if (a.children != null) {
             for (PangaeaNote c : a.children) {
                 this.children.add(c.copy());

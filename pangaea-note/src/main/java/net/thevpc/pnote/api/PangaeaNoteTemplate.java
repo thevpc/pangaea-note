@@ -8,7 +8,7 @@ package net.thevpc.pnote.api;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -28,9 +28,9 @@ public interface PangaeaNoteTemplate extends PangaeaNoteTypeServiceBase {
         return 0;
     }
 
-    void prepare(PangaeaNote n, PangaeaNoteService win);
+    void prepare(PangaeaNote n, PangaeaNoteApp app);
 
-    public default Str getLabel(PangaeaNoteService win) {
+    public default Str getLabel(PangaeaNoteApp app) {
         return null;
     }
 

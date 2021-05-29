@@ -6,7 +6,6 @@
 package net.thevpc.pnote.core.types.plain;
 
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.service.refactor.AnythingToPlainContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
@@ -27,9 +26,9 @@ public class PangaeaNotePlainTextService extends AbstractPangaeaNoteSourceCodeSe
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        super.onInstall(service, app);
-        service.installTypeReplacer(new AnythingToPlainContentTypeReplacer());
+    public void onInstall(PangaeaNoteApp app) {
+        super.onInstall(app);
+        app.installTypeReplacer(new AnythingToPlainContentTypeReplacer());
     }
 
     @Override

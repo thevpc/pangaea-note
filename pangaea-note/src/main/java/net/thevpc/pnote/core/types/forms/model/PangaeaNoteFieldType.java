@@ -11,18 +11,32 @@ package net.thevpc.pnote.core.types.forms.model;
  */
 public enum PangaeaNoteFieldType {
     TEXT,
+    DATE,
+    STARS,
+    TIME,
+    YEAR,
+    DAY_OF_WEEK,
+    MONTH,
+    DATETIME,
     URL,
     PASSWORD,
     COMBOBOX,
     CHECKBOX,
+    RADIOBUTTON,
+    TOGGLE,
     TEXTAREA;
 
     public boolean isSelectMulti() {
-        return this == PangaeaNoteFieldType.CHECKBOX;
+        return this == PangaeaNoteFieldType.CHECKBOX
+                || this == PangaeaNoteFieldType.TOGGLE;
     }
 
     public boolean isSelectOne() {
-        return this == PangaeaNoteFieldType.COMBOBOX;
+        return this == PangaeaNoteFieldType.RADIOBUTTON
+                || this == PangaeaNoteFieldType.COMBOBOX
+                || this == PangaeaNoteFieldType.YEAR
+                || this == PangaeaNoteFieldType.MONTH
+                || this == PangaeaNoteFieldType.DAY_OF_WEEK;
     }
 
     public boolean isFreeTextTypeAcceptingNewLine() {
@@ -32,24 +46,31 @@ public enum PangaeaNoteFieldType {
     public boolean isFreeTextType() {
         switch (this) {
             case TEXT:
-            case TEXTAREA: 
-            case PASSWORD: 
-            case URL: 
-            {
+            case TEXTAREA:
+            case PASSWORD:
+            case URL:
+            case DATE:
+            case DATETIME:
+            case TIME: {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isSelectType() {
+    public boolean isCustomSelect() {
         switch (this) {
+            case RADIOBUTTON:
+            case CHECKBOX:
             case COMBOBOX:
-            case CHECKBOX: {
+            case TOGGLE:
                 return true;
-            }
         }
         return false;
+    }
+
+    public boolean isSelect() {
+        return isSelectMulti() || isSelectOne();
     }
 
 }

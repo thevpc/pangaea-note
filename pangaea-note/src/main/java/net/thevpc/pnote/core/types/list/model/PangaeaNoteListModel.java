@@ -14,9 +14,21 @@ import java.util.Set;
  */
 public class PangaeaNoteListModel {
 
-    private Set<String> selectedNames = new HashSet<>();
+//    private Set<String> selectedNames = new HashSet<>();
     private PangaeaNoteListLayout layout;
     private int colsRows;
+    private boolean selectableItems;
+    private boolean showNumbers;
+    private boolean strikeSelected;
+
+    public boolean isSelectableItems() {
+        return selectableItems;
+    }
+
+    public PangaeaNoteListModel setSelectableItems(boolean selectableItems) {
+        this.selectableItems = selectableItems;
+        return this;
+    }
 
     public int getColsRows() {
         return colsRows;
@@ -26,13 +38,13 @@ public class PangaeaNoteListModel {
         this.colsRows = colsRows;
     }
 
-    public Set<String> getSelectedNames() {
-        return selectedNames;
-    }
-
-    public void setSelectedNames(Set<String> selectedNames) {
-        this.selectedNames = selectedNames;
-    }
+//    public Set<String> getSelectedNames() {
+//        return selectedNames;
+//    }
+//
+//    public void setSelectedNames(Set<String> selectedNames) {
+//        this.selectedNames = selectedNames;
+//    }
 
     public PangaeaNoteListLayout getLayout() {
         return layout;
@@ -42,4 +54,21 @@ public class PangaeaNoteListModel {
         this.layout = layout;
     }
 
+    public boolean isShowNumbers() {
+        return showNumbers;
+    }
+
+    public PangaeaNoteListModel setShowNumbers(boolean showNumbers) {
+        this.showNumbers = showNumbers;
+        return this;
+    }
+
+    public boolean isStrikeSelected() {
+        return strikeSelected;
+    }
+
+    public PangaeaNoteListModel setStrikeSelected(boolean strikeSelected) {
+        this.strikeSelected = strikeSelected;
+        return this;
+    }
 }

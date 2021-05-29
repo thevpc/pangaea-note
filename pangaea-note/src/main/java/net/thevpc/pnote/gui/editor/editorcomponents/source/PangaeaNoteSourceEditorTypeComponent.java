@@ -8,11 +8,10 @@ package net.thevpc.pnote.gui.editor.editorcomponents.source;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.AppColor;
-import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.api.components.AppContextMenu;
+import net.thevpc.echo.util.ClipboardHelper;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.SelectableElement;
 import net.thevpc.pnote.gui.search.SearchDialog;
@@ -23,6 +22,7 @@ import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 import java.util.stream.Stream;
+import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  * @author vpc
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 
     private TextArea textArea;
-    private PangaeaNoteExt currentNote;
+    private PangaeaNote currentNote;
     private boolean compactMode;
     private boolean editable = true;
     private PangaeaNoteFrame frame;
@@ -47,7 +47,7 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
         this.compactMode = compactMode;
         this.textArea = new TextArea(frame.app());
         this.textArea.rowNumberRuler().set(true);
-        TextToolBarHelper.prepare(frame);
+        ClipboardHelper.prepareToolBar(frame);
         textArea.installDefaults();
         textArea.registerAccelerator("search-text", "control F", () -> showSearchDialog());
 //        for (PangaeaNoteTypeService contentTypeService : win.service().getContentTypeServices()) {
@@ -64,7 +64,7 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
         this.textArea.text().onChange(e -> {
             if (currentNote != null) {
                 frame.onDocumentChanged();
-                currentNote.setContent(frame.service().stringToElement(textArea.text().get().value()));
+                currentNote.setContent(frame.app().stringToElement(textArea.text().get().value()));
             }
         });
         AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
@@ -96,15 +96,15 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
     }
 
     @Override
-    public void setNote(PangaeaNoteExt note, PangaeaNoteFrame win) {
+    public void setNote(PangaeaNote note) {
         this.currentNote = note;
-        String c = win.service().elementToString(note.getContent());
+//        String c = frame.app().elementToString(note.getContent());
         String type = note.getContentType();
         if (type == null) {
             type = "";
         }
         textArea.textContentType().set(type.isEmpty() ? "text/plain" : type);
-        textArea.text().set(Str.of(win.service().elementToString(note.getContent())));
+        textArea.text().set(Str.of(frame.app().elementToString(note.getContent())));
         setEditable(!note.isReadOnly());
 //        UndoManager um = GuiHelper.getUndoRedoManager(editorBuilder.editor());
 //        um.discardAllEdits();

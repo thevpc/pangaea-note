@@ -31,7 +31,6 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.service.PangaeaNoteService;
 
 /**
  *
@@ -49,7 +48,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
 
     @Override
     public void onLoad(PangaeaNoteApp app) {
-        app.service().installFileImporter(this);
+        app.installFileImporter(this);
     }
 
     @Override
@@ -57,12 +56,12 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
         return new String[]{"csv"};
     }
 
-    private List<List<String>> loadCSV(InputStream stream, PangaeaNoteService service) {
+    private List<List<String>> loadCSV(InputStream stream, PangaeaNoteApp app) {
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));
         TokenConf tokenConf = new TokenConf();
         List<List<String>> all = new ArrayList<>();
         while (true) {
-            List<String> line = parseRow(br, service, tokenConf);
+            List<String> line = parseRow(br, app, tokenConf);
             if (line != null && line.size() > 0) {
                 all.add(line);
             } else {
@@ -99,7 +98,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
 
     }
 
-    private Token parseQuotedStringToken(Reader line, char c0, PangaeaNoteService service, TokenConf cnf) throws IOException {
+    private Token parseQuotedStringToken(Reader line, char c0, PangaeaNoteApp app, TokenConf cnf) throws IOException {
         boolean inLoop = true;
         char q = c0;
         StringBuilder sb = new StringBuilder();
@@ -117,7 +116,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
         return new Token(Token.TEXT, sb.toString(), false);
     }
 
-    private Token parseUnquotedStringToken(Reader line, StringBuilder sb, PangaeaNoteService service, TokenConf cnf) throws IOException {
+    private Token parseUnquotedStringToken(Reader line, StringBuilder sb, PangaeaNoteApp app, TokenConf cnf) throws IOException {
         boolean inLoop = true;
         while (inLoop) {
             line.mark(1);
@@ -150,7 +149,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
         return new Token(Token.TEXT, sb.toString(), true);
     }
 
-    private Token parseToken(Reader line, PangaeaNoteService service, TokenConf cnf) {
+    private Token parseToken(Reader line, PangaeaNoteApp app, TokenConf cnf) {
         try {
             int i = line.read();
             if (i < 0) {
@@ -168,7 +167,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
                     }
                     StringBuilder sb = new StringBuilder();
                     sb.append(c);
-                    return parseUnquotedStringToken(line, sb, service, cnf);
+                    return parseUnquotedStringToken(line, sb, app, cnf);
                 }
                 case '\r': {
                     line.mark(1);
@@ -191,16 +190,16 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
                             || (c == '\'' && cnf.smplQte)) {
                         StringBuilder sb = new StringBuilder();
                         sb.append(c);
-                        return parseQuotedStringToken(line, c, service, cnf);
+                        return parseQuotedStringToken(line, c, app, cnf);
                     }
                     StringBuilder sb = new StringBuilder();
                     sb.append(c);
-                    return parseUnquotedStringToken(line, sb, service, cnf);
+                    return parseUnquotedStringToken(line, sb, app, cnf);
                 }
                 default: {
                     StringBuilder sb = new StringBuilder();
                     sb.append(c);
-                    return parseUnquotedStringToken(line, sb, service, cnf);
+                    return parseUnquotedStringToken(line, sb, app, cnf);
                 }
             }
         } catch (IOException ex) {
@@ -208,11 +207,11 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
         }
     }
 
-    private List<String> parseRow(Reader ll, PangaeaNoteService service, TokenConf cnf) {
+    private List<String> parseRow(Reader ll, PangaeaNoteApp app, TokenConf cnf) {
         List<String> a = new ArrayList<>();
         Token t = null;
         boolean wasSep = true;
-        while ((t = parseToken(ll, service, cnf)) != null) {
+        while ((t = parseToken(ll, app, cnf)) != null) {
             if (t.type == Token.SEPARATOR) {
                 if (wasSep) {
                     a.add("");
@@ -233,7 +232,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
         return a;
     }
 
-    private PangaeaNote findGroup(PangaeaNote n, String group, PangaeaNoteService service) {
+    private PangaeaNote findGroup(PangaeaNote n, String group, PangaeaNoteApp app) {
         if (group == null || group.length() == 0) {
             return n;
         }
@@ -255,7 +254,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
                 next = new PangaeaNote();
                 next.setName(c);
                 next.setContentType(PangaeaNotePlainTextService.PLAIN.toString());
-                next.setContent(service.stringToElement(""));
+                next.setContent(app.stringToElement(""));
                 p.getChildren().add(next);
             }
             p = next;
@@ -264,7 +263,7 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
     }
 
     @Override
-    public PangaeaNote loadNote(InputStream stream, String preferredName, String fileExtension, PangaeaNoteService service) {
+    public PangaeaNote loadNote(InputStream stream, String preferredName, String fileExtension, PangaeaNoteApp service) {
         if ("csv".equals(fileExtension)) {
             List<List<String>> lines = loadCSV(stream, service);
             PangaeaNote n = new PangaeaNote().setName(preferredName)

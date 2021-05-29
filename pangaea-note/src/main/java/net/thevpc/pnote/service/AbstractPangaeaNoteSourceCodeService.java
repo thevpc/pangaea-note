@@ -10,9 +10,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -43,14 +42,14 @@ public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPanga
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
-        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", getContentAsString(note.getContent())).iterator()
+    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
+        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", getContentAsString(note.getContent())).iterator()
         );
     }
 
     @Override
     public NutsElement createDefaultContent() {
-        return service().stringToElement("");
+        return app().stringToElement("");
     }
 
      @Override

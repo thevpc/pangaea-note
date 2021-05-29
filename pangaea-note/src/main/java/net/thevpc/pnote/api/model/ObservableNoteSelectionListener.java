@@ -11,6 +11,6 @@ package net.thevpc.pnote.api.model;
  */
 public interface ObservableNoteSelectionListener {
 
-    void onSelectionChanged(PangaeaNoteExt note);
+    void onSelectionChanged(PangaeaNote note);
     
 }

@@ -13,11 +13,9 @@ import net.thevpc.echo.RichHtmlEditor;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.core.types.rich.editor.RichEditorService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
-import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.core.types.sourcecode.html.refactor.PlainToHtmlContentTypeReplacer;
@@ -47,9 +45,9 @@ public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public void onInstall(PangaeaNoteService service, PangaeaNoteApp app) {
-        super.onInstall(service, app);
-        service.installTypeReplacer(new PlainToHtmlContentTypeReplacer());
+    public void onInstall(PangaeaNoteApp app) {
+        super.onInstall(app);
+        app.installTypeReplacer(new PlainToHtmlContentTypeReplacer());
         app.installEditorService(new RichEditorService());
     }
 
@@ -58,30 +56,30 @@ public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> resolveTextNavigators(PangaeaNoteExt note, PangaeaNoteFrame frame) {
+    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
         String content = getContentAsString(note.getContent());
-        content = extractTextFromHtml(content, frame);
+        content = extractTextFromHtml(content);
         return Arrays.asList(
-                new StringDocumentTextNavigator<PangaeaNoteExt>("content", note, "content", content).iterator()
+                new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", content).iterator()
         );
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement element, PangaeaNoteFrame frame) {
-        String content = service().elementToString(element);
+    public boolean isEmptyContent(NutsElement element) {
+        String content = app().elementToString(element);
         if (content == null || content.trim().length() == 0) {
             return true;
         }
-        return extractTextFromHtml(content, frame).trim().isEmpty();
+        return extractTextFromHtml(content).trim().isEmpty();
     }
 
-    private String extractTextFromHtml(String content, PangaeaNoteFrame frame) {
-        RichHtmlEditor ed = new RichHtmlEditor(content,frame.app());
+    private String extractTextFromHtml(String content) {
+        RichHtmlEditor ed = new RichHtmlEditor(content,app());
         return ed.getText(0, ed.getTextLength());
     }
 
     @Override
     public NutsElement createDefaultContent() {
-        return service().stringToElement("");
+        return app().stringToElement("");
     }
 }

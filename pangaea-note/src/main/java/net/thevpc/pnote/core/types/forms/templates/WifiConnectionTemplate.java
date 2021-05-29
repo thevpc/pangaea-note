@@ -12,9 +12,9 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldType;
-import net.thevpc.pnote.service.PangaeaNoteService;
 import net.thevpc.pnote.api.AbstractPangaeaNoteTemplate;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -27,22 +27,22 @@ public class WifiConnectionTemplate extends AbstractPangaeaNoteTemplate {
     }
 
     @Override
-    public void prepare(PangaeaNote n, PangaeaNoteService win) {
-        PangaeaNoteFormsService s = (PangaeaNoteFormsService) win.getContentTypeService(PangaeaNoteFormsService.FORMS);
+    public void prepare(PangaeaNote n, PangaeaNoteApp app) {
+        PangaeaNoteFormsService s = (PangaeaNoteFormsService) app.getContentTypeService(PangaeaNoteFormsService.FORMS);
         PangaeaNoteObjectDocument doc = new PangaeaNoteObjectDocument().setDescriptor(new PangaeaNoteObjectDescriptor()
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("title", win)).setType(PangaeaNoteFieldType.TEXT))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("security", win)).setType(PangaeaNoteFieldType.COMBOBOX)
-                        .addValue(str("security.wpa", win))
-                        .addValue(str("security.wep", win))
-                        .addValue(str("security.none", win))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("title", app)).setType(PangaeaNoteFieldType.TEXT))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("security", app)).setType(PangaeaNoteFieldType.COMBOBOX)
+                        .addValue(str("security.wpa", app))
+                        .addValue(str("security.wep", app))
+                        .addValue(str("security.none", app))
                 )
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("ssid", win)).setType(PangaeaNoteFieldType.TEXT))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("passphrase", win)).setType(PangaeaNoteFieldType.PASSWORD))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("ip", win)).setType(PangaeaNoteFieldType.TEXT))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("mask", win)).setType(PangaeaNoteFieldType.TEXT))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("dns", win)).setType(PangaeaNoteFieldType.TEXT))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("gateway", win)).setType(PangaeaNoteFieldType.TEXT))
-                .addField(new PangaeaNoteFieldDescriptor().setName(str("notes", win)).setType(PangaeaNoteFieldType.TEXTAREA)));
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("ssid", app)).setType(PangaeaNoteFieldType.TEXT))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("passphrase", app)).setType(PangaeaNoteFieldType.PASSWORD))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("ip", app)).setType(PangaeaNoteFieldType.TEXT))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("mask", app)).setType(PangaeaNoteFieldType.TEXT))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("dns", app)).setType(PangaeaNoteFieldType.TEXT))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("gateway", app)).setType(PangaeaNoteFieldType.TEXT))
+                .addField(new PangaeaNoteFieldDescriptor().setName(str("notes", app)).setType(PangaeaNoteFieldType.TEXTAREA)));
         n.setContentType(PangaeaNoteFormsService.FORMS.toString());
         n.setContent(s.getContentAsElement(doc.setValues(new ArrayList<>(Arrays.asList(doc.getDescriptor().createObject())))));
     }

@@ -5,16 +5,15 @@
  */
 package net.thevpc.pnote.service.search;
 
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.pnote.api.model.PangaeaNoteExt;
-import net.thevpc.pnote.service.PangaeaNoteService;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
+import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 /**
  *
@@ -22,27 +21,25 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
  */
 public class PangaeaNoteExtDocumentTextNavigator implements DocumentTextNavigator {
 
-    private PangaeaNoteService service;
-    private PangaeaNoteExt note;
-    private PangaeaNoteFrame frame;
+    private PangaeaNote note;
+    private PangaeaNoteApp app;
 
-    public PangaeaNoteExtDocumentTextNavigator(PangaeaNoteService service, PangaeaNoteExt source, PangaeaNoteFrame frame) {
-        this.service = service;
-        note = source == null ? new PangaeaNoteExt() : source;
-        this.frame=frame;
+    public PangaeaNoteExtDocumentTextNavigator(PangaeaNote source, PangaeaNoteApp app) {
+        note = source == null ? new PangaeaNote() : source;
+        this.app=app;
     }
 
     @Override
-    public Iterator<DocumentTextPart<PangaeaNoteExt>> iterator() {
-        List<Iterator<DocumentTextPart<PangaeaNoteExt>>> parts = new ArrayList<>();
+    public Iterator<DocumentTextPart<PangaeaNote>> iterator() {
+        List<Iterator<DocumentTextPart<PangaeaNote>>> parts = new ArrayList<>();
         parts.add(new StringDocumentTextNavigator("name", note, "name", note.getName()).iterator());
         parts.add(new StringDocumentTextNavigator("tags", note, "tags", String.join(" ", note.getTags())).iterator());
-        PangaeaNoteMimeType ct = service.normalizeContentType(note.getContentType());
-        List<? extends Iterator<DocumentTextPart<PangaeaNoteExt>>> i = service.getContentTypeService(ct)
-                .resolveTextNavigators(note, frame);
+        PangaeaNoteMimeType ct = app.normalizeContentType(note.getContentType());
+        List<? extends Iterator<DocumentTextPart<PangaeaNote>>> i = app.getContentTypeService(ct)
+                .resolveTextNavigators(note);
         parts.addAll(i);
-        List<DocumentTextPart<PangaeaNoteExt>> li = new ArrayList<>();
-        for (Iterator<DocumentTextPart<PangaeaNoteExt>> o : parts) {
+        List<DocumentTextPart<PangaeaNote>> li = new ArrayList<>();
+        for (Iterator<DocumentTextPart<PangaeaNote>> o : parts) {
             o.forEachRemaining(li::add);
         }
         return li.iterator();

@@ -21,7 +21,7 @@ public class RichHtmlToolBarHelper {
 
             AppComponent folder = editToolBar.children().addFolder(Path.of("Styles"));
 //            System.out.println(folder.smallIcon().getId());
-            folder.smallIcon().set(Str.i18n("/mainFrame/toolBar/RichHtml/Styles.icon"));
+            folder.icon().set(Str.i18n("/mainFrame/toolBar/RichHtml/Styles.icon"));
 //            folder.smallIcon().reEvalValue();
             folder.with(enableIfRichHtmlEditor);
             for (String tag : new String[]{"h1", "h2", "h3", "h5", "h6", "pre", "div", "p", "ol", "ul"}) {

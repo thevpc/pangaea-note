@@ -40,12 +40,12 @@ public class FileComponent extends HorizontalPane {
         openFile = new Button("OpenFile",()->onShowDialog(),app)
         .with(b->{
             openFile.text().set((Str) null);
-            openFile.smallIcon().set(Str.of("folder"));
+            openFile.icon().set(Str.of("folder"));
         });
         reloadFile = new Button("OpenFile",()->doReload(),app)
         .with(b->{
             openFile.text().set((Str) null);
-            openFile.smallIcon().set(Str.of("reload"));
+            openFile.icon().set(Str.of("reload"));
         });
         textField.onChange(x->{
             setContentString(x.newValue());

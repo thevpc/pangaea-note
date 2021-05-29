@@ -19,6 +19,7 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
     private String name;
     private String defaultValue;
     private PangaeaNoteFieldType type;
+    private String contentType;
     private List<String> values;
     private String pattern;
 
@@ -78,6 +79,15 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
         return this;
     }
 
+    public String getContentType() {
+        return contentType;
+    }
+
+    public PangaeaNoteFieldDescriptor setContentType(String contentType) {
+        this.contentType = contentType;
+        return this;
+    }
+
     public PangaeaNoteFieldDescriptor copy() {
         try {
             PangaeaNoteFieldDescriptor d = (PangaeaNoteFieldDescriptor) super.clone();
@@ -98,6 +108,7 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
         hash = 29 * hash + Objects.hashCode(this.type);
         hash = 29 * hash + Objects.hashCode(this.values);
         hash = 29 * hash + Objects.hashCode(this.pattern);
+        hash = 29 * hash + Objects.hashCode(this.contentType);
         return hash;
     }
 
@@ -120,6 +131,9 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
             return false;
         }
         if (!Objects.equals(this.pattern, other.pattern)) {
+            return false;
+        }
+        if (!Objects.equals(this.contentType, other.contentType)) {
             return false;
         }
         if (this.type != other.type) {

@@ -13,19 +13,16 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
  *
  * @author vpc
  */
-public class URLComponent extends HorizontalPane implements FormComponent {
-    private TextField textField;
+public class URLComponent extends TextField implements FormComponent {
     private Runnable callback;
 
     public URLComponent(PangaeaNoteFrame win) {
         super(win.app());
-        textField = new TextField(Str.empty(), win.app());
-        children().add(textField);
         ContextMenu p = new ContextMenu(app());
-        textField.contextMenu().set(p);
-        p.children().add(new Button("copy", () -> app().clipboard().putString(textField.text().get().value()), app()));
-        p.children().add(new Button("paste", () -> textField.text().set(Str.of(app().clipboard().getString())), app()));
-        textField.text().onChange(x -> textChanged());
+        contextMenu().set(p);
+        p.children().add(new Button("copy", () -> app().clipboard().putString(text().get().value()), app()));
+        p.children().add(new Button("paste", () -> text().set(Str.of(app().clipboard().getString())), app()));
+        text().onChange(x -> textChanged());
     }
 
     private void textChanged() {
@@ -35,7 +32,7 @@ public class URLComponent extends HorizontalPane implements FormComponent {
     }
 
     @Override
-    public void install(Application app) {
+    public void install(Application app, ContextMenu contextMenu) {
     }
 
     @Override
@@ -50,24 +47,20 @@ public class URLComponent extends HorizontalPane implements FormComponent {
 
     @Override
     public String getContentString() {
-        return textField.text().get().value();
+        return text().get().value();
     }
 
     @Override
     public void setContentString(String s) {
-        textField.text().set(Str.of(s));
-    }
-
-    public TextField getTextField() {
-        return textField;
+        text().set(Str.of(s));
     }
 
     public void setEditable(boolean b) {
-        textField.editable().set(b);
+        editable().set(b);
     }
 
     public boolean isEditable() {
-        return textField.editable().get();
+        return editable().get();
     }
 
 }

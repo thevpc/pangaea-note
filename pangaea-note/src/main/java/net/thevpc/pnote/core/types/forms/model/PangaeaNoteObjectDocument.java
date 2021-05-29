@@ -110,6 +110,16 @@ public class PangaeaNoteObjectDocument {
         }
     }
 
+    public void changeContentType(String fieldName, String contentType) {
+        PangaeaNoteFieldDescriptor theField = null;
+        if (descriptor != null) {
+            theField = descriptor.findField(fieldName);
+        }
+        if (theField != null) {
+            theField.setContentType(contentType);
+        }
+    }
+    
     public void changeType(String fieldName, PangaeaNoteFieldType newFieldType) {
         PangaeaNoteFieldDescriptor theField = null;
         if (descriptor != null) {
