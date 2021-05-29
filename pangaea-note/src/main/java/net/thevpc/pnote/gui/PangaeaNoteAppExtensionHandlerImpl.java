@@ -83,6 +83,7 @@ public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensi
                     fireStateChange(PangaeaNoteAppExtensionStatus.LOADING, PangaeaNoteAppExtensionStatus.ERROR);
                 }
             } catch (Exception ex) {
+                app.errors().add(ex);
                 extension = null;
                 error = ex;
                 state = PangaeaNoteAppExtensionStatus.ERROR;

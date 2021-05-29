@@ -32,7 +32,7 @@ public class PangaeaNoteTypesList extends BorderPane {
     private PangaeaNoteFrame frame;
     private ChoiceList<SimpleItem> list;
     private ScrollPane typeDescriptionContent;
-    private TextArea typeDescription;
+    private WebView typeDescription;
 
     public PangaeaNoteTypesList(PangaeaNoteFrame frame) {
         super(frame.app());
@@ -71,12 +71,7 @@ public class PangaeaNoteTypesList extends BorderPane {
             }
         });
         typeDescriptionContent = new ScrollPane(typeDescription
-                = new TextArea(Str.empty(),app())
-                .with((TextArea a)-> {
-                    a.textContentType().set("text/html");
-                    a.editable().set(false);
-                })
-        ).with(s->{
+                = new WebView(app())).with(s->{
             s.prefSize().set(new Dimension(300, 100));
             s.anchor().set(Anchor.CENTER);
         });

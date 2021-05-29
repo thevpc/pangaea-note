@@ -113,7 +113,10 @@ public class PangaeaNoteApp extends DefaultApplication {
         "application/x-shellscript;ext=sh,zsh,tsh",
         "text/markdown;group=simple-documents",
         "text/x-nuts-text-format;group=simple-documents;ext=ntf",
-        "application/x-hadra"
+        "application/x-hadra",
+        "application/x-bibtex;ext=bib",
+        "text/xml",
+//        "text/html",
     };
     public static final String SECURE_ALGO = PangaeaNoteObfuscatorDefault.ID;
     private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(PangaeaNoteApp.class.getName());
