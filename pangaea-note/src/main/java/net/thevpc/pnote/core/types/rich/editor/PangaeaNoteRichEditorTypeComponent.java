@@ -146,7 +146,7 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
     private void showSearchDialog() {
         SearchDialog dialog = new SearchDialog(frame);
         dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
-        dialog.setSearchText(textArea.textSelection().get());
+        dialog.setSearchTextElseClipboard(textArea.textSelection().get());
         SearchQuery query = dialog.showDialog();
         if (query != null) {
             StringQuerySearch<String> fi = new StringQuerySearch(query);

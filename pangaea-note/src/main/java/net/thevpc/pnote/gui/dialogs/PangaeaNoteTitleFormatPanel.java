@@ -10,7 +10,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.constraints.AllAnchors;
 import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.echo.constraints.Fill;
-import net.thevpc.echo.constraints.GrowContainer;
+import net.thevpc.echo.constraints.ContainerGrow;
 import net.thevpc.echo.constraints.ParentMargin;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
@@ -43,7 +43,7 @@ public class PangaeaNoteTitleFormatPanel extends GridPane {
                 new GridPane(4, app())
                         .with((GridPane v) -> {
                             v.parentConstraints().addAll(
-                                    GrowContainer.HORIZONTAL,
+                                    ContainerGrow.TOP_ROW,
                                     AllMargins.of(10, 5, 5, 5),
                                     ParentMargin.of(20, 0, 0, 0),
                                     AllAnchors.LEFT
@@ -58,7 +58,7 @@ public class PangaeaNoteTitleFormatPanel extends GridPane {
                 new GridPane(4, app())
                         .with((GridPane v) -> {
                             v.parentConstraints().addAll(
-                                    GrowContainer.HORIZONTAL,
+                                    ContainerGrow.TOP_ROW,
                                     AllMargins.of(10, 5, 5, 5),
                                     //                                    new ParentMargin(20, 0, 0, 0),
                                     AllAnchors.LEFT

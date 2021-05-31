@@ -35,7 +35,7 @@ public class PangaeaNoteListSettingsComponent extends GridPane implements EditTy
 
     public PangaeaNoteListSettingsComponent(PangaeaNoteFrame frame) {
         super(2, frame.app());
-        parentConstraints().addAll(AllMargins.of(3), AllFill.HORIZONTAL, AllGrow.HORIZONTAL, AllAnchors.LEFT, GrowContainer.HORIZONTAL);
+        parentConstraints().addAll(AllMargins.of(3), AllFill.HORIZONTAL, AllGrow.HORIZONTAL, AllAnchors.LEFT, ContainerGrow.TOP_ROW);
         this.frame = frame;
         layoutCombo = new RadioButtonGroup<SimpleItem>(SimpleItem.class, app());
         colsRowsLabel = new Label(Str.i18n("PangaeaNoteListSettingsComponent.colsLabel"), frame.app());

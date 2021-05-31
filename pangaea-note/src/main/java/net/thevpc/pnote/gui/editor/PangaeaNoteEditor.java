@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.thevpc.echo.Application;
-import net.thevpc.echo.BreadCrumb;
-import net.thevpc.echo.api.components.AppChoiceItemContext;
-import net.thevpc.echo.api.components.AppChoiceItemRenderer;
 import net.thevpc.pnote.gui.PangaeaNoteTypes;
 import net.thevpc.pnote.gui.PangaeaNoteAppExtensionHandler;
 import net.thevpc.pnote.api.PangaeaNoteExtEditorListener;
@@ -167,8 +164,10 @@ public class PangaeaNoteEditor extends BorderPane {
         } else {
             PangaeaNoteMimeType contentType = frame.app().normalizeContentType(note.getContentType());
             String editorType = frame.app().normalizeEditorType(contentType, note.getEditorType());
-            getEditor(editorType).setNote(note);
+            PangaeaNoteEditorTypeComponent editor = getEditor(editorType);
+            editor.setNote(note);
             showEditor(editorType);
+            editor.requestFocus();
         }
     }
 

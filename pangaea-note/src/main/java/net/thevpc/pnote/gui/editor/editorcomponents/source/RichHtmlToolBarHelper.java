@@ -87,7 +87,7 @@ public class RichHtmlToolBarHelper {
                                 if (t.textSelection().get().length() > 0) {
                                     t.runTextForegroundColor(c.value().get());
                                 } else {
-                                    t.textStyle().foregroundColor().set(c.value().get());
+                                    t.foregroundColor().set(c.value().get());
                                 }
                             }
                         });
@@ -103,7 +103,7 @@ public class RichHtmlToolBarHelper {
                                 if (t.textSelection().get().length() > 0) {
                                     t.runTextBackgroundColor(c.value().get());
                                 } else {
-                                    t.textStyle().backgroundColor().set(c.value().get());
+                                    t.backgroundColor().set(c.value().get());
                                 }
                             }
                         });

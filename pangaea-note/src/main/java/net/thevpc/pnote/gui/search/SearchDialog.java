@@ -101,7 +101,7 @@ public class SearchDialog {
         while (true) {
             install();
             this.ok = false;
-            new Alert(frame.app())
+            new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(titleId);
                         a.headerText().set(titleId);
@@ -144,6 +144,15 @@ public class SearchDialog {
         return null;
     }
 
+    public void setSearchTextElseClipboard(String selectedText) {
+        if(selectedText==null || selectedText.length()==0){
+            String s = frame.app().clipboard().getString();
+            if(s!=null){
+                selectedText=s;
+            }
+        }
+        setSearchText(selectedText);
+    }
     public void setSearchText(String selectedText) {
         queryEditor.text().set(Str.of(selectedText));
         queryEditor.lastWasEdit().set(true);

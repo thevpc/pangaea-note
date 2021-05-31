@@ -64,7 +64,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
         this.objectTracker = objectTracker;
         this.parentDataItem = parent;
         this.frame = frame;
-        parentConstraints().addAll(GrowContainer.HORIZONTAL, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL, AllAnchors.LEFT);
+        parentConstraints().addAll(ContainerGrow.TOP_ROW, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL, AllAnchors.LEFT);
     }
 
     public PangaeaNoteObject getObject() {

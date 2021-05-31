@@ -83,7 +83,7 @@ class PangaeaNoteListEditorItem extends BorderPane {
         _contextMenu.children().add(new Button("moveFirstInObjectList", () -> parent.onMoveFirstAt(pos), app));
         _contextMenu.children().add(new Button("moveLastInObjectList", () -> parent.onMoveLastAt(pos), app));
         _contextMenu.children().addSeparator();
-        _contextMenu.children().add(new Button("removeInObjectList", () -> parent.onRemoveObjectAt(pos), app));
+        _contextMenu.children().add(new Button("removeNote", () -> parent.onRemoveObjectAt(pos), app));
 
         this.contextMenu().set(_contextMenu);
         icon.contextMenu().set(_contextMenu);
@@ -108,7 +108,7 @@ class PangaeaNoteListEditorItem extends BorderPane {
         }
 
         String iconName = ((PangaeaNoteApp)app()).getNoteIcon(value);
-        AppImage image = app().iconSets().icon(iconName,iconSet().get());
+        AppImage image = app().iconSets().icon(iconName,this);
         icon.image().set(image);
 
         checkBox.text().set(Str.empty());

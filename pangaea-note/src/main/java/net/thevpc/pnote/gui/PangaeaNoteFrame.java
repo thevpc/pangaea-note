@@ -13,6 +13,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.*;
 import net.thevpc.echo.api.components.*;
 import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.iconset.IconConfig;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.echo.impl.controls.ExtraControls;
 import net.thevpc.echo.util.ClipboardHelper;
@@ -75,6 +76,10 @@ public class PangaeaNoteFrame extends Frame {
         this.iconSet().set(ic0 == null ? DEFAULT_ICONSET : ic0);
         String loc0 = app.config().getLocale();
         this.locale().set(loc0 == null ? Locale.getDefault() : new Locale(loc0));
+        int iconSize0 = app.config().getIconSize();
+        if(iconSize0>=8){
+            this.iconConfig().set(new IconConfig(iconSize0));
+        }
         this.iconSet().onChange(
                 () -> {
                     PangaeaNote d = getDocument();
@@ -84,6 +89,18 @@ public class PangaeaNoteFrame extends Frame {
                     config().setIconSet(this.iconSet().get());
                     saveConfig();
                     app().iconSets().id().set(this.iconSet().get());
+                }
+        );
+        this.iconConfig().onChange(
+                () -> {
+                    PangaeaNote d = getDocument();
+                    PangaeaNoteDocumentInfo info = app().getDocumentInfo(d);
+                    IconConfig c = this.iconConfig().get();
+                    info.setIconSize(c==null?16:c.getWidth());
+                    d.setContent(app().documentInfoToElement(info));
+                    config().setIconSize(info.getIconSize());
+                    saveConfig();
+                    app().iconSets().config().set(new IconConfig(info.getIconSize()));
                 }
         );
         this.locale().onChange(
@@ -141,10 +158,11 @@ public class PangaeaNoteFrame extends Frame {
         }
         String modPrefix = "";//mainFrame().get() ? "(!!) " : "";
         String modSuffix = modificationsCount > 0 ? " (*)" : "";
+        String pv=app().appContext().getAppVersion().toString();
         if (currentFilePath == null || currentFilePath.length() == 0) {
-            this.title().set(Str.of(modPrefix + "Pangaea-Note v1.2 : " + "<" + app().i18n().getString("Message.noName") + ">" + modSuffix));
+            this.title().set(Str.of(modPrefix + "Pangaea-Note v"+pv+" : " + "<" + app().i18n().getString("Message.noName") + ">" + modSuffix));
         } else {
-            this.title().set(Str.of(modPrefix + "Pangaea-Note v1.2 : " + currentFilePath + modSuffix));
+            this.title().set(Str.of(modPrefix + "Pangaea-Note v"+pv+" : " + currentFilePath + modSuffix));
         }
     }
 
@@ -215,6 +233,7 @@ public class PangaeaNoteFrame extends Frame {
 //        AppEditorThemes editorThemes = new AppEditorThemes();
         ticSplash();
         this.addDefaultMenus();
+        this.icon().unset();
         this.icon().set(new Image(
                 getClass().getResource("/net/thevpc/pnote/icon.png"), app()
         ));
@@ -235,9 +254,6 @@ public class PangaeaNoteFrame extends Frame {
         this.centerOnDefaultMonitor();
         ticSplash();
         onChangeTitle();
-        this.icon().set(
-                Image.of(getClass().getResource("/net/thevpc/pnote/icon.png"), app())
-        );
 
         DockPane ws = workspace();
         ticSplash();
@@ -247,12 +263,9 @@ public class PangaeaNoteFrame extends Frame {
 
         breadCrumb = new BreadCrumb<>(PangaeaNote.class, app());
         breadCrumb.anchor().set(Anchor.TOP);
-        breadCrumb.itemRenderer().set(new AppChoiceItemRenderer<PangaeaNote>() {
-            @Override
-            public void render(AppChoiceItemContext<PangaeaNote> context) {
-                context.setText(context.getValue().getName());
-                context.setIcon(Str.of(app().getNoteIcon(context.getValue())));
-            }
+        breadCrumb.itemRenderer().set(context -> {
+            context.setText(context.getValue().getName());
+            context.setIcon(Str.of(app().getNoteIcon(context.getValue())));
         });
         children().add(breadCrumb);
 
@@ -261,8 +274,8 @@ public class PangaeaNoteFrame extends Frame {
         tree.addNoteSelectionListener(n -> {
             try {
                 noteEditor.setNote(n);
+                noteEditor.requestFocus();
             } catch (Exception ex) {
-                ex.printStackTrace();
                 app().errors().add(ex);
             }
             if (n == null) {
@@ -285,7 +298,10 @@ public class PangaeaNoteFrame extends Frame {
 //            ));
         }
         ws.children().add(searchResultsTool);
-
+        searchResultsTool.active().set(false);
+        searchResultsTool.active().onChange(e->{
+            System.out.println("searchResultsTool active "+searchResultsTool.active().get());
+        });
         ticSplash();
         ws.children().add(new BorderPane(app())
                 .with((BorderPane p) -> {
@@ -405,7 +421,7 @@ public class PangaeaNoteFrame extends Frame {
                 pathOf("/menuBar/Edit/Search"), pathOf("/toolBar/Default/*"));
 
         app().components().addFolder(pathOf("/menuBar/Help"));
-        app().components().add(new Button("About", () -> app().showAbout(), app()),
+        app().components().add(new Button("About", () -> showAbout(), app()),
                 pathOf("/menuBar/Help/*"));
 
         app().components().add(new Spacer(app()).expandX(), pathOf("/toolBar/Default/*"));
@@ -595,7 +611,7 @@ public class PangaeaNoteFrame extends Frame {
             public boolean reTypePasswordOnError() {
                 app().getOpenWallet().clear();
                 return "yes".equals(
-                        new Alert(app())
+                        new Alert(PangaeaNoteFrame.this)
                                 .with((Alert a) -> {
                                     a.title().set(Str.i18n("Message.invalidPassword.askRetype"));
                                     a.headerText().set(Str.i18n("Message.invalidPassword.askRetype"));
@@ -660,7 +676,7 @@ public class PangaeaNoteFrame extends Frame {
 
     public ReturnType trySaveChangesOrDiscard() {
         if (isModifiedDocument()) {
-            String s = new Alert(app())
+            String s = new Alert(this)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.askSaveDocument"));
                         a.headerText().set(Str.i18n("Message.askSaveDocument"));
@@ -863,7 +879,7 @@ public class PangaeaNoteFrame extends Frame {
 
     public ReturnType saveAsDocument() {
         boolean doSecureDocument;
-        switch (new Alert(app())
+        switch (new Alert(this)
                 .with((Alert t) -> {
                     t.title().set(Str.i18n("Message.askSecureSaveTitle"));
                     t.headerText().set(Str.i18n("Message.askSecureSaveHeader"));
@@ -943,7 +959,7 @@ public class PangaeaNoteFrame extends Frame {
         if (se != null) {
             searchText = se.getSelectedText();
         }
-        dialog.setSearchText(searchText);
+        dialog.setSearchTextElseClipboard(searchText);
         if (app().getParent(n) == null) {
 
             dialog.setTitle(Str.i18n("Message.search.searchEverywhere"));
@@ -1000,7 +1016,7 @@ public class PangaeaNoteFrame extends Frame {
     public void renameNote() {
         PangaeaNote vn = getSelectedNote();
         if (vn != null) {
-            AppDialogResult r = new Alert(app()).withOkCancelButtons()
+            AppDialogResult r = new Alert(this).withOkCancelButtons()
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.renameNote"));
                         a.headerText().set(Str.i18n("Message.renameNote"));
@@ -1011,6 +1027,7 @@ public class PangaeaNoteFrame extends Frame {
             if (!r.isBlankValue() && r.isButton("ok")) {
                 PangaeaNote a = vn.setName(r.<String>value());
                 app().updateNoteProperties(vn, a, this);
+                app().treeNodeOf(a).fireContentUpdated();
                 onDocumentChanged();
 //                tree.invalidate();
 //                tree.repaint();
@@ -1085,7 +1102,7 @@ public class PangaeaNoteFrame extends Frame {
         AppTreeNode<PangaeaNote> n = treePane().tree().selection().get();
         if (n != null) {
             if (n != treePane().tree().root().get()) {
-                String s = new Alert(app())
+                String s = new Alert(this)
                         .with((Alert a) -> {
                             a.title().set(Str.i18n("Message.warning"));
                             a.headerText().set(Str.i18n("Message.warning"));
@@ -1217,6 +1234,19 @@ public class PangaeaNoteFrame extends Frame {
 
     public I18n i18n() {
         return app().i18n();
+    }
+
+    public void showAbout() {
+        Alert alert = new Alert(this)
+                .with(a -> {
+                    a.headerIcon().set(new Image(getClass().getResource("/net/thevpc/pnote/icon.png"), app()));
+                    a.withOkOnlyButton();
+                    a.title().set(Str.i18n("About.title"));
+                    a.headerText().set(Str.i18n("About.header"));
+                    a.setContent(new PangaeaAboutPane(app()));
+                    a.prefSize().set(new Dimension(500, 400));
+                });
+        alert.showDialog(null);
     }
 
 }

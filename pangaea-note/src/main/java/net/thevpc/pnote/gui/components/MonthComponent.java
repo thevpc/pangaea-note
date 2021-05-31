@@ -34,57 +34,56 @@ public class MonthComponent extends ComboBox<String> implements FormComponent {
                     v = "";
                 }
                 switch (v) {
-                    case "": {
-                        context.setText("<no-selection>");
-                        break;
-                    }
                     case "1": {
-                        context.setText("january");
+                        context.setText(app().i18n().getString("Month.january"));
                         break;
                     }
                     case "2": {
-                        context.setText("february");
+                        context.setText(app().i18n().getString("Month.february"));
                         break;
                     }
                     case "3": {
-                        context.setText("march");
+                        context.setText(app().i18n().getString("Month.march"));
                         break;
                     }
                     case "4": {
-                        context.setText("april");
+                        context.setText(app().i18n().getString("Month.april"));
                         break;
                     }
                     case "5": {
-                        context.setText("may");
+                        context.setText(app().i18n().getString("Month.may"));
                         break;
                     }
                     case "6": {
-                        context.setText("june");
+                        context.setText(app().i18n().getString("Month.june"));
                         break;
                     }
                     case "7": {
-                        context.setText("july");
+                        context.setText(app().i18n().getString("Month.july"));
                         break;
                     }
                     case "8": {
-                        context.setText("august");
+                        context.setText(app().i18n().getString("Month.august"));
                         break;
                     }
                     case "9": {
-                        context.setText("september");
+                        context.setText(app().i18n().getString("Month.september"));
                         break;
                     }
                     case "10": {
-                        context.setText("october");
+                        context.setText(app().i18n().getString("Month.october"));
                         break;
                     }
                     case "11": {
-                        context.setText("november");
+                        context.setText(app().i18n().getString("Month.november"));
                         break;
                     }
                     case "12": {
-                        context.setText("november");
+                        context.setText(app().i18n().getString("Month.december"));
                         break;
+                    }
+                    default:{
+                        context.setText(app().i18n().getString("Month.undefined"));
                     }
                 }
                 context.renderDefault();

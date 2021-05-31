@@ -31,52 +31,58 @@ public class PangaeaAboutPane extends TabPane {
                                     t.parentConstraints().addAll(AllMargins.of(2),
                                             AllFill.HORIZONTAL, AllAnchors.LEFT,
                                             AllGrow.NONE,
-                                            GrowContainer.BOTH);
+                                            ContainerGrow.ALL);
                                     t.children().addAll(
-                                            new Label(Str.of("architecture"),app),
+                                            new Label(Str.i18n("About.panganeaNoteVersionLabel"),app),
+                                            new TextField(Str.of(app.appContext().getAppVersion().toString()),app)
+                                                .with(tt-> {
+                                                    tt.childConstraints().add(Grow.HORIZONTAL);
+                                                    tt.editable().set(false);
+                                                }),
+                                            new Label(Str.i18n("About.architecture"),app),
                                             new TextField(Str.of(app.getNutsWorkspace().env().getArch().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
                                                 }),
-                                            new Label(Str.of("os"),app),
+                                            new Label(Str.i18n("About.os"),app),
                                             new TextField(Str.of(app.getNutsWorkspace().env().getOs().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
-                                            new Label(Str.of("os distribution"),app),
+                                            new Label(Str.i18n("About.osDistribution"),app),
                                             new TextField(Str.of(app.getNutsWorkspace().env().getOsDist().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
-                                            new Label(Str.of("platform"),app),
+                                            new Label(Str.i18n("About.platform"),app),
                                             new TextField(Str.of(app.getNutsWorkspace().env().getPlatform().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
-                                            new Label(Str.of("nuts api version"),app),
+                                            new Label(Str.i18n("About.nutsApiVersion"),app),
                                             new TextField(Str.of(app.getNutsWorkspace().getApiVersion().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
-                                            new Label(Str.of("nuts implementation"),app),
+                                            new Label(Str.i18n("About.nutsImplementation"),app),
                                             new TextField(Str.of(app.getNutsWorkspace().getRuntimeId().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
-                                            new Label(Str.of("Pangaea Note config file"),app),
-                                            new TextField(Str.of(app.getConfigFilePath().toString()),app)
+                                            new Label(Str.i18n("About.renderingTToolkit"),app),
+                                            new TextField(Str.of(app.toolkit().id().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
-                                            new Label(Str.of("Rendering Toolkit"),app),
-                                            new TextField(Str.of(app.toolkit().id().toString()),app)
+                                            new Label(Str.i18n("About.pangaeaNoteConfigFile"),app),
+                                            new TextField(Str.of(app.getConfigFilePath().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);

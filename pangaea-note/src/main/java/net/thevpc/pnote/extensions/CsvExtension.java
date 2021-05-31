@@ -126,6 +126,12 @@ public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExte
             } else {
                 char c = (char) i;
                 switch (c) {
+                    case '\r':
+                    case '\n':{
+                        line.reset();
+                        inLoop=false;
+                        break;
+                    }
                     case ',':
                     case '\t':
                     case ';': {

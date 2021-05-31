@@ -140,7 +140,7 @@ public class EditNoteDialog {
         while (true) {
             install();
             this.ok = false;
-            new Alert(frame.app())
+            new Alert(frame)
                             .with((Alert a)->{
                                 a.title().set(Str.i18n("Message.editNote"));
                                 a.headerText().set(Str.i18n("Message.editNote"));

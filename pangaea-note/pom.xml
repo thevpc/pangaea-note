@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.pnote</groupId>
     <artifactId>pnote</artifactId>
-    <version>0.8.1.0</version><!--published NONE-->
+    <version>0.8.1.1</version><!--published NONE-->
     <packaging>jar</packaging>
     <name>net.thevpc.pnote.pnote</name>
     <description>Pangaea Note Taking Application</description>
@@ -61,11 +61,11 @@
         </repository>
     </distributionManagement>
     <dependencies>
-        <dependency>
-            <groupId>temp</groupId>
-            <artifactId>swing-explorer</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>temp</groupId>-->
+<!--            <artifactId>swing-explorer</artifactId>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>net.sourceforge.tess4j</groupId>
@@ -87,33 +87,33 @@
         <dependency>
             <groupId>net.thevpc.diagram4j</groupId>
             <artifactId>diagram4j</artifactId>
-            <version>0.1</version>
+            <version>0.1.1</version>
         </dependency>
         <dependency>
             <groupId>net.thevpc.more.iconsets</groupId>
             <artifactId>iconset-feather</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>net.thevpc.more.iconsets</groupId>
             <artifactId>iconset-svgrepo-color</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.thevpc.echo</groupId>
+            <artifactId>echo-api</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>net.thevpc.echo</groupId>
             <artifactId>echo-swing</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>net.thevpc.echo</groupId>
-            <artifactId>echo-jfx</artifactId>
-            <version>1.0.0</version>
-        </dependency>
 <!--        <dependency>-->
-<!--            <groupId>org.jopendocument</groupId>-->
-<!--            <artifactId>jOpenDocument</artifactId>-->
-<!--            <version>1.3</version>-->
+<!--            <groupId>net.thevpc.echo</groupId>-->
+<!--            <artifactId>echo-jfx</artifactId>-->
+<!--            <version>1.1.0</version>-->
 <!--        </dependency>-->
         <dependency>
             <groupId>org.jodconverter</groupId>

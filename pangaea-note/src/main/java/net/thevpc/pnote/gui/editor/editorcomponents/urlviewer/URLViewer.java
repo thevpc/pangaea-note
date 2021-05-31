@@ -167,7 +167,7 @@ public class URLViewer extends BorderPane {
 
         public Header(URLViewer parent, PangaeaNoteFrame win) {
             super(win.app());
-            parentConstraints().addAll(AllMargins.of(3), AllFill.NONE, AllAnchors.LEFT, AllGrow.NONE, GrowContainer.HORIZONTAL);
+            parentConstraints().addAll(AllMargins.of(3), AllFill.NONE, AllAnchors.LEFT, AllGrow.NONE, ContainerGrow.TOP_ROW);
             this.parent = parent;
             PangaeaNoteApp app = win.app();
             this.textField = new TextField(app)

@@ -57,7 +57,7 @@ public class PangaeaNoteTypesList extends BorderPane {
 
         availableTypes.addAll(createTypeListNamedValue());
         list = new ChoiceList<>(SimpleItem.class, frame.app());
-        list.disabledPredicate().set(SimpleItem::isGroup);
+        list.selection().disablePredicate().set(SimpleItem::isGroup);
         list.values().addAll(availableTypes.toArray(new SimpleItem[0]));
         list.selection().multipleSelection().set(false);
         list.selection().onChange(event -> {
@@ -78,7 +78,6 @@ public class PangaeaNoteTypesList extends BorderPane {
 
         ScrollPane listWithScroll = new ScrollPane(list)
                 .with((ScrollPane s) -> s.anchor().set(Anchor.LEFT));
-        parentConstraints().addAll(GrowContainer.BOTH);
         children().addAll(
                 listWithScroll,
                 typeDescriptionContent

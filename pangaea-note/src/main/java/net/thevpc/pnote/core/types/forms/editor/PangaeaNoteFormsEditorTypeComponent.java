@@ -270,7 +270,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
                 }
             }, frame.app());
             this.frame = frame;
-            container().get().parentConstraints().addAll(Layout.GRID, ColumnCount.of(1), GrowContainer.HORIZONTAL, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL);
+            container().get().parentConstraints().addAll(Layout.GRID, ColumnCount.of(1), ContainerGrow.TOP_ROW, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL);
         }
 
         private void onAddObject() {
@@ -299,7 +299,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
 
         private void onRemoveAllObjects() {
             if (dynamicDocument != null) {
-                String s = new Alert(frame.app())
+                String s = new Alert(frame)
                         .with((Alert a) -> {
                             a.title().set(Str.i18n("Message.warning"));
                             a.headerText().set(Str.i18n("Message.warning"));
@@ -321,7 +321,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
         private void onRemoveObjectAt(int index) {
             if (dynamicDocument != null) {
                 if (dynamicDocument.getValues() != null) {
-                    String s = new Alert(frame.app())
+                    String s = new Alert(frame)
                             .with((Alert a) -> {
                                 a.title().set(Str.i18n("Message.warning"));
                                 a.headerText().set(Str.i18n("Message.warning"));

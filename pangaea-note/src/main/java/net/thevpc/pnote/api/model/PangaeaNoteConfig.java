@@ -23,7 +23,7 @@ public class PangaeaNoteConfig {
     private Boolean displayStatusBar;
     private FrameDisplayMode displayMode;
     private String iconSet;
-    private int iconSetSize;
+    private int iconSize;
     private List<String> recentFiles = new ArrayList<>();
     private List<String> recentContentTypes = new ArrayList<>();
 
@@ -117,12 +117,12 @@ public class PangaeaNoteConfig {
         this.recentContentTypes = recentContentTypes;
     }
 
-    public int getIconSetSize() {
-        return iconSetSize;
+    public int getIconSize() {
+        return iconSize;
     }
 
-    public void setIconSetSize(int iconSetSize) {
-        this.iconSetSize = iconSetSize;
+    public void setIconSize(int iconSize) {
+        this.iconSize = iconSize;
     }
     
 }

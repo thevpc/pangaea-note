@@ -343,7 +343,7 @@ class PangaeaNoteFieldDescriptorPanel {
                 }
                 oldValue = (String.join("\n", all));
             }
-            AppDialogResult s = new Alert(frame.app())
+            AppDialogResult s = new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.changeFieldValues"));
                         a.headerText().set(Str.i18n("Message.changeFieldValues"));
@@ -362,7 +362,7 @@ class PangaeaNoteFieldDescriptorPanel {
 
     public void onDescriptorRename() {
         if (document != null) {
-            AppDialogResult r = new Alert(frame.app())
+            AppDialogResult r = new Alert(frame)
                     .withOkCancelButtons()
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.renameField.title"));
@@ -400,7 +400,7 @@ class PangaeaNoteFieldDescriptorPanel {
 
     public void onRemoveField() {
         if (document != null) {
-            if (new Alert(frame.app())
+            if (new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.warning"));
                         a.headerText().set(Str.i18n("Message.warning"));
@@ -417,7 +417,7 @@ class PangaeaNoteFieldDescriptorPanel {
 
     public void onAddField() {
         if (document != null) {
-            AppDialogResult r = new Alert(frame.app())
+            AppDialogResult r = new Alert(frame)
                     .withOkCancelButtons()
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.addField"));

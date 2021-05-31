@@ -67,7 +67,7 @@ public class PangaeaNoteMain extends NutsApplication {
         if (!console && !gui && !cui) {
             console = true;
         }
-        gui = true;//foce for now
+        gui = true;//force for now
         PangaeaSplashScreen.get().tic();
         if (cui || gui) {
             runGui(appContext);

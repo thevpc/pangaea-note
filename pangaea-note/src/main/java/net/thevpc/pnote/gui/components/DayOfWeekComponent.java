@@ -35,35 +35,35 @@ public class DayOfWeekComponent extends ComboBox<String> implements FormComponen
                 }
                 switch (v) {
                     case "1": {
-                        context.setText("sunday");
+                        context.setText(app().i18n().getString("DayOfWeek.sunday"));
                         break;
                     }
                     case "2": {
-                        context.setText("monday");
+                        context.setText(app().i18n().getString("DayOfWeek.monday"));
                         break;
                     }
                     case "3": {
-                        context.setText("tuesday");
+                        context.setText(app().i18n().getString("DayOfWeek.tuesday"));
                         break;
                     }
                     case "4": {
-                        context.setText("wednesday");
+                        context.setText(app().i18n().getString("DayOfWeek.wednesday"));
                         break;
                     }
                     case "5": {
-                        context.setText("thursday");
+                        context.setText(app().i18n().getString("DayOfWeek.thursday"));
                         break;
                     }
                     case "6": {
-                        context.setText("friday");
+                        context.setText(app().i18n().getString("DayOfWeek.friday"));
                         break;
                     }
                     case "7": {
-                        context.setText("saturday");
+                        context.setText(app().i18n().getString("DayOfWeek.saturday"));
                         break;
                     }
                     default:{
-                        context.setText("<no-selection>");
+                        context.setText(app().i18n().getString("DayOfWeek.undefined"));
                     }
                 }
                 context.renderDefault();

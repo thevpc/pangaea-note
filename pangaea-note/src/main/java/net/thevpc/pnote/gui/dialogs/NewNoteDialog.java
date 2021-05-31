@@ -8,10 +8,7 @@ package net.thevpc.pnote.gui.dialogs;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppEventType;
-import net.thevpc.echo.constraints.AllFill;
-import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.echo.constraints.Fill;
-import net.thevpc.echo.constraints.Grow;
+import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
@@ -41,7 +38,7 @@ public class NewNoteDialog {
         this.frame = frame;
         panel = new GridPane(1, frame.app())
                 .with(p -> {
-                    p.parentConstraints().addAll(AllMargins.of(5), AllFill.HORIZONTAL);
+                    p.parentConstraints().addAll(AllMargins.of(5), AllFill.HORIZONTAL, AllGrow.HORIZONTAL, ContainerGrow.ALL);
                     p.children().addAll(
                             new Label(Str.i18n("Message.name"), frame.app()),
                             nameText = new TextField(Str.empty(), frame.app())
@@ -74,7 +71,8 @@ public class NewNoteDialog {
                                     })
                     );
                 });
-
+        Applications.copyResources(frame,panel);
+        System.out.println(typeList.list().iconConfig().get());
 //        onNoteTypeChange(null);
 //        onNoteTypeChange(typeList.getSelectedContentTypeId());
     }
@@ -133,7 +131,7 @@ public class NewNoteDialog {
         while (true) {
             install();
             this.ok = false;
-            new Alert(frame.app())
+            new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.addNewNote"));
                         a.headerText().set(Str.i18n("Message.addNewNote"));

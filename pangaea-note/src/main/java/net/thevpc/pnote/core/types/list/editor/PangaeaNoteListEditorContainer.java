@@ -83,7 +83,7 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
 
     public void onRemoveObjectAt(int pos) {
         if (currentNote != null) {
-            String s = new Alert(frame.app())
+            String s = new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.warning"));
                         a.headerText().set(Str.i18n("Message.warning"));

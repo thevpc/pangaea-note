@@ -142,13 +142,13 @@ public class OtherUtils {
         }
         b = Color.of(n.getTitleForeground(), app);
         if (b != null) {
-            textStyle.foregroundColor().set(b);
+            textControl.foregroundColor().set(b);
         }
         //do not apply to CheckBox or radio Button!
         textControl.text().set(Str.of((n.getName())));
         if (!(textControl instanceof AppToggleControl)) {
             String iconName = app.getNoteIcon(n);
-            AppImage icon = app.iconSets().icon(iconName,textControl.iconSet().get());
+            AppImage icon = app.iconSets().icon(iconName,textControl);
             textControl.icon().set(icon);
         }
     }

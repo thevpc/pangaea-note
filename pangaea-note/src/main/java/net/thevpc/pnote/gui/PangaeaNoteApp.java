@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -116,6 +117,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         "application/x-hadra",
         "application/x-bibtex;ext=bib",
         "text/xml",
+        "application/x-tex;application/x-latex;ext=tex,latex",
+        "application/sql;ext=sql",
 //        "text/html",
     };
     public static final String SECURE_ALGO = PangaeaNoteObfuscatorDefault.ID;
@@ -309,6 +312,8 @@ public class PangaeaNoteApp extends DefaultApplication {
             "content-type.application/zip",
             "content-type.text/plain",
             "content-type.application/x-java",
+            "content-type.application/x-tex",
+            "content-type.application/sql",
             "content-type.application/octet-stream",
             "content-type.application/x-pangaea-note-forms",
             "content-type.application/x-pangaea-note-list"
@@ -318,6 +323,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     private Map<PangaeaNoteMimeType, PangaeaNoteTypeService> typeServices = new LinkedHashMap<>();
     private List<PangaeaNoteFileImporter> fileImporters = new ArrayList<>();
     private PangaeaNoteConfig config;
+    private int maxRecentContentTypes=4;
 
     public PangaeaNoteApp(NutsApplicationContext appContext) {
         super("swing");
@@ -361,6 +367,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         w.mainFrame().set(main);
         if (main) {
             app().mainFrame().set(w);
+        }else{
+            app().components().add(w,id);
         }
         windows.add(w);
         w.app().state().onChange(event -> {
@@ -393,41 +401,6 @@ public class PangaeaNoteApp extends DefaultApplication {
 //        quit0();
     }
 
-    public void showAbout() {
-        Alert alert = new Alert(this)
-                .with(a -> {
-                    a.headerIcon().set(new Image(getClass().getResource("/net/thevpc/pnote/icon.png"), app()));
-                    a.withOkOnlyButton();
-                    a.title().set(Str.i18n("About.title"));
-                    a.headerText().set(Str.i18n("About.header"));
-                    a.setContent(new PangaeaAboutPane(this));
-                    a.prefSize().set(new Dimension(500, 400));
-                });
-        alert.showDialog(null);
-
-//        JSplashScreen ss = new JSplashScreen(new ImageIcon(PangaeaSplashScreen.class.getResource("/net/thevpc/pnote/splash-screen.png")), null);
-//        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, "https://github.com/thevpc/pangaea-note",
-//                Animators.linear(
-//                        AnimPoint.of(-100, 200),
-//                        AnimPoint.of(90, 200),
-//                        200
-//                )
-//        ));
-//        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, "version 1.0.0",
-//                Animators.linear(AnimPoint.of(-100, 220),
-//                        AnimPoint.of(165, 220), 200
-//                )
-//        ));
-////        ss.addMessage(new JSplashScreen.Message(JSplashScreen.Type.INFO, ""));
-//        ss.setTextHeightExact(16);
-//        ss.setTextYmax(300);
-//        ss.setShowProgress(false);
-//        ss.setTextY(220);
-//        ss.setHideOnClick(true);
-//        ss.setTimeout(30000);
-//        ss.animateText();
-//        ss.openSplash();
-    }
 
     public void run() {
         System.out.println("loading config: " + getConfigFilePath());
@@ -439,12 +412,27 @@ public class PangaeaNoteApp extends DefaultApplication {
         app().i18n().bundles().add("net.thevpc.pnote.messages.pnote-messages");
         app().i18n().bundles().add("net.thevpc.echo.app-locale-independent");
         app().i18n().bundles().add("net.thevpc.echo.app");
+        app().i18n().defaultValue().set(new Function<String, String>() {
+            @Override
+            public String apply(String t) {
+                if(t!=null){
+                    if(t.endsWith(".tooltip")){
+                        return null;
+                    }
+                    if(t.endsWith(".largeIcon")){
+                        return "";
+                    }
+                }
+                LOG.log(Level.FINEST, "I18n String not found: {0}", t);
+                return "NotFound(" + t + ")";
+            }
+        });
         app().iconSets().add(new NoIconSet("no-icon"));
         app().iconSets().add().name("svgrepo-color").path("/net/thevpc/pnote/iconsets/svgrepo-color").build();
         app().iconSets().add().name("feather-black").path("/net/thevpc/pnote/iconsets/feather").build();
         for (Object[] r : new Object[][]{
             {"white", Color.WHITE(app())},
-            {"white", Color.WHITE(app())},
+            {"black", Color.BLACK(app())},
             {"blue", new Color(22, 60, 90, app())},
             {"cyan", new Color(32, 99, 155, app())},
             {"green", new Color(60, 174, 163, app())},
@@ -707,7 +695,6 @@ public class PangaeaNoteApp extends DefaultApplication {
             }
         }
         recentContentTypes = new ArrayList<>(new LinkedHashSet<String>(recentContentTypes));
-        int maxRecentContentTypes = 12;
         while (recentContentTypes.size() > maxRecentContentTypes) {
             recentContentTypes.remove(recentContentTypes.size() - 1);
         }
@@ -857,6 +844,14 @@ public class PangaeaNoteApp extends DefaultApplication {
             c.setPlaf("FlatLight");
             return c;
         });
+        List<String> recentContentTypes = config.getRecentContentTypes();
+        if(recentContentTypes==null){
+            recentContentTypes=new ArrayList<>();
+            config.setRecentContentTypes(recentContentTypes);
+        }
+        while (recentContentTypes.size() > maxRecentContentTypes) {
+            recentContentTypes.remove(recentContentTypes.size() - 1);
+        }
     }
 
     public void saveConfig() {

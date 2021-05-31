@@ -63,7 +63,7 @@ public class DataPane<T> extends BorderPane {
                         AllGrow.HORIZONTAL,
                         AllMargins.of(3),
                         AllFill.HORIZONTAL,
-                        GrowContainer.HORIZONTAL
+                        ContainerGrow.TOP_ROW
                 );
                 container = p;
             } else if (newLayout instanceof Horizontal) {
@@ -71,12 +71,12 @@ public class DataPane<T> extends BorderPane {
                 if (rows == 1) {
                     HorizontalPane p = new HorizontalPane(app());
                     container = p;
-                    p.parentConstraints().addAll(AllMargins.of(3),GrowContainer.HORIZONTAL);
+                    p.parentConstraints().addAll(AllMargins.of(3), ContainerGrow.TOP_ROW);
                 } else {
                     HorizontalPane p = new HorizontalPane(app());
                     p.parentConstraints().add(new ColumnCount(rows));
                     container = p;
-                    p.parentConstraints().addAll(AllMargins.of(3),GrowContainer.NONE);
+                    p.parentConstraints().addAll(AllMargins.of(3), ContainerGrow.TOP_LEFT_CORNER);
                 }
             } else if (newLayout instanceof Tabs) {
                 container = new TabPane(app());

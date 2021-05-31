@@ -9,40 +9,107 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.Path;
 import net.thevpc.common.props.PropertyEvent;
 import net.thevpc.common.props.PropertyListener;
-import net.thevpc.echo.BorderPane;
-import net.thevpc.echo.Button;
-import net.thevpc.echo.ContextMenu;
+import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppMenu;
+import net.thevpc.echo.constraints.AllMargins;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.constraints.ContainerGrow;
+import net.thevpc.echo.constraints.Span;
+import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
+import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
- *
  * @author vpc
  */
-public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*GradientPanel*/ implements PangaeaNoteEditorTypeComponent {
+public class PangaeaNoteEmptyNoteEditorTypeComponent extends GridPane/*GradientPanel*/ implements PangaeaNoteEditorTypeComponent {
 
     private PangaeaNoteFrame frame;
 //    UpdateLocale updateLocale = new UpdateLocale();
 
     public PangaeaNoteEmptyNoteEditorTypeComponent(PangaeaNoteFrame frame) {
-        super(frame.app());
+        super(2,frame.app());
+        parentConstraints().addAll(ContainerGrow.CENTER, AllMargins.of(5,5,5,5));
+        Color colorShortcut = Color.of("darkcyan", app());
+        Color colorAction = Color.of("gray", app());
+        String pv=frame.app().appContext().getAppVersion().toString();
+        Font fontTitle=new Font("Arial",22,FontWeight.BOLD, FontPosture.REGULAR, app());
+        Font fontAction=new Font("Arial",13,FontWeight.BOLD, FontPosture.REGULAR, app());
+        Font fontShortcut=new Font("Courrier",11,FontWeight.BOLD, FontPosture.REGULAR, app());
+        children().addAll(
+                new Label(Str.of("Pangaea Note v"+pv), app())
+                        .with((Label l) -> {
+//                            l.font().set(l.font().get().derive(l.font().get().size()*1.3));
+                            l.textStyle().font().set(fontTitle);
+                            l.anchor().set(Anchor.CENTER);
+                            l.childConstraints().addAll(Span.col(2));
+//                            l.peer();//
+                        }),
+                new Label(Str.i18n("Action.NewFile"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontAction);
+                            l.foregroundColor().set(colorAction);
+                        }),
+                new Label(Str.of("CTRL+N"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontShortcut);
+                            l.foregroundColor().set(colorShortcut);
+                        }),
+                new Label(Str.i18n("Action.OpenFile"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontAction);
+                            l.foregroundColor().set(colorAction);
+                        }),
+                new Label(Str.of("CTRL+O"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontShortcut);
+                            l.foregroundColor().set(colorShortcut);
+                        }),
+                new Label(Str.i18n("Action.AddNote"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontAction);
+                            l.foregroundColor().set(colorAction);
+                        }),
+                new Label(Str.of("CTRL+B"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontShortcut);
+                            l.foregroundColor().set(colorShortcut);
+                        }),
+                new Label(Str.i18n("Action.SearchNote"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontAction);
+                            l.foregroundColor().set(colorAction);
+                        }),
+                new Label(Str.of("CTRL+SHIFT+F"), app())
+                        .with((Label l) -> {
+                            l.anchor().set(Anchor.LEFT);
+                            l.textStyle().font().set(fontShortcut);
+                            l.foregroundColor().set(colorShortcut);
+                        })
+                );
         this.frame = frame;
         PangaeaNoteApp app = frame.app();
 //        app.i18n().locale().onChange(updateLocale);
 
         ContextMenu treePopupMenu = new ContextMenu(app);
         contextMenu().set(treePopupMenu);
+        treePopupMenu.children().add(new Button("AddChildNote", () -> frame.addNote(), app));
+        treePopupMenu.children().addSeparator();
+
         AppMenu importMenu = (AppMenu) treePopupMenu.children().addFolder(Path.of("Import"));
         importMenu.text().set(Str.i18n("Import"));
         importMenu.icon().unset();
 
-        treePopupMenu.children().add(new Button("AddChildNote", () -> frame.addNote(), app));
-        treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("Import.Any", () -> frame.importFileInto(), app), Path.of("/Import/*"));
         treePopupMenu.children().add(new Button("Import.PangaeaNote", ()
                 -> frame.importFileInto(PangaeaNoteEmbeddedService.PANGAEA_NOTE_DOCUMENT.toString()),
@@ -58,7 +125,10 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*Gradien
 
     }
 
-//    @Override
+    @Override
+    public void uninstall() {
+//        frame.app().i18n().locale().events().remove(updateLocale);
+    }    //    @Override
 //    public void paintComponent(Graphics g) {
 //        super.paintComponent(g);
 //
@@ -131,22 +201,7 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*Gradien
     }
 
     @Override
-    public void uninstall() {
-//        frame.app().i18n().locale().events().remove(updateLocale);
-    }
-
-    @Override
     public void setNote(PangaeaNote note) {
-    }
-
-    @Override
-    public void setEditable(boolean b) {
-
-    }
-
-    @Override
-    public boolean isEditable() {
-        return false;
     }
 
     private class UpdateLocale implements PropertyListener {
@@ -159,5 +214,17 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends BorderPane/*Gradien
             //repaint();
         }
     }
+
+    @Override
+    public void setEditable(boolean b) {
+
+    }
+
+    @Override
+    public boolean isEditable() {
+        return false;
+    }
+
+
 
 }

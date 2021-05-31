@@ -21,7 +21,7 @@ public class EmptyEditTypeComponent extends BorderPane implements EditTypeCompon
 
     public EmptyEditTypeComponent(Application application) {
         super(application);
-        Label options = new Label(Str.of("No Options available"), application);
+        Label options = new Label(Str.i18n("Message.NoOptions"), application);
         options.enabled().set(false);
         children().add(options);
     }

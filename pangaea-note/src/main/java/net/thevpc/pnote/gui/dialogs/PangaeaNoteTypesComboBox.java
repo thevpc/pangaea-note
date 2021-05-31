@@ -49,7 +49,7 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
         }
 
         availableTypes.addAll(createTypeListNamedValue());
-        this.disabledPredicate().set(SimpleItem::isGroup);
+        this.selection().disablePredicate().set(SimpleItem::isGroup);
         this.values().addAll(availableTypes.toArray(new SimpleItem[0]));
         this.selection().multipleSelection().set(false);
     }

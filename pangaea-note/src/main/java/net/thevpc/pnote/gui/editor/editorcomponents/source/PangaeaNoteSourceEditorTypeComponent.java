@@ -113,7 +113,7 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
     public void showSearchDialog() {
         SearchDialog dialog = new SearchDialog(frame);
         dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
-        dialog.setSearchText(textArea.text().get().value());
+        dialog.setSearchTextElseClipboard(textArea.text().get().value());
         SearchQuery query = dialog.showDialog();
         if (query != null) {
             StringQuerySearch<String> fi = new StringQuerySearch(query);

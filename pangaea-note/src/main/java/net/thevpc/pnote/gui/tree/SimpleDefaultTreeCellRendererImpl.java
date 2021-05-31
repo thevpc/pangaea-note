@@ -114,7 +114,7 @@ class SimpleDefaultTreeCellRendererImpl implements AppTreeItemRenderer<PangaeaNo
             PangaeaNote n = (PangaeaNote) value;
             String iconName = frame.app().getNoteIcon(n, context.isExpanded());
             AppTree<PangaeaNote> tree = context.getTree();
-            AppImage icon = app.iconSets().icon(iconName,tree.iconSet().get());
+            AppImage icon = app.iconSets().icon(iconName,tree);
             context.setIcon(icon);
         } else {
             context.setIcon(resolveIcon("file",context));
@@ -125,7 +125,7 @@ class SimpleDefaultTreeCellRendererImpl implements AppTreeItemRenderer<PangaeaNo
         if (name == null || name.length() == 0) {
             return null;
         }
-        return app.iconSets().icon(name,context.getTree().iconSet().get());
+        return app.iconSets().icon(name,context.getTree());
     }
 
 }

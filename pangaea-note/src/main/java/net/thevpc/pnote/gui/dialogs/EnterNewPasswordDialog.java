@@ -14,7 +14,7 @@ import net.thevpc.pnote.service.security.PasswordHandler;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllGrow;
 import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.echo.constraints.GrowContainer;
+import net.thevpc.echo.constraints.ContainerGrow;
 
 /**
  * @author vpc
@@ -40,7 +40,7 @@ public class EnterNewPasswordDialog{
 
         panel=new GridPane(1,frame.app())
                 .with(p->{
-                    p.parentConstraints().addAll(AllMargins.of(3),AllFill.HORIZONTAL,GrowContainer.HORIZONTAL,AllGrow.HORIZONTAL);
+                    p.parentConstraints().addAll(AllMargins.of(3),AllFill.HORIZONTAL, ContainerGrow.TOP_ROW,AllGrow.HORIZONTAL);
                     p.children().addAll(
                             new net.thevpc.echo.Label(Str.i18n("Message.enter-password"),frame.app()),
                             passwordComponent1,
@@ -84,7 +84,7 @@ public class EnterNewPasswordDialog{
         while (true) {
             install();
             this.ok = false;
-            new Alert(frame.app())
+            new Alert(frame)
                             .with((Alert a)->{
                                 a.title().set(Str.i18n("Message.passwordTitle"));
                                 a.headerText().set(Str.i18n("Message.passwordHeader"));

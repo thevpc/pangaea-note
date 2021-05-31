@@ -9,7 +9,7 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.AppImage;
 import net.thevpc.echo.constraints.Layout;
-import net.thevpc.echo.iconset.IconSetConfig;
+import net.thevpc.echo.iconset.IconConfig;
 import net.thevpc.echo.iconset.IconSets;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
@@ -81,10 +81,11 @@ public class PangaeaNoteIconsList extends BorderPane {
 
     public AppImage getIcon(String icon) {
         IconSets iconSets = frame.app().iconSets();
-        IconSetConfig c = iconSets.config().get();
-        return ((icon == null || icon.length() == 0) ? new Image(c.getWidth(), c.getHeight(), null, app())
-                : iconSets.icon(icon,iconSet().get()) == null ? null :
-                iconSets.icon(icon,iconSet().get())
+        IconConfig c = iconSets.config().get();
+        return ((icon == null || icon.length() == 0) ?
+                new Image(c.getWidth(), c.getHeight(), null, app())
+                : iconSets.icon(icon,this) == null ? null :
+                iconSets.icon(icon,this)
         );
     }
 
