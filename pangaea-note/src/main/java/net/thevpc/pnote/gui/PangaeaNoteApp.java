@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.gui;
 
-//import java.awt.Color;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.Props;
 import net.thevpc.common.props.WritableList;
@@ -403,7 +402,6 @@ public class PangaeaNoteApp extends DefaultApplication {
 
 
     public void run() {
-        System.out.println("loading config: " + getConfigFilePath());
         loadConfig();
 //        app = new DefaultApplication("swing");
 //        new AppSwingxConfigurator().configure(app);
@@ -875,7 +873,6 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
         try {
-            System.out.println("load config from: " + getConfigFilePath());
             PangaeaNoteConfig n = element()
                     .setContentType(NutsContentType.JSON)
                     .parse(getConfigFilePath(),

@@ -11,10 +11,6 @@ import net.thevpc.echo.api.AppFileFilter;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
-//import javax.swing.*;
-//import java.awt.*;
-//import java.awt.event.FocusEvent;
-//import java.awt.event.FocusListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +76,7 @@ public class FileComponent extends HorizontalPane {
             chooser.filters().add(filter);
         }
         if(acceptAllFileFilterUsed){
-            chooser.filters().add(new FileFilter(Str.i18n("*.*"),"*.*"));
+            chooser.filters().add(new FileFilter(Str.i18n("Message.AnyFileFilter"),"*.*"));
         }
         if (chooser.showOpenDialog(null)) {
             setContentString(chooser.selection().get());

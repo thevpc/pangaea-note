@@ -5,12 +5,6 @@
 // */
 //package net.thevpc.pnote.gui.util.dialog;
 //
-//import java.awt.BorderLayout;
-//import javax.swing.BorderFactory;
-//import javax.swing.JButton;
-//import javax.swing.JComponent;
-//import javax.swing.JFrame;
-//import javax.swing.JPanel;
 //import net.thevpc.common.swing.layout.GridBagLayoutSupport;
 //import net.thevpc.common.swing.dialog.JDialog2;
 //import net.thevpc.common.swing.SwingUtilities3;

@@ -31,7 +31,6 @@ public class StrokeUtils {
                 if (ss.length() > 0) {
                     String[] kv = ss.split("=");
                     if (kv.length != 2) {
-                        //System.err.println("unable to keyval parse "+ss);
                         continue;
                     }
                     String v = kv[1];
@@ -94,7 +93,6 @@ public class StrokeUtils {
             }
             return new SloppyStroke(width, sloppiness);
         }
-//        System.out.println("unknown "+s);
         return new BasicStroke();
     }
 

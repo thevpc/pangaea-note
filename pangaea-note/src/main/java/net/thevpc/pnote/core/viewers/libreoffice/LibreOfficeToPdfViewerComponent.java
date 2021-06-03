@@ -8,7 +8,6 @@ package net.thevpc.pnote.core.viewers.libreoffice;
 import java.awt.*;
 import java.io.File;
 import java.util.function.Consumer;
-//import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import net.thevpc.echo.BorderPane;

@@ -17,8 +17,6 @@ import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.search.SearchQuery;
 
-import java.awt.*;
-
 /**
  * @author vpc
  */
@@ -36,7 +34,7 @@ public class SearchDialog {
     private boolean ok = false;
     private Str titleId = Str.i18n("Message.search");
 
-    public SearchDialog(PangaeaNoteFrame frame) throws HeadlessException {
+    public SearchDialog(PangaeaNoteFrame frame) {
         this.frame = frame;
         PangaeaNoteApp app = frame.app();
         this.matchCaseEditor = new CheckBox(Str.i18n("Message.matchCase"), app);

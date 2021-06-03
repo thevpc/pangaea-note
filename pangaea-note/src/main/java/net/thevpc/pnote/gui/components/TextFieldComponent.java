@@ -16,8 +16,8 @@ public class TextFieldComponent extends TextField implements FormComponent {
 
     private Runnable callback;
 
-    public TextFieldComponent(PangaeaNoteFrame win) {
-        super(win.app());
+    public TextFieldComponent(PangaeaNoteFrame frame) {
+        super(frame.app());
         ContextMenu p = new ContextMenu(app());
         contextMenu().set(p);
         p.children().add(new Button("copy", () -> app().clipboard().putString(text().get().value()), app()));

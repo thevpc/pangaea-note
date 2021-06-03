@@ -18,7 +18,6 @@ import net.thevpc.echo.constraints.ContainerGrow;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
-import java.awt.*;
 
 /**
  * @author vpc
@@ -33,7 +32,7 @@ public class EnterPasswordDialog {
     private boolean ok = false;
     private String path;
 
-    public EnterPasswordDialog(PangaeaNoteFrame frame, String path, PasswordHandler ph) throws HeadlessException {
+    public EnterPasswordDialog(PangaeaNoteFrame frame, String path, PasswordHandler ph) {
         this.ph = ph;
         this.frame = frame;
         passwordComponent = new PasswordField(frame.app());

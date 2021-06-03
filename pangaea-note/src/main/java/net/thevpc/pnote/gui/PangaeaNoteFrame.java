@@ -8,8 +8,14 @@ package net.thevpc.pnote.gui;
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.*;
+import net.thevpc.echo.Button;
+import net.thevpc.echo.Color;
+import net.thevpc.echo.Dimension;
 import net.thevpc.echo.FileFilter;
 import net.thevpc.echo.*;
+import net.thevpc.echo.Frame;
+import net.thevpc.echo.Image;
+import net.thevpc.echo.Menu;
 import net.thevpc.echo.api.*;
 import net.thevpc.echo.api.components.*;
 import net.thevpc.echo.constraints.Anchor;
@@ -42,9 +48,9 @@ import net.thevpc.pnote.service.search.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
-import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author vpc
@@ -299,9 +305,6 @@ public class PangaeaNoteFrame extends Frame {
         }
         ws.children().add(searchResultsTool);
         searchResultsTool.active().set(false);
-        searchResultsTool.active().onChange(e->{
-            System.out.println("searchResultsTool active "+searchResultsTool.active().get());
-        });
         ticSplash();
         ws.children().add(new BorderPane(app())
                 .with((BorderPane p) -> {
@@ -325,7 +328,7 @@ public class PangaeaNoteFrame extends Frame {
         app().components().addMulti(
                 new Button("NewFile", this::closeDocumentNoDiscard, app())
                         .with((Button b) -> {
-                            b.mnemonic().set(KeyEvent.VK_N);
+                            b.mnemonic().set(KeyCode.N);
                             b.accelerator().set("control N");
                         }),
                 pathOf("/menuBar/File/*")
@@ -336,7 +339,7 @@ public class PangaeaNoteFrame extends Frame {
 //        newfileAction.accelerator().set("control N");
         ticSplash();
         Menu f = (Menu) app().components().get(pathOf("/menuBar/File"));
-        f.mnemonic().set(KeyEvent.VK_F);
+        f.mnemonic().set(KeyCode.F);
 
         app().components().add(new Button("OpenLastFile", this::openLastDiscardNoDiscard, app())
                         .with((Button b) -> {
@@ -346,14 +349,14 @@ public class PangaeaNoteFrame extends Frame {
 
         app().components().add(new Button("Open", this::openDocumentNoDiscard, app())
                         .with((Button b) -> {
-                            b.mnemonic().set(KeyEvent.VK_O);
+                            b.mnemonic().set(KeyCode.O);
                             b.accelerator().set("control O");
                         }),
                 pathOf("/menuBar/File/*"));
 
         app().components().add(new Button("Reload", this::reloadDocumentNoDiscard, app())
                         .with((Button b) -> {
-                            b.mnemonic().set(KeyEvent.VK_R);
+                            b.mnemonic().set(KeyCode.R);
                             b.accelerator().set("control R");
                         }),
                 pathOf("/menuBar/File/*"));
@@ -367,7 +370,7 @@ public class PangaeaNoteFrame extends Frame {
 
         app().components().add(new Button("Save", this::saveDocument, app())
                         .with((Button b) -> {
-                            b.mnemonic().set(KeyEvent.VK_S);
+                            b.mnemonic().set(KeyCode.S);
                             b.accelerator().set("control S");
                         }),
                 pathOf("/menuBar/File/*"));
@@ -389,7 +392,7 @@ public class PangaeaNoteFrame extends Frame {
 
         app().components().add(new Button("Exit", this::exitApp, app())
                         .with((Button b) -> {
-                            b.mnemonic().set(KeyEvent.VK_X);
+                            b.mnemonic().set(KeyCode.X);
                             b.accelerator().set("control X");
                         }),
                 pathOf("/menuBar/File/*")
@@ -400,7 +403,7 @@ public class PangaeaNoteFrame extends Frame {
         app().components().addSeparator(pathOf("/menuBar/Edit/*"));
         app().components().addMulti(new Button("AddNote", this::addNote, app())
                         .with((Button b) -> {
-                            b.mnemonic().set(KeyEvent.VK_B);
+                            b.mnemonic().set(KeyCode.B);
                             b.accelerator().set("control B");
                         }),
                 pathOf("/menuBar/Edit/AddNote"), pathOf("/toolBar/Default/*")
@@ -413,7 +416,7 @@ public class PangaeaNoteFrame extends Frame {
         app().components().addMulti(new Button("Search", this::searchNote, app())
                         .with((Button b)
                                         -> {
-                                    b.mnemonic().set(KeyEvent.VK_F);
+                                    b.mnemonic().set(KeyCode.F);
                                     b.accelerator().set("control shift F");
 
                                 }
@@ -978,6 +981,15 @@ public class PangaeaNoteFrame extends Frame {
         SearchQuery s = dialog.showDialog();
         if (s != null) {
             searchInNodes(s, n);
+        }
+    }
+
+    public void printNote() {
+        PangaeaNote n = getSelectedNote();
+        if(n!=null) {
+            app().printerService().createJob().printComponent(
+                    noteEditor().getCurrentEditor()
+            );
         }
     }
 

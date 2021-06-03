@@ -20,7 +20,6 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +157,6 @@ public class URLViewer extends BorderPane {
         private TextField textField;
         //        private Application app;
         private boolean acceptAllFileFilterUsed;
-        private List<FileFilter> fileFilters = new ArrayList<>();
         private URLViewer parent;
         private Button reloadButton;
         private Button goUpButton;
@@ -238,25 +236,20 @@ public class URLViewer extends BorderPane {
             textField.editable().set(b);
         }
 
-        private void onShowDialog() throws HeadlessException {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        private void onShowDialog()  {
+            FileChooser chooser = new FileChooser(app());
+            chooser.acceptDirectories().set(true);
+            chooser.acceptFiles().set(true);
             File f = Applications.asFile(textField.text().get().value());
             if (f != null && f.getParentFile() != null) {
-                chooser.setCurrentDirectory(f);
+                chooser.currentDirectory().set(f.getPath());
             }
             if (f != null) {
-                chooser.setSelectedFile(f);
+                chooser.selection().set(f.getPath());
             }
-            for (FileFilter filter : fileFilters) {
-                chooser.addChoosableFileFilter(filter);
-            }
-            chooser.setAcceptAllFileFilterUsed(acceptAllFileFilterUsed);
-            int v = chooser.showOpenDialog(
-                    (Component) app().mainFrame().get().peer().toolkitComponent()
-            );
-            if (v == JFileChooser.APPROVE_OPTION) {
-                setContentString(chooser.getSelectedFile().getPath());
+            chooser.filters().add(new net.thevpc.echo.FileFilter(Str.i18n("Message.AnyFileFilter"),"*.*"));
+            if (chooser.showOpenDialog()) {
+                setContentString(chooser.selection().get());
             }
         }
 
@@ -281,15 +274,6 @@ public class URLViewer extends BorderPane {
                 textField.text().set(Str.of(s));
             }
             doReload();
-        }
-
-        public List<FileFilter> getFileFilters() {
-            return fileFilters;
-        }
-
-        public Header setFileFilters(List<FileFilter> fileFilters) {
-            this.fileFilters = fileFilters;
-            return this;
         }
 
         public void uninstall() {

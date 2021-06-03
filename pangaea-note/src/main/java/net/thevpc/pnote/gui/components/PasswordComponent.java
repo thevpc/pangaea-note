@@ -10,7 +10,6 @@ import net.thevpc.echo.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 
 /**
- *
  * @author vpc
  */
 public class PasswordComponent extends PasswordField implements FormComponent {
@@ -34,11 +33,16 @@ public class PasswordComponent extends PasswordField implements FormComponent {
 
     @Override
     public void install(Application app, ContextMenu contextMenu) {
-//        showPassword.setText(app.i18n().getString("Message.showPassword"));
+    }
+
+    @Override
+    public void setFormChangeListener(Runnable callback) {
+        this.callback = callback;
     }
 
     @Override
     public void uninstall() {
+        this.callback = null;
     }
 
     @Override
@@ -49,11 +53,6 @@ public class PasswordComponent extends PasswordField implements FormComponent {
     @Override
     public void setContentString(String s) {
         text().set(Str.of(s));
-    }
-
-    @Override
-    public void setFormChangeListener(Runnable callback) {
-        this.callback = callback;
     }
 
     public void setEditable(boolean b) {

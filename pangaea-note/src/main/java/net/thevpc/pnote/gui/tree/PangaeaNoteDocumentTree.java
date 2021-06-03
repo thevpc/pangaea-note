@@ -118,6 +118,8 @@ public class PangaeaNoteDocumentTree extends BorderPane {
         treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("SearchNote", () -> frame.searchNote(), app));
         treePopupMenu.children().addSeparator();
+        treePopupMenu.children().add(new Button("PrintNote", () -> frame.printNote(), app).with(enableIfSelection));
+        treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("NoteProperties", () -> frame.editNote(), app).with(enableIfSelection));
         PangaeaNote sn = getSelectedNote();
 //        for (TreeAction action : actions) {

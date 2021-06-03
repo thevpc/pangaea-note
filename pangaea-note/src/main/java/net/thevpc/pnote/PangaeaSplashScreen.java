@@ -5,8 +5,6 @@
  */
 package net.thevpc.pnote;
 
-import java.awt.Color;
-import javax.swing.ImageIcon;
 
 /**
  *

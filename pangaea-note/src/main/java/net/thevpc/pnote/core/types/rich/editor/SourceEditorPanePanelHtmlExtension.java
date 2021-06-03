@@ -5,7 +5,6 @@
 // */
 //package net.thevpc.pnote.core.types.rich.editor;
 //
-//import java.awt.Color;
 //import java.util.ArrayList;
 //import java.util.LinkedHashMap;
 //import java.util.List;
