@@ -39,7 +39,7 @@ public class PangaeaNoteObfuscatorDefault implements PangaeaNoteObfuscator {
         if (password == null || password.length() == 0) {
             throw new CancelException();
         }
-        String s = context.getWorkspace().formats().element()
+        String s = context.getWorkspace().elem()
                 .setContentType(NutsContentType.JSON)
                 .setValue(a)
                 .setCompact(true)
@@ -65,7 +65,7 @@ public class PangaeaNoteObfuscatorDefault implements PangaeaNoteObfuscator {
         } catch (Exception ex) {
             throw new InvalidSecretException();
         }
-        return context.getWorkspace().formats().element()
+        return context.getWorkspace().elem()
                 .setContentType(NutsContentType.JSON)
                 .setValue(password)
                 .setCompact(true)

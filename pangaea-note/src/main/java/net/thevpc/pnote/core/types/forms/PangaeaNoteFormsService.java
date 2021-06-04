@@ -100,14 +100,14 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     public NutsElement getContentAsElement(PangaeaNoteObjectDocument dynamicDocument) {
-        return app().element().toElement(dynamicDocument);
+        return app().elem().toElement(dynamicDocument);
     }
 
     public PangaeaNoteObjectDocument getContentAsObject(NutsElement s) {
         if (s != null && s.isString()) {
-            return app().element().parse(s.asString(), PangaeaNoteObjectDocument.class);
+            return app().elem().parse(s.asString(), PangaeaNoteObjectDocument.class);
         }
-        return app().element().convert(s, PangaeaNoteObjectDocument.class);
+        return app().elem().convert(s, PangaeaNoteObjectDocument.class);
     }
 
     @Override

@@ -17,7 +17,6 @@ import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.dialogs.EditNoteDialog;
 
-import java.util.Set;
 import net.thevpc.pnote.gui.PangaeaNoteApp;
 
 public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
@@ -231,12 +230,12 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
                 NutsElement cd = note.getChildData();
                 NutsObjectElementBuilder cdb;
                 if(cd==null || cd.isNull()){
-                    cdb=app().element().forObject();
+                    cdb=app().elem().forObject();
                 }else if(!cd.isObject()){
-                    cdb=app().element().forObject();
+                    cdb=app().elem().forObject();
                     cdb.set("value",cd);
                 }else{
-                    cdb=app().element().forObject().add(cd.asObject());
+                    cdb=app().elem().forObject().add(cd.asObject());
                 }
                 cdb.set("selected",sel);
                 note.setChildData(cdb.build());

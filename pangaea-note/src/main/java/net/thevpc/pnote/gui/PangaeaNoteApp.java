@@ -5,7 +5,6 @@
  */
 package net.thevpc.pnote.gui;
 
-import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.Props;
 import net.thevpc.common.props.WritableList;
 import net.thevpc.echo.*;
@@ -568,8 +567,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         return new ArrayList<>(extra.values());
     }
 
-    public NutsElementFormat element() {
-        return appContext().getWorkspace().formats().element()
+    public NutsElementFormat elem() {
+        return appContext().getWorkspace().elem()
                 .setSession(appContext().getSession());
     }
 
@@ -614,10 +613,11 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public String stringifyAny(Object value) {
-        return element().setValue(value)
+        return elem().setValue(value)
                 .setContentType(NutsContentType.JSON)
                 .setCompact(true)
-                .format();
+                .setNtf(false)
+                .format().toString();
     }
 
     public <T> T parseAny(String s, Class<T> cls) {
@@ -625,7 +625,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             return null;
         }
         try {
-            return element()
+            return elem()
                     .setContentType(NutsContentType.JSON)
                     .parse(s, cls);
         } catch (Exception ex) {
@@ -655,7 +655,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NutsElement stringToElement(String string) {
-        return element().forString(string);
+        return elem().forString(string);
     }
 
     public String elementToString(NutsElement string) {
@@ -794,12 +794,12 @@ public class PangaeaNoteApp extends DefaultApplication {
                         n2.setCreationTime(n.getCreationTime());
                         n2.setLastModified(n.getLastModified());
                         n2.setCypherInfo(ci);
-                        element()
+                        elem()
                                 .setContentType(NutsContentType.JSON)
                                 .setValue(n2)
                                 .println(f);
                     } else {
-                        element()
+                        elem()
                                 .setContentType(NutsContentType.JSON)
                                 .setValue(n)
                                 .println(f);
@@ -865,7 +865,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         if (pf != null) {
             pf.mkdirs();
         }
-        element()
+        elem()
                 .setContentType(NutsContentType.JSON)
                 .setValue(c)
                 .println(configFilePath);
@@ -873,7 +873,7 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
         try {
-            PangaeaNoteConfig n = element()
+            PangaeaNoteConfig n = elem()
                     .setContentType(NutsContentType.JSON)
                     .parse(getConfigFilePath(),
                             PangaeaNoteConfig.class);
@@ -897,7 +897,7 @@ public class PangaeaNoteApp extends DefaultApplication {
                 String nodePath = di.getPath();
                 nodePath = nodePath == null ? "" : nodePath.trim();
                 if (nodePath.length() > 0) {
-                    PangaeaNote rawNode = element()
+                    PangaeaNote rawNode = elem()
                             .setContentType(NutsContentType.JSON).setSession(appContext().getSession())
                             .parse(new File(nodePath), PangaeaNote.class);
                     n.copyFrom(rawNode);
@@ -1393,7 +1393,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         if (info == null) {
             info = new PangaeaNoteDocumentInfo();
         }
-        return element().toElement(info);
+        return elem().toElement(info);
     }
 
     public PangaeaNoteDocumentInfo getDocumentInfo(PangaeaNote document) {

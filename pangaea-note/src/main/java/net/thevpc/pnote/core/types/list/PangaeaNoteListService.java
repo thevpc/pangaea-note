@@ -99,7 +99,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     public NutsElement contentToElement(PangaeaNoteListModel value) {
-        return app().element().toElement(value);
+        return app().elem().toElement(value);
     }
 
     public PangaeaNoteListModel elementToContent(NutsElement s) {
@@ -109,7 +109,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
         if (!s.isObject()) {
             return new PangaeaNoteListModel();
         } else {
-            return app().element().convert(s, PangaeaNoteListModel.class);
+            return app().elem().convert(s, PangaeaNoteListModel.class);
         }
     }
 

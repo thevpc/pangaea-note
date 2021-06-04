@@ -227,8 +227,8 @@ public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements
                     s.onChange((a) -> getDiagram().setGridX(a.newValue()));
                 }),Path.of("/Default/Grid/*")
         );
-        frame.getNutsWorkspace().formats().element().setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
-        frame.getNutsWorkspace().formats().element().setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
+        frame.getNutsWorkspace().elem().setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
+        frame.getNutsWorkspace().elem().setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
     }
 
     @Override

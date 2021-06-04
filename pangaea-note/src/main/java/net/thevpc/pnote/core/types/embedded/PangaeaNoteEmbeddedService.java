@@ -60,7 +60,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
 
     @Override
     public NutsElement createDefaultContent() {
-        return app.element().toElement(app.newDocument());
+        return app.elem().toElement(app.newDocument());
     }
 
     @Override
@@ -96,7 +96,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
         if (contentString == null) {
             contentString = new PangaeaNoteDocumentInfo();
         }
-        return app.element().toElement(contentString);
+        return app.elem().toElement(contentString);
     }
 
     public PangaeaNoteDocumentInfo getContentValueAsInfo(NutsElement content) {
@@ -106,7 +106,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
         if(content.isString()){
             return new PangaeaNoteDocumentInfo().setPath(content.asString());
         }
-        return app.element().convert(content, PangaeaNoteDocumentInfo.class);
+        return app.elem().convert(content, PangaeaNoteDocumentInfo.class);
     }
 
 }

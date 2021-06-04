@@ -72,14 +72,14 @@ public class PangaeaNoteDiaService extends AbstractPangaeaNoteTypeService {
     }
 
     public NutsElement diagramToElement(JDiagramModel elem) {
-        return app().element().toElement(elem);
+        return app().elem().toElement(elem);
     }
 
     public JDiagramModel elementToDiagram(NutsElement elem) {
         if (elem.isNull() || elem.isString()) {
             return new JDiagramModel();
         }
-        JDiagramModel a = app().element().convert(elem, JDiagramModel.class);
+        JDiagramModel a = app().elem().convert(elem, JDiagramModel.class);
         if (a == null) {
             return new JDiagramModel();
         }
