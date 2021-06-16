@@ -18,17 +18,18 @@ public class PangaeaNoteMain extends NutsApplication {
     String PREFERRED_ALIAS = "pnote";
 
     public static void main(String[] args) {
+//        System.out.println("<<complied>> : Tue Jun  8 01:43:11 PM CET 2021");
         PangaeaSplashScreen.get();
-        java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+//        java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+////        rootLogger.setLevel(Level.FINEST);
+//        for (Handler handler : rootLogger.getHandlers()) {
+//            handler.setLevel(Level.FINEST);
+//        }
+//        rootLogger = java.util.logging.Logger.getLogger("net.thevpc");
 //        rootLogger.setLevel(Level.FINEST);
-        for (Handler handler : rootLogger.getHandlers()) {
-            handler.setLevel(Level.FINEST);
-        }
-        rootLogger = java.util.logging.Logger.getLogger("net.thevpc");
-        rootLogger.setLevel(Level.FINEST);
-        for (Handler handler : rootLogger.getHandlers()) {
-            handler.setLevel(Level.FINEST);
-        }
+//        for (Handler handler : rootLogger.getHandlers()) {
+//            handler.setLevel(Level.FINEST);
+//        }
         PangaeaSplashScreen.get().tic();
         new PangaeaNoteMain().runAndExit(args);
     }

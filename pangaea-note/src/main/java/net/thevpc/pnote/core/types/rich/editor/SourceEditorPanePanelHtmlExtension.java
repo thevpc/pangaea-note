@@ -21,7 +21,7 @@
 ////import javax.swing.text.StyleConstants;
 ////import javax.swing.text.StyledEditorKit;
 //
-//import net.thevpc.echo.FontChooser;
+//import net.thevpc.echo.FontChooserDeprecated;
 //import net.thevpc.echo.FontPosture;
 //import net.thevpc.echo.FontWeight;
 //import net.thevpc.echo.api.AppFont;
@@ -84,7 +84,7 @@
 //        fontActions.add(
 //                new ActionInfo("customFont",
 //                        (e) -> {
-//                            FontChooser jfc = new FontChooser(win.app());
+//                            FontChooserDeprecated jfc = new FontChooserDeprecated(win.app());
 //                            jfc.selection().set(
 //                                    new net.thevpc.echo.Font(
 //                                            editor.getFont().getFamily(),

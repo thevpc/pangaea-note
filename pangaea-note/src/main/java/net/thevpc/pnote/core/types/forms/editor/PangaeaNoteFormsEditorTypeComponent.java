@@ -22,6 +22,7 @@ import net.thevpc.pnote.util.OtherUtils;
 import java.util.ArrayList;
 import java.util.List;
 import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.echo.api.AppAlertResult;
 
 /**
  * @author vpc
@@ -299,7 +300,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
 
         private void onRemoveAllObjects() {
             if (dynamicDocument != null) {
-                String s = new Alert(frame)
+                AppAlertResult s = new Alert(frame)
                         .with((Alert a) -> {
                             a.title().set(Str.i18n("Message.warning"));
                             a.headerText().set(Str.i18n("Message.warning"));
@@ -307,9 +308,9 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
                         })
                         .setContentText(Str.i18n("Message.askDeleteAllObjects"))
                         .withYesNoButtons()
-                        .showDialog(null);
+                        .showDialog();
 
-                if ("yes".equals(s)) {
+                if (s.isYesButton()) {
                     dynamicDocument.getValues().clear();
                     values().clear();
                     onListValuesChangedImpl();
@@ -321,7 +322,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
         private void onRemoveObjectAt(int index) {
             if (dynamicDocument != null) {
                 if (dynamicDocument.getValues() != null) {
-                    String s = new Alert(frame)
+                    AppAlertResult s = new Alert(frame)
                             .with((Alert a) -> {
                                 a.title().set(Str.i18n("Message.warning"));
                                 a.headerText().set(Str.i18n("Message.warning"));
@@ -329,9 +330,9 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
                             })
                             .setContentText(Str.i18n("Message.askDeleteObject"))
                             .withYesNoButtons()
-                            .showDialog(null);
+                            .showDialog();
 
-                    if ("yes".equals(s)) {
+                    if (s.isYesButton()) {
                         dynamicDocument.getValues().remove(index);
                         onListValuesChangedImpl();
                     }

@@ -1,6 +1,6 @@
 package net.thevpc.pnote.core.types.embedded;
 
-public class PangaeaNoteDocumentInfo {
+public class PangaeaNoteDocumentInfo implements Cloneable{
     private String path;
     private String locale;
     private String iconSet;
@@ -40,5 +40,13 @@ public class PangaeaNoteDocumentInfo {
     public PangaeaNoteDocumentInfo setIconSet(String iconSet) {
         this.iconSet = iconSet;
         return this;
+    }
+
+    public PangaeaNoteDocumentInfo copy(){
+        try {
+            return (PangaeaNoteDocumentInfo) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

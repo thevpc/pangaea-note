@@ -78,7 +78,7 @@ public class FileComponent extends HorizontalPane {
         if(acceptAllFileFilterUsed){
             chooser.filters().add(new FileFilter(Str.i18n("Message.AnyFileFilter"),"*.*"));
         }
-        if (chooser.showOpenDialog(null)) {
+        if (chooser.showOpenDialog(this)) {
             setContentString(chooser.selection().get());
         }
     }

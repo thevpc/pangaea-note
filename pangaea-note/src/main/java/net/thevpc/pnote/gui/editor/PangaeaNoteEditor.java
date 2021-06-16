@@ -167,7 +167,7 @@ public class PangaeaNoteEditor extends BorderPane {
             PangaeaNoteEditorTypeComponent editor = getEditor(editorType);
             editor.setNote(note);
             showEditor(editorType);
-            editor.requestFocus();
+//            editor.requestFocus();
         }
     }
 

@@ -32,8 +32,10 @@ public class PangaeaNoteTitleFormatPanel extends GridPane {
         super(1, frame.app());
         this.frame = frame;
         title().set(Str.i18n("PangaeaNoteListSettingsComponent.titleLabel"));
-        foregroundEditor = new ColorButton(app());
-        backgroundEditor = new ColorButton(app());
+        foregroundEditor = new ColorButton("foregroundColor",app());
+        foregroundEditor.tooltip().set(Str.of("Message.foregroundColor"));
+        backgroundEditor = new ColorButton("backgroundColor",app());
+        backgroundEditor.tooltip().set(Str.of("Message.backgroundEditor"));
         boldEditor = new CheckBox(Str.i18n("Message.titleBold"), app());
         italicEditor = new CheckBox(Str.i18n("Message.titleItalic"), app());
         underlinedEditor = new CheckBox(Str.i18n("Message.titleUnderlined"), app());

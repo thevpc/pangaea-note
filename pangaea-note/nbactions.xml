@@ -10,8 +10,11 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Dnuts.args=--verbose -classpath %classpath org.swingexplorer.Launcher net.thevpc.pnote.PangaeaNoteMain</exec.args>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.executable>java</exec.executable>
+                <exec.appArgs></exec.appArgs>
+                <exec.vmArgs>-Dnuts.args=--verbose</exec.vmArgs>
+                <exec.mainClass>net.thevpc.pnote.PangaeaNoteMain</exec.mainClass>
             </properties>
         </action>
         <action>
@@ -24,9 +27,12 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -Dnuts.args=--verbose -classpath %classpath org.swingexplorer.Launcher net.thevpc.pnote.PangaeaNoteMain</exec.args>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
+                <exec.appArgs></exec.appArgs>
+                <exec.vmArgs>-Dnuts.args=--verbose -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
+                <exec.mainClass>net.thevpc.pnote.PangaeaNoteMain</exec.mainClass>
             </properties>
         </action>
         <action>
@@ -39,8 +45,11 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Dnuts.args=--verbose -classpath %classpath org.swingexplorer.Launcher net.thevpc.pnote.PangaeaNoteMain</exec.args>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.executable>java</exec.executable>
+                <exec.appArgs></exec.appArgs>
+                <exec.vmArgs>-Dnuts.args=--verbose</exec.vmArgs>
+                <exec.mainClass>net.thevpc.pnote.PangaeaNoteMain</exec.mainClass>
             </properties>
         </action>
     </actions>

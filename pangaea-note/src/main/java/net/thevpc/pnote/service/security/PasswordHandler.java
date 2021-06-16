@@ -11,7 +11,9 @@ package net.thevpc.pnote.service.security;
  */
 public interface PasswordHandler {
 
-    String askForSavePassword(String path,String root);
-    String askForLoadPassword(String path,String root);
+    String askForSavePassword(String path, String root);
+
+    String askForLoadPassword(String path, String root);
+
     boolean reTypePasswordOnError();
 }

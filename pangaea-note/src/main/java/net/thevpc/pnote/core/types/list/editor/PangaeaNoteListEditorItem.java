@@ -74,9 +74,10 @@ class PangaeaNoteListEditorItem extends BorderPane {
 //        header.children().add(new Button("removeInObjectList", () -> parent.onRemoveObjectAt(pos), app));
 
         ContextMenu _contextMenu = new ContextMenu(app);
-        _contextMenu.children().add(new Button("NoteProperties", () -> parent.onEditAt(pos), app));
-        _contextMenu.children().addSeparator();
-        _contextMenu.children().add(new Button("duplicateInObjectList", () -> parent.onDuplicateObjectAt(pos), app));
+        _contextMenu.children().add(new Button("DuplicateNote", () -> parent.onDuplicateObjectAt(pos), app));
+        _contextMenu.children().add(new Button("RenameNote", () -> parent.renameNote(pos), app));
+        _contextMenu.children().add(new Button("StrikeNote", () -> parent.strikeThroughNote(pos), app));
+        _contextMenu.children().add(new Button("BoldNote", () -> parent.boldNote(pos), app));
         _contextMenu.children().addSeparator();
         _contextMenu.children().add(new Button("moveUpInObjectList", () -> parent.onMoveUpAt(pos), app));
         _contextMenu.children().add(new Button("moveDownInObjectList", () -> parent.onMoveDownAt(pos), app));
@@ -84,6 +85,8 @@ class PangaeaNoteListEditorItem extends BorderPane {
         _contextMenu.children().add(new Button("moveLastInObjectList", () -> parent.onMoveLastAt(pos), app));
         _contextMenu.children().addSeparator();
         _contextMenu.children().add(new Button("removeNote", () -> parent.onRemoveObjectAt(pos), app));
+        _contextMenu.children().addSeparator();
+        _contextMenu.children().add(new Button("NoteProperties", () -> parent.onEditAt(pos), app));
 
         this.contextMenu().set(_contextMenu);
         icon.contextMenu().set(_contextMenu);

@@ -102,7 +102,7 @@ public class EditNoteDialog {
     }
 
     protected PangaeaNote getNote() {
-        String txt = Applications.rawString(nameEditor.text(),nameEditor);
+        String txt = Applications.rawString(nameEditor.text(), nameEditor);
         note.setName(txt);
         if (txt == null || txt.trim().length() == 0) {
             String ct = note.getContentType();
@@ -141,27 +141,27 @@ public class EditNoteDialog {
             install();
             this.ok = false;
             new Alert(frame)
-                            .with((Alert a)->{
-                                a.title().set(Str.i18n("Message.editNote"));
-                                a.headerText().set(Str.i18n("Message.editNote"));
-                                a.headerIcon().set(Str.of("edit"));
-                            })
-                    .setContent(panel)
-                    .withOkCancelButtons(
-                            (a) -> {
-                                ok();
-                                a.getDialog().closeDialog();
-                            },
-                            (a) -> {
-                                cancel();
-                                a.getDialog().closeDialog();
-                            }
-                    )
-                    .showDialog(null);
+                    .with((Alert a) -> {
+                        a.title().set(Str.i18n("Message.editNote"));
+                        a.headerText().set(Str.i18n("Message.editNote"));
+                        a.headerIcon().set(Str.of("edit"));
+                        a.content().set(panel);
+                        a.withOkCancelButtons(
+                                (b) -> {
+                                    ok();
+                                    b.getAlert().closeAlert();
+                                },
+                                (b) -> {
+                                    cancel();
+                                    b.getAlert().closeAlert();
+                                }
+                        );
+                    })
+                    .showDialog();
             try {
                 PangaeaNote n = get();
                 if (n != null) {
-                    frame.app().updateNoteProperties(vn, n, frame);
+                    frame.updateNoteProperties(vn, n, frame);
                     frame.onDocumentChanged();
                 }
                 return n;

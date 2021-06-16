@@ -7,13 +7,13 @@ package net.thevpc.pnote.core.types.forms.editor;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
-import net.thevpc.echo.api.AppDialogResult;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.core.types.forms.model.*;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.components.*;
 
 import java.util.*;
+import net.thevpc.echo.api.AppAlertResult;
 
 /**
  * @author vpc
@@ -343,7 +343,7 @@ class PangaeaNoteFieldDescriptorPanel {
                 }
                 oldValue = (String.join("\n", all));
             }
-            AppDialogResult s = new Alert(frame)
+            AppAlertResult s = new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.changeFieldValues"));
                         a.headerText().set(Str.i18n("Message.changeFieldValues"));
@@ -352,7 +352,7 @@ class PangaeaNoteFieldDescriptorPanel {
                     })
                     .setInputTextAreaContent(Str.i18n("Message.changeFieldValues.label"), Str.of(oldValue))
                     .withOkCancelButtons()
-                    .showInputDialog(null);
+                    .showDialog();
             if (s.isButton("ok") && !s.isBlankValue()) {
                 document.updateFieldValues(descr.getName(), s.<String>value().split("\n"));
                 callOnStructureChanged();
@@ -362,7 +362,7 @@ class PangaeaNoteFieldDescriptorPanel {
 
     public void onDescriptorRename() {
         if (document != null) {
-            AppDialogResult r = new Alert(frame)
+            AppAlertResult r = new Alert(frame)
                     .withOkCancelButtons()
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.renameField.title"));
@@ -373,7 +373,7 @@ class PangaeaNoteFieldDescriptorPanel {
                             Str.i18n("Message.renameField.label"), Str.of(descr.getName())
                     )
                     //                    .setPreferredSize(400, 200)
-                    .showInputDialog(null);
+                    .showDialog();
             if (r.isButton("ok") && !r.isBlankValue()) {
                 String n = r.<String>value().trim();
                 if (document != null) {
@@ -417,7 +417,7 @@ class PangaeaNoteFieldDescriptorPanel {
 
     public void onAddField() {
         if (document != null) {
-            AppDialogResult r = new Alert(frame)
+            AppAlertResult r = new Alert(frame)
                     .withOkCancelButtons()
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.addField"));
@@ -428,7 +428,7 @@ class PangaeaNoteFieldDescriptorPanel {
                             Str.i18n("Message.addField.label"), Str.of("")
                     )
                     //                    .setPreferredSize(400, 200)
-                    .showInputDialog(null);
+                    .showDialog();
             if ("ok".equals(r.button())) {
                 String n = r.value();
                 if (n != null) {

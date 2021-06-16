@@ -314,7 +314,7 @@ public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements
         }
         FontChooser jfc = new FontChooser(app());
         jfc.selection().set(initialFont);
-        if (jfc.showDialog(null)) {
+        if (jfc.showDialog(frame)) {
             AppFont font = jfc.selection().get();
             if (sc == 0) {
                 canvas.getDiagram().setConfigTextFont(Font.format(font));

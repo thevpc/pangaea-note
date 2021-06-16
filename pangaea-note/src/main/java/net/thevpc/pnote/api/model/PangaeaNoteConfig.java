@@ -78,9 +78,8 @@ public class PangaeaNoteConfig {
                 }
             }
             List<String> ok = new ArrayList<>(all);
-            if (!all.contains(recentFile)) {
-                ok.add(0, recentFile);
-            }
+            ok.remove(recentFile);
+            ok.add(0, recentFile);
             this.recentFiles = ok;
         }
     }

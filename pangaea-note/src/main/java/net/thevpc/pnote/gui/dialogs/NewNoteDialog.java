@@ -61,9 +61,8 @@ public class NewNoteDialog {
                                                 }
                                             }
                                         }, AppEventType.KEY_PRESSED);
-                                    })
-                            ,
-                            new Label(Str.i18n("Message.noteType"), frame.app()),
+                                    }),
+                             new Label(Str.i18n("Message.noteType"), frame.app()),
                             typeList = new PangaeaNoteTypesList(frame)
                                     .with(t -> {
                                         t.onChange(e -> onNoteTypeChange(typeList.getSelectedContentTypeId()));
@@ -71,8 +70,8 @@ public class NewNoteDialog {
                                     })
                     );
                 });
-        Applications.copyResources(frame,panel);
-        System.out.println(typeList.list().iconConfig().get());
+        Applications.copyResources(frame, panel);
+//        System.out.println(typeList.list().iconConfig().get());
 //        onNoteTypeChange(null);
 //        onNoteTypeChange(typeList.getSelectedContentTypeId());
     }
@@ -136,19 +135,19 @@ public class NewNoteDialog {
                         a.title().set(Str.i18n("Message.addNewNote"));
                         a.headerText().set(Str.i18n("Message.addNewNote"));
                         a.headerIcon().set(Str.of("edit-plus"));
+                        a.content().set(panel);
+                        a.withOkCancelButtons(
+                                (b) -> {
+                                    ok();
+                                    b.getAlert().closeAlert();
+                                },
+                                (b) -> {
+                                    cancel();
+                                    b.getAlert().closeAlert();
+                                }
+                        );
                     })
-                    .setContent(panel)
-                    .withOkCancelButtons(
-                            (a) -> {
-                                ok();
-                                a.getDialog().closeDialog();
-                            },
-                            (a) -> {
-                                cancel();
-                                a.getDialog().closeDialog();
-                            }
-                    )
-                    .showDialog(null);
+                    .showDialog();
             try {
                 return get();
             } catch (Exception ex) {

@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.thevpc.pnote.service.search.SearchQuery;
+import net.thevpc.echo.SearchQuery;
 
 /**
  *

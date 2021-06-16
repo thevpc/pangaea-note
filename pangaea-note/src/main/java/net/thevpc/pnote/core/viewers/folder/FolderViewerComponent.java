@@ -12,6 +12,7 @@ import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
 import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -28,17 +29,14 @@ public class FolderViewerComponent extends FolderView implements URLViewerCompon
         this.onSuccess = onSuccess;
         this.viewer = viewer;
         this.frame = frame;
-        selection().onChange(new Runnable() {
-            @Override
-            public void run() {
-                String t = selection().get();
-                if(t!=null){
-                    if(Applications.asFile(t)!=null){
-                        viewer.getHeader().getTextField().text().set(Str.of(t));
-                        navigate(t);
-                    }else{
-                        viewer.navigate(t);
-                    }
+        selection().onChange(() -> {
+            String t = selection().get();
+            if(t!=null){
+                File file = Applications.asFile(t);
+                if(file !=null && file.isDirectory()){
+                    navigate(t);
+                }else{
+                    viewer.navigate(t);
                 }
             }
         });
@@ -46,14 +44,17 @@ public class FolderViewerComponent extends FolderView implements URLViewerCompon
 
     @Override
     public void navigate(String url) {
-        String old = folder().get();
-        if(Objects.equals(url,old)){
-            refresh();
-        }else {
-            folder().set(url);
-        }
-        if (onSuccess != null) {
-            onSuccess.run();
+        if(editable().get()) {
+            viewer.getHeader().getTextField().text().set(Str.of(url));
+            String old = folder().get();
+            if (Objects.equals(url, old)) {
+                refresh();
+            } else {
+                folder().set(url);
+            }
+            if (onSuccess != null) {
+                onSuccess.run();
+            }
         }
     }
 
@@ -69,6 +70,7 @@ public class FolderViewerComponent extends FolderView implements URLViewerCompon
 
     @Override
     public void setEditable(boolean editable) {
+        editable().set(editable);
     }
 
 

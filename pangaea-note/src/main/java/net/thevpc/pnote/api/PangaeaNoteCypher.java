@@ -5,17 +5,19 @@
  */
 package net.thevpc.pnote.api;
 
-import java.util.function.Supplier;
 import net.thevpc.pnote.api.model.CypherInfo;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
+import java.util.function.Supplier;
+
 /**
- *
  * @author vpc
  */
-public interface PangaeaNoteObfuscator {
+public interface PangaeaNoteCypher {
+
+    String getId();
 
     CypherInfo encrypt(PangaeaNote a, Supplier<String> passwordSupplier);
 
-    PangaeaNote decrypt(CypherInfo cypherInfo, PangaeaNote original,Supplier<String> passwordSupplier);
+    PangaeaNote decrypt(CypherInfo cypherInfo, PangaeaNote original, Supplier<String> passwordSupplier);
 }

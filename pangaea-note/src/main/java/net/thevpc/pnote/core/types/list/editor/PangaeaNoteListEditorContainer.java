@@ -15,9 +15,9 @@ import net.thevpc.pnote.core.types.list.model.PangaeaNoteListLayout;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListModel;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.dialogs.EditNoteDialog;
 
 import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.echo.api.AppAlertResult;
 
 public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
 
@@ -39,6 +39,7 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
         }
         return false;
     }
+
     public boolean isShowNumbers() {
         if (this.currentNote != null && this.noteListModel != null) {
             return this.noteListModel.isShowNumbers();
@@ -53,26 +54,48 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
         return false;
     }
 
-
     public void onAddObjectAt(int pos) {
         if (currentNote != null) {
             if (currentNote.getChildren().size() > 0) {
                 PangaeaNote p = currentNote.getChildren().get(pos);
-                app().addChild(currentNote, (new PangaeaNote().setContentType(p.getContentType())), pos);
+                frame.treePane().addNoteChild(currentNote, (new PangaeaNote().setContentType(p.getContentType())), pos);
             } else {
-                app().addChild(currentNote, (new PangaeaNote().setContentType(PangaeaNotePlainTextService.PLAIN.toString())), pos);
+                frame.treePane().addNoteChild(currentNote, (new PangaeaNote().setContentType(PangaeaNotePlainTextService.PLAIN.toString())), pos);
             }
             values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-            frame.treePane().fireNoteChanged(currentNote);
+            frame.treePane().updateNote(currentNote);
         }
     }
 
     public void onDuplicateObjectAt(int pos) {
         if (currentNote != null) {
             PangaeaNote p = currentNote.getChildren().get(pos);
-            app().addDuplicateSiblingNote(p, pos);
+            frame.treePane().addDuplicateSiblingNote(p, pos);
             values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-            frame.treePane().fireNoteChanged(currentNote);
+        }
+    }
+
+    public void renameNote(int pos) {
+        if (currentNote != null) {
+            PangaeaNote p = currentNote.getChildren().get(pos);
+            frame.renameNote(p);
+            //values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
+        }
+    }
+
+    public void strikeThroughNote(int pos) {
+        if (currentNote != null) {
+            PangaeaNote p = currentNote.getChildren().get(pos);
+            frame.strikeThroughNote(p);
+            onUpdateAt(pos);
+        }
+    }
+
+    public void boldNote(int pos) {
+        if (currentNote != null) {
+            PangaeaNote p = currentNote.getChildren().get(pos);
+            frame.boldNote(p);
+            onUpdateAt(pos);
         }
     }
 
@@ -82,7 +105,7 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
 
     public void onRemoveObjectAt(int pos) {
         if (currentNote != null) {
-            String s = new Alert(frame)
+            AppAlertResult s = new Alert(frame)
                     .with((Alert a) -> {
                         a.title().set(Str.i18n("Message.warning"));
                         a.headerText().set(Str.i18n("Message.warning"));
@@ -90,55 +113,53 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
                     })
                     .setContentText(Str.i18n("Message.askDeleteObject"))
                     .withYesNoButtons()
-                    .showDialog(null);
+                    .showDialog();
 
-            if ("yes".equals(s)) {
-                app().removeChildNote(currentNote, pos);
+            if (s.isYesButton()) {
+                frame.treePane().removeNodeChild(currentNote, pos);
                 values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-                frame.treePane().fireNoteChanged(currentNote);
             }
         }
     }
 
     public void onMoveUpAt(int pos) {
         if (currentNote != null) {
-            app().moveUp(currentNote, pos);
+            frame.treePane().moveUp(currentNote, pos);
             values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-            frame.treePane().fireNoteChanged(currentNote);
         }
     }
 
     public void onMoveDownAt(int pos) {
         if (currentNote != null) {
-            app().moveDown(currentNote, pos);
+            frame.treePane().moveDown(currentNote, pos);
             values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-            frame.treePane().fireNoteChanged(currentNote);
         }
     }
 
     public void onMoveFirstAt(int pos) {
         if (currentNote != null) {
-            app().moveFirst(currentNote, pos);
+            frame.treePane().moveFirst(currentNote, pos);
             values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-            frame.treePane().fireNoteChanged(currentNote);
         }
+    }
+
+    public void onUpdateAt(int pos) {
+        PangaeaNoteListEditorItem item = (PangaeaNoteListEditorItem) container().get().children().get(pos);
+        item.setValue(item.getValue(), pos);
     }
 
     public void onEditAt(int pos) {
         PangaeaNote cc = currentNote.getChildren().get(pos);
-        PangaeaNote n = new EditNoteDialog(frame, cc).showDialog();
-        if (n != null) {
-            frame.treePane().fireNoteChanged(cc);
-//            this.invalidate();
-//            this.repaint();
+        if (frame.editNote(cc)) {
+            onUpdateAt(pos);
         }
     }
 
     public void onMoveLastAt(int pos) {
         if (currentNote != null) {
-            app().moveLast(currentNote, pos);
+            frame.treePane().moveLast(currentNote, pos);
             values().setAll(currentNote.getChildren().toArray(new PangaeaNote[0]));
-            frame.treePane().fireNoteChanged(currentNote);
+            frame.treePane().updateNote(currentNote);
         }
     }
 
@@ -205,39 +226,39 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
     }
 
     public boolean isSelectedIndex(PangaeaNote note) {
-        if(note==null){
+        if (note == null) {
             return false;
         }
-        String name=note.getName();
+        String name = note.getName();
         if (this.currentNote != null && this.noteListModel != null) {
             NutsElement cd = note.getChildData();
-            if(!(cd instanceof NutsObjectElement)){
+            if (!(cd instanceof NutsObjectElement)) {
                 return false;
             }
             NutsObjectElement obj = cd.asObject();
-            return obj.type()== NutsElementType.BOOLEAN &&  obj.getBoolean("selected");
+            return obj.type() == NutsElementType.BOOLEAN && obj.getBoolean("selected");
         }
         return false;
     }
 
     public boolean setSelectedName(PangaeaNote note, boolean sel) {
-        if(note==null){
+        if (note == null) {
             return false;
         }
         if (this.currentNote != null && this.noteListModel != null) {
 //            Set<String> n = this.noteListModel.getSelectedNames();
-            if(isSelectedIndex(note)!=sel) {
+            if (isSelectedIndex(note) != sel) {
                 NutsElement cd = note.getChildData();
                 NutsObjectElementBuilder cdb;
-                if(cd==null || cd.isNull()){
-                    cdb=app().elem().forObject();
-                }else if(!cd.isObject()){
-                    cdb=app().elem().forObject();
-                    cdb.set("value",cd);
-                }else{
-                    cdb=app().elem().forObject().add(cd.asObject());
+                if (cd == null || cd.isNull()) {
+                    cdb = app().elem().forObject();
+                } else if (!cd.isObject()) {
+                    cdb = app().elem().forObject();
+                    cdb.set("value", cd);
+                } else {
+                    cdb = app().elem().forObject().add(cd.asObject());
                 }
-                cdb.set("selected",sel);
+                cdb.set("selected", sel);
                 note.setChildData(cdb.build());
                 app().fireNoteChanged(note);
                 frame.onDocumentChanged();

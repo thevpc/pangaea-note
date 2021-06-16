@@ -15,10 +15,10 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.SelectableElement;
-import net.thevpc.pnote.gui.editor.editorcomponents.source.RichHtmlToolBarHelper;
+import net.thevpc.echo.util.RichHtmlToolBarHelper;
 import net.thevpc.echo.util.ClipboardHelper;
-import net.thevpc.pnote.gui.search.SearchDialog;
-import net.thevpc.pnote.service.search.SearchQuery;
+import net.thevpc.pnote.gui.search.PangaeaSearchDialog;
+import net.thevpc.echo.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
@@ -106,8 +106,10 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
 //                }
 //        );
         textArea.zoomOnMouseWheel().set(true);
-        ClipboardHelper.prepareToolBar(frame);
-        RichHtmlToolBarHelper.prepare(frame);
+        ClipboardHelper.prepareMenu(frame,false,true);
+        ClipboardHelper.prepareToolBar(frame,false,true);
+        RichHtmlToolBarHelper.prepareMenu(frame,false,true);
+        RichHtmlToolBarHelper.prepareToolBar(frame,false,true);
         AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
 //        textExtension.prepareEditor(editorBuilder, compactMode, win);
 //        htmlExtension.prepareEditor(editorBuilder, compactMode, win);
@@ -144,7 +146,7 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
 //        return "";
 //    }
     private void showSearchDialog() {
-        SearchDialog dialog = new SearchDialog(frame);
+        PangaeaSearchDialog dialog = new PangaeaSearchDialog(frame);
         dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
         dialog.setSearchTextElseClipboard(textArea.textSelection().get());
         SearchQuery query = dialog.showDialog();

@@ -68,7 +68,7 @@ public class NoteURLViewerComponent extends PangaeaNoteEditor implements URLView
     public void setContent(String content, String contentType) {
         PangaeaNote d = frame.app().newDocument();
         PangaeaNote n = new PangaeaNote().setContentType(contentType).setContent(frame.app().stringToElement(content));
-        ((PangaeaNoteApp) app()).addChild(d, n, -1);
+//        frame.treePane().addNoteChild(d, n, -1);
         super.setNote(n);
     }
 

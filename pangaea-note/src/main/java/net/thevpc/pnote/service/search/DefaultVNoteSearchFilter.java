@@ -5,6 +5,7 @@
  */
 package net.thevpc.pnote.service.search;
 
+import net.thevpc.echo.SearchQuery;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;

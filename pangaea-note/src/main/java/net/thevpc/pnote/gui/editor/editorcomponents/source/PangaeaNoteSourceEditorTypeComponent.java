@@ -14,8 +14,8 @@ import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.HighlightType;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.gui.SelectableElement;
-import net.thevpc.pnote.gui.search.SearchDialog;
-import net.thevpc.pnote.service.search.SearchQuery;
+import net.thevpc.pnote.gui.search.PangaeaSearchDialog;
+import net.thevpc.echo.SearchQuery;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
@@ -47,7 +47,8 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
         this.compactMode = compactMode;
         this.textArea = new TextArea(frame.app());
         this.textArea.rowNumberRuler().set(true);
-        ClipboardHelper.prepareToolBar(frame);
+        ClipboardHelper.prepareMenu(frame,false,true);
+        ClipboardHelper.prepareToolBar(frame,false,true);
         textArea.installDefaults();
         textArea.registerAccelerator("search-text", "control F", () -> showSearchDialog());
 //        for (PangaeaNoteTypeService contentTypeService : win.service().getContentTypeServices()) {
@@ -111,7 +112,7 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
     }
 
     public void showSearchDialog() {
-        SearchDialog dialog = new SearchDialog(frame);
+        PangaeaSearchDialog dialog = new PangaeaSearchDialog(frame);
         dialog.setTitle(Str.i18n("Message.search.searchInDocument"));
         dialog.setSearchTextElseClipboard(textArea.text().get().value());
         SearchQuery query = dialog.showDialog();

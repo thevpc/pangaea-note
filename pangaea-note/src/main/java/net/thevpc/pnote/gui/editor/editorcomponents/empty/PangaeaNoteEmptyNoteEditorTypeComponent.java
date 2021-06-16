@@ -104,7 +104,7 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends GridPane/*GradientP
         ContextMenu treePopupMenu = new ContextMenu(app);
         contextMenu().set(treePopupMenu);
         treePopupMenu.children().add(new Button("AddChildNote", () -> frame.addNote(), app));
-        treePopupMenu.children().addSeparator();
+//        treePopupMenu.children().addSeparator();
 
         AppMenu importMenu = (AppMenu) treePopupMenu.children().addFolder(Path.of("Import"));
         importMenu.text().set(Str.i18n("Import"));
@@ -120,7 +120,7 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends GridPane/*GradientP
                     -> frame.importFileInto(fileImporter.getSupportedFileExtensions()),
                     app), Path.of("/Import/*"));
         }
-        treePopupMenu.children().addSeparator();
+//        treePopupMenu.children().addSeparator();
         treePopupMenu.children().add(new Button("SearchNote", () -> frame.searchNote(), app));
 
     }

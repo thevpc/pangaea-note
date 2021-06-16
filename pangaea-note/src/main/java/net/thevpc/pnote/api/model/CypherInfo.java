@@ -5,6 +5,8 @@
  */
 package net.thevpc.pnote.api.model;
 
+import java.util.Objects;
+
 /**
  *
  * @author vpc
@@ -51,4 +53,33 @@ public class CypherInfo {
         return new CypherInfo(this);
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.algo);
+        hash = 53 * hash + Objects.hashCode(this.value);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CypherInfo other = (CypherInfo) obj;
+        if (!Objects.equals(this.algo, other.algo)) {
+            return false;
+        }
+        if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        return true;
+    }
+    
 }

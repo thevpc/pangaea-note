@@ -8,8 +8,11 @@ package net.thevpc.pnote.gui.editor.editorcomponents.urlviewer;
 import java.util.function.Consumer;
 
 import net.thevpc.common.i18n.Str;
+import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.Label;
 import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.echo.constraints.ContainerGrow;
 import net.thevpc.pnote.gui.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
@@ -17,7 +20,7 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
  *
  * @author vpc
  */
-public class UnsupportedViewerComponent extends Label implements URLViewerComponent {
+public class UnsupportedViewerComponent extends BorderPane implements URLViewerComponent {
 
     PangaeaNoteFrame frame;
     private final URLViewer outer;
@@ -30,7 +33,14 @@ public class UnsupportedViewerComponent extends Label implements URLViewerCompon
     public UnsupportedViewerComponent(
             String path, String extension, PangaeaNoteMimeType probedContentType,
             PangaeaNoteFrame frame, final URLViewer outer, Runnable onSuccess, Consumer<Exception> onError) {
-        super(Str.of("<<UNSUPPORTED>>"), frame.app());
+        super(frame.app());
+        Label label=new Label(
+                probedContentType==null?Str.of(""):
+                Str.i18n("UnsupportedViewerComponent.text"),app())
+                .with(t->t.anchor().set(Anchor.CENTER))
+                ;
+        parentConstraints().addAll(ContainerGrow.CENTER);
+        children().add(label);
         this.path = path;
         this.extension = extension;
         this.probedContentType = probedContentType;

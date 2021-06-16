@@ -20,7 +20,6 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements PangaeaNoteEditorTypeComponent {
 
     private PangaeaNote currentNote;
-    private boolean editable = true;
 
     public PangaeaNoteFileEditorTypeComponent(PangaeaNoteFrame frame) {
         super(frame);
@@ -79,6 +78,7 @@ public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements Pan
         this.currentNote = note;
         String c = frame().app().elementToString(note.getContent());
         navigate(c);
+        setEditable(currentNote==null?false:!currentNote.isReadOnly());
     }
 
     @Override
@@ -86,12 +86,7 @@ public class PangaeaNoteFileEditorTypeComponent extends URLViewer implements Pan
         if (currentNote != null && currentNote.isReadOnly()) {
             b = false;
         }
-        this.editable = b;
         super.setEditable(b);
     }
 
-    @Override
-    public boolean isEditable() {
-        return editable && super.isEditable();
-    }
 }

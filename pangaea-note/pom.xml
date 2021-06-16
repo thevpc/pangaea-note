@@ -78,6 +78,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>io.humble</groupId>-->
+<!--            <artifactId>humble-video-all</artifactId>-->
+<!--            <version>0.3.0</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>net.thevpc.nuts</groupId>
             <artifactId>nuts</artifactId>
@@ -101,7 +108,7 @@
         </dependency>
         <dependency>
             <groupId>net.thevpc.echo</groupId>
-            <artifactId>echo-api</artifactId>
+            <artifactId>echo</artifactId>
             <version>1.1.0</version>
         </dependency>
         <dependency>
@@ -129,10 +136,9 @@
         </dependency>
         
         <!--- PDF -->
-        
         <dependency>
             <groupId>org.icepdf.os</groupId>
-            <artifactId>icepdf-core</artifactId>
+            <artifactId>icepdf-viewer</artifactId>
             <version>6.2.2</version>
             <exclusions>
                 <exclusion>
@@ -140,12 +146,6 @@
                     <artifactId>jai_core</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.icepdf.os</groupId>
-            <artifactId>icepdf-viewer</artifactId>
-            <version>6.2.2</version>
         </dependency>
         
     </dependencies>
