@@ -7,6 +7,9 @@ package net.thevpc.pnote.gui.editor.editorcomponents.source;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
+import net.thevpc.echo.Button;
+import net.thevpc.echo.ScrollPane;
+import net.thevpc.echo.TextArea;
 import net.thevpc.echo.api.AppColor;
 import net.thevpc.echo.api.components.AppContextMenu;
 import net.thevpc.echo.util.ClipboardHelper;
@@ -21,6 +24,7 @@ import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
+import java.awt.*;
 import java.util.stream.Stream;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
@@ -68,7 +72,7 @@ public class PangaeaNoteSourceEditorTypeComponent extends BorderPane implements 
                 currentNote.setContent(frame.app().stringToElement(textArea.text().get().value()));
             }
         });
-        AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
+        ClipboardHelper.prepareContextMenu(textArea,false,false);
         children().add(new ScrollPane(textArea));
 //        GuiHelper.installUndoRedoManager(editorBuilder.editor());
 //        children().add(editorBuilder);

@@ -33,7 +33,7 @@ public class PangaeaAboutPane extends TabPane {
                                             AllGrow.NONE,
                                             ContainerGrow.ALL);
                                     t.children().addAll(
-                                            new Label(Str.i18n("About.panganeaNoteVersionLabel"),app),
+                                            new Label(Str.i18n("About.pangaeaNoteVersionLabel"),app),
                                             new TextField(Str.of(app.appContext().getAppVersion().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);

@@ -8,6 +8,7 @@ package net.thevpc.pnote.gui;
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.common.props.*;
+import net.thevpc.common.props.impl.PropertyAdjusterContext;
 import net.thevpc.echo.FileFilter;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.*;
@@ -125,6 +126,14 @@ public class PangaeaNoteFrame extends Frame {
                     app().i18n().locale().set(this.locale().get());
                 }
         );
+        state().adjusters().add(e -> {
+            WindowStateSet s=e.newValue();
+            if(s.is(WindowState.CLOSING)){
+                if(trySaveChangesOrDiscard()==ReturnType.CANCEL){
+                    e.doNothing();
+                }
+            }
+        });
     }
 
     public NutsWorkspace getNutsWorkspace() {

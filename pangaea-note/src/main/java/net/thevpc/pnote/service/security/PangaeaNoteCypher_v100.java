@@ -5,30 +5,22 @@
  */
 package net.thevpc.pnote.service.security;
 
-import net.thevpc.echo.api.CancelException;
-import net.thevpc.pnote.api.InvalidSecretException;
-import net.thevpc.pnote.api.PangaeaNoteCypher;
-import net.thevpc.pnote.api.model.CypherInfo;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.function.Supplier;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import net.thevpc.nuts.NutsApplicationContext;
-import net.thevpc.nuts.NutsContentType;
-import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
  * @author vpc
  */
-public class PangaeaNoteCypher_v1000 extends PangaeaNoteCypherBase {
+public class PangaeaNoteCypher_v100 extends PangaeaNoteCypherBase {
     public static final String ID="v1.0.0";
-    public PangaeaNoteCypher_v1000(NutsApplicationContext context) {
+    public PangaeaNoteCypher_v100(NutsApplicationContext context) {
         super(ID,context);
     }
 

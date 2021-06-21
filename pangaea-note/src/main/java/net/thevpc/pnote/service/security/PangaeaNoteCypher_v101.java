@@ -20,10 +20,11 @@ import java.util.Base64;
 /**
  * @author vpc
  */
-public class PangaeaNoteCypher_v1001 extends PangaeaNoteCypherBase {
+public class PangaeaNoteCypher_v101 extends PangaeaNoteCypherBase {
+
     public static final String ID = "v1.0.1";
 
-    public PangaeaNoteCypher_v1001(NutsApplicationContext context) {
+    public PangaeaNoteCypher_v101(NutsApplicationContext context) {
         super(ID, context);
     }
 
@@ -79,14 +80,16 @@ public class PangaeaNoteCypher_v1001 extends PangaeaNoteCypherBase {
             byte[] bytes = cipher.doFinal(Base64.getDecoder().decode(strToDecrypt));
 
             //bytes is padded to be multiple of 16 (bug in jdk11)
-            if (bytes.length < 4)
+            if (bytes.length < 4) {
                 throw new EOFException();
-            int ch1 = bytes[0];
-            int ch2 = bytes[1];
-            int ch3 = bytes[2];
-            int ch4 = bytes[3];
-            if ((ch1 | ch2 | ch3 | ch4) < 0)
+            }
+            int ch1 = bytes[0] & 0xff;
+            int ch2 = bytes[1] & 0xff;
+            int ch3 = bytes[2] & 0xff;
+            int ch4 = bytes[3] & 0xff;
+            if ((ch1 | ch2 | ch3 | ch4) < 0) {
                 throw new EOFException();
+            }
             int v = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
             bytes = Arrays.copyOfRange(bytes, 4, 4 + v);
             return new String(bytes);

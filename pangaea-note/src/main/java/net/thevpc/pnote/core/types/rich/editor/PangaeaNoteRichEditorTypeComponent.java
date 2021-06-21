@@ -110,7 +110,9 @@ public class PangaeaNoteRichEditorTypeComponent extends BorderPane implements Pa
         ClipboardHelper.prepareToolBar(frame,false,true);
         RichHtmlToolBarHelper.prepareMenu(frame,false,true);
         RichHtmlToolBarHelper.prepareToolBar(frame,false,true);
-        AppContextMenu popup = textArea.contextMenu().getOrCompute(() -> new ContextMenu(app()));
+        ClipboardHelper.prepareContextMenu(textArea,false,false);
+        RichHtmlToolBarHelper.prepareContextMenu(textArea,false,false);
+
 //        textExtension.prepareEditor(editorBuilder, compactMode, win);
 //        htmlExtension.prepareEditor(editorBuilder, compactMode, win);
 

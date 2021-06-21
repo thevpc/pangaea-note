@@ -69,8 +69,8 @@ import net.thevpc.echo.SearchQuery;
 import net.thevpc.pnote.service.search.VNoteSearchFilter;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
-import net.thevpc.pnote.service.security.PangaeaNoteCypher_v1000;
-import net.thevpc.pnote.service.security.PangaeaNoteCypher_v1001;
+import net.thevpc.pnote.service.security.PangaeaNoteCypher_v100;
+import net.thevpc.pnote.service.security.PangaeaNoteCypher_v101;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
 /**
@@ -99,8 +99,10 @@ public class PangaeaNoteApp extends DefaultApplication {
         "text/xml",
         "application/x-tex;application/x-latex;ext=tex,latex",
         "application/sql;ext=sql", //        "text/html",
+        "text/css;ext=css", //        "text/html",
+        "application/json;ext=json",
     };
-    public static final String SECURE_ALGO = PangaeaNoteCypher_v1001.ID;
+    public static final String SECURE_ALGO = PangaeaNoteCypher_v101.ID;
     private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(PangaeaNoteApp.class.getName());
     private static List<String> CUSTOM_ICONS = Arrays.asList(
             "bell",
@@ -321,8 +323,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         this.appContext = appContext;
         hideDisabled().set(true);
         this.executorService().set(appContext.getWorkspace().concurrent().executorService());
-        registerCypher(new PangaeaNoteCypher_v1000(appContext));
-        registerCypher(new PangaeaNoteCypher_v1001(appContext));
+        registerCypher(new PangaeaNoteCypher_v100(appContext));
+        registerCypher(new PangaeaNoteCypher_v101(appContext));
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
             {
                 checkLoaded();

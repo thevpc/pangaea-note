@@ -1,7 +1,5 @@
 package net.thevpc.pnote;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
 import net.thevpc.nuts.NutsApplication;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsArgument;
