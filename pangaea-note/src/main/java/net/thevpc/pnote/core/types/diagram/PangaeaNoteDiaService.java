@@ -12,7 +12,7 @@ import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.core.types.diagram.editor.DiagramEditorService;
 import net.thevpc.diagram4j.model.JDiagramModel;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;

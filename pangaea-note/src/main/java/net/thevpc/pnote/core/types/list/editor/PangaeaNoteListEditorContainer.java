@@ -14,9 +14,9 @@ import net.thevpc.pnote.core.types.list.PangaeaNoteListService;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListLayout;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListModel;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.echo.api.AppAlertResult;
 
 public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {

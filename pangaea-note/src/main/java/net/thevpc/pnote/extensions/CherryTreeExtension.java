@@ -20,17 +20,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NutsIOException;
 import net.thevpc.nuts.NutsLogVerb;
 import net.thevpc.nuts.NutsSession;
+import net.thevpc.nuts.NutsUtilStrings;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.rich.PangaeaNoteRichService;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.pnote.util.PNoteUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -180,7 +180,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
         }
 
         public RichText addStyle(String k, String v) {
-            if (!Applications.isBlank(v)) {
+            if (!NutsUtilStrings.isBlank(v)) {
                 this.style.put(k, v);
             }
             return this;
@@ -212,14 +212,14 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                         Attr a = (Attr) attr;
                         String k = a.getName();
                         String v = a.getValue();
-                        if (!Applications.isBlank(k)) {
+                        if (!NutsUtilStrings.isBlank(k)) {
                             switch (k) {
                                 case "name": {
                                     nn.setName(v);
                                     break;
                                 }
                                 case "tags": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         nn.setTags(
                                                 Arrays.asList(
                                                         v.split("[ ,;:]")
@@ -230,7 +230,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "custom_icon_id": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         int x = 0;
                                         try {
                                             x = Integer.parseInt(v);
@@ -245,31 +245,31 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "foregournd": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         nn.setTitleForeground(v);
                                     }
                                     break;
                                 }
                                 case "background": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         nn.setTitleBackground(v);
                                     }
                                     break;
                                 }
                                 case "readonly": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         nn.setReadOnly(Boolean.parseBoolean(v));
                                     }
                                     break;
                                 }
                                 case "is_bold": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         nn.setTitleBold(Boolean.parseBoolean(v));
                                     }
                                     break;
                                 }
                                 case "ts_creation": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         double d = 0;
                                         try {
                                             d = Double.parseDouble(v);
@@ -289,7 +289,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "ts_lastsave": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         double d = 0;
                                         try {
                                             d = Double.parseDouble(v);
@@ -309,7 +309,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "prog_lang": {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         switch (v) {
                                             case "java": {
                                                 nn.setContentType("text/java");
@@ -336,7 +336,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 default: {
-                                    if (!Applications.isBlank(v)) {
+                                    if (!NutsUtilStrings.isBlank(v)) {
                                         nn.getProperties().put(k, v);
                                     }
                                 }
@@ -354,14 +354,14 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                             nn.getChildren().add(parseCherryTreeXmlNote(e2, app));
                         } else if (e2.getTagName().equals("rich_text")) {
                             String link = e.getAttribute("link");
-                            if (!Applications.isBlank(link)) {
+                            if (!NutsUtilStrings.isBlank(link)) {
                                 richTexts.add(
                                         new RichText()
                                                 .addStyle("foreground", e2.getAttribute("foreground"))
                                                 .addStyle("background", e2.getAttribute("background"))
                                                 .setText(
                                                         "<a href='" + link + "'>"
-                                                        + OtherUtils.escapeHtml(e.getTextContent())
+                                                        + PNoteUtils.escapeHtml(e.getTextContent())
                                                         + "/>"
                                                 ).setEscaped(true)
                                 );
@@ -389,7 +389,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     if (x.style.isEmpty()) {
                                         return x.isEscaped() ? t
                                                 : ("<pre>"
-                                                + OtherUtils.escapeHtml(t)
+                                                + PNoteUtils.escapeHtml(t)
                                                 + "</pre>");
                                     } else {
                                         StringBuilder sb = new StringBuilder();
@@ -399,7 +399,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                         sb.append(
                                                 x.isEscaped() ? t
                                                 : ("<pre>"
-                                                + OtherUtils.escapeHtml(t)
+                                                + PNoteUtils.escapeHtml(t)
                                                 + "</pre>")
                                         );
                                         sb.append("</div>");

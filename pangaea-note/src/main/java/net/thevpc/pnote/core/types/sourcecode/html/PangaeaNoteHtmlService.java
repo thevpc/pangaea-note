@@ -6,7 +6,7 @@
 package net.thevpc.pnote.core.types.sourcecode.html;
 
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.types.sourcecode.html.refactor.PlainToHtmlContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;

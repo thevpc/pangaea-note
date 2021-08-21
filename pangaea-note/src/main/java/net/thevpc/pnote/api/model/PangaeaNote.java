@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import net.thevpc.echo.impl.TreeNode;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.util.PangaeaNoteError;
+import net.thevpc.pnote.core.frame.util.PangaeaNoteError;
 
 /**
  *

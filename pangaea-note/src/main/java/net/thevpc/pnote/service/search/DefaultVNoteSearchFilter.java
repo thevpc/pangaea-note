@@ -6,12 +6,12 @@
 package net.thevpc.pnote.service.search;
 
 import net.thevpc.echo.SearchQuery;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.service.search.strsearch.StringQuerySearch;
 import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 import java.util.stream.Stream;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 
 /**

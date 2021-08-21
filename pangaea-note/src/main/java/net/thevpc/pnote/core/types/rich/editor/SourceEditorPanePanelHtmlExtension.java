@@ -31,8 +31,8 @@
 //import net.thevpc.more.shef.BlocEnum;
 //import net.thevpc.more.shef.InlineStyleEnum;
 //import net.thevpc.more.shef.ShefHelper;
-//import net.thevpc.pnote.gui.PangaeaNoteFrame;
-//import net.thevpc.pnote.gui.editor.editorcomponents.source.AbstractSourceEditorPaneExtension;
+//import net.thevpc.pnote.frame.PangaeaNoteFrame;
+//import net.thevpc.pnote.frame.editor.editorcomponents.source.AbstractSourceEditorPaneExtension;
 //import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 //
 ///**

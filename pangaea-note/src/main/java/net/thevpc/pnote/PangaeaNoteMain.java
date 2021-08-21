@@ -1,18 +1,10 @@
 package net.thevpc.pnote;
 
-import net.thevpc.nuts.NutsApplication;
-import net.thevpc.nuts.NutsApplicationContext;
-import net.thevpc.nuts.NutsArgument;
-import net.thevpc.nuts.NutsCommandAliasConfig;
-import net.thevpc.nuts.NutsCommandLine;
-import net.thevpc.nuts.NutsConfirmationMode;
-import net.thevpc.nuts.NutsId;
-import net.thevpc.nuts.NutsSession;
-import net.thevpc.nuts.NutsWorkspace;
-import net.thevpc.nuts.NutsWorkspaceCommandAlias;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.nuts.*;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
-public class PangaeaNoteMain extends NutsApplication {
+public class PangaeaNoteMain implements NutsApplication {
     String PREFERRED_ALIAS = "pnote";
 
     public static void main(String[] args) {
@@ -30,6 +22,47 @@ public class PangaeaNoteMain extends NutsApplication {
 //        }
         PangaeaSplashScreen.get().tic();
         new PangaeaNoteMain().runAndExit(args);
+    }
+
+    private void runGui(NutsApplicationContext appContext) {
+        new PangaeaNoteApp(appContext).run();
+    }
+
+    private void runInteractiveConsole(NutsApplicationContext appContext) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private void runNonInteractiveConsole(NutsApplicationContext appContext) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private NutsWorkspaceCustomCommand findDefaultAlias(NutsApplicationContext applicationContext) {
+        NutsWorkspace ws = applicationContext.getWorkspace();
+        NutsId appId = applicationContext.getAppId();
+        return ws.commands().findCommand(PREFERRED_ALIAS, appId, appId);
+    }
+
+    @Override
+    public void onInstallApplication(NutsApplicationContext applicationContext) {
+        NutsWorkspace ws = applicationContext.getWorkspace();
+        ws.env().addLauncher(new NutsLauncherOptions()
+                .setId(applicationContext.getAppId())
+                .setAlias(PREFERRED_ALIAS)
+                .setCreateAlias(true)
+                .setCreateMenuShortcut(NutsActionSupportCondition.PREFERRED)
+                .setCreateDesktopShortcut(NutsActionSupportCondition.PREFERRED)
+        );
+    }
+
+    @Override
+    public void onUpdateApplication(NutsApplicationContext applicationContext) {
+        onInstallApplication(applicationContext);
+    }
+
+    @Override
+    public void onUninstallApplication(NutsApplicationContext applicationContext) {
+        NutsWorkspace ws = applicationContext.getWorkspace();
+        ws.commands().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
     @Override
@@ -77,60 +110,4 @@ public class PangaeaNoteMain extends NutsApplication {
         }
     }
 
-    private void runGui(NutsApplicationContext appContext) {
-        new PangaeaNoteApp(appContext).run();
-    }
-
-    private void runInteractiveConsole(NutsApplicationContext appContext) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    private void runNonInteractiveConsole(NutsApplicationContext appContext) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    private NutsWorkspaceCommandAlias findDefaultAlias(NutsApplicationContext applicationContext) {
-        NutsWorkspace ws = applicationContext.getWorkspace();
-        NutsId appId = applicationContext.getAppId();
-        return ws.aliases().find(PREFERRED_ALIAS, appId, appId);
-    }
-
-    @Override
-    protected void onUninstallApplication(NutsApplicationContext applicationContext) {
-        NutsWorkspace ws = applicationContext.getWorkspace();
-        NutsSession session = applicationContext.getSession();
-        NutsWorkspaceCommandAlias a = findDefaultAlias(applicationContext);
-        if (a != null) {
-            ws.aliases().remove(PREFERRED_ALIAS);
-        }
-    }
-
-    @Override
-    protected void onUpdateApplication(NutsApplicationContext applicationContext) {
-        onInstallApplication(applicationContext);
-    }
-
-    @Override
-    protected void onInstallApplication(NutsApplicationContext applicationContext) {
-        NutsWorkspace ws = applicationContext.getWorkspace();
-        NutsSession session = applicationContext.getSession();
-        NutsWorkspaceCommandAlias a = findDefaultAlias(applicationContext);
-        boolean update = false;
-        boolean add = false;
-        if (a != null) {
-            update = true;
-        } else if (ws.aliases().find(PREFERRED_ALIAS) == null) {
-            add = true;
-        }
-        if (update || add) {
-            ws.aliases()
-                    .setSession(update ? session.copy().setConfirm(NutsConfirmationMode.YES) : session)
-                    .add(new NutsCommandAliasConfig()
-                    .setName(PREFERRED_ALIAS)
-                    .setOwner(applicationContext.getAppId())
-                    .setCommand(applicationContext.getAppId().getShortName())
-                    );
-        }
-    }
-    
 }

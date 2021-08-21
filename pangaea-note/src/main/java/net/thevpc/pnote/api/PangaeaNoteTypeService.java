@@ -9,8 +9,8 @@ import net.thevpc.pnote.api.model.ContentTypeSelector;
 import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 
 /**

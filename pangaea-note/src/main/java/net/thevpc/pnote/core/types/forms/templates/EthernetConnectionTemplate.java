@@ -14,7 +14,7 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldType;
 import net.thevpc.pnote.api.AbstractPangaeaNoteTemplate;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 /**
  *

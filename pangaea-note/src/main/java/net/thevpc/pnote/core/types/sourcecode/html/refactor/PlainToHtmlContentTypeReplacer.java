@@ -5,11 +5,11 @@
  */
 package net.thevpc.pnote.core.types.sourcecode.html.refactor;
 
-import net.thevpc.pnote.gui.PangaeaContentTypes;
+import net.thevpc.pnote.core.frame.PangaeaContentTypes;
 import net.thevpc.pnote.api.PangaeaContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 /**
  *

@@ -1,11 +1,11 @@
 package net.thevpc.pnote.core.editors;
 
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.gui.editor.editorcomponents.source.PangaeaNoteSourceEditorTypeComponent;
+import net.thevpc.pnote.core.types.sourcecode.PangaeaNoteSourceEditorTypeComponent;
 
 public class SourceEditorService implements PangaeaNoteEditorService {
     @Override

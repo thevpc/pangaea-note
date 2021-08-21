@@ -5,23 +5,20 @@
  */
 package net.thevpc.pnote.core.types.forms.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.pnote.core.types.forms.util.PangaeaNoteFormUtils;
+import net.thevpc.pnote.util.PNoteUtils;
+
+import java.util.*;
 
 /**
- *
  * @author vpc
  */
 public class PangaeaNoteObjectDocument {
 
     private PangaeaNoteObjectDescriptor descriptor;
     private List<PangaeaNoteObject> values = new ArrayList<>();
+
 
     public PangaeaNoteObjectDescriptor getDescriptor() {
         return descriptor;
@@ -36,16 +33,16 @@ public class PangaeaNoteObjectDocument {
         return values;
     }
 
+    public PangaeaNoteObjectDocument setValues(List<PangaeaNoteObject> values) {
+        this.values = values;
+        return this;
+    }
+
     public PangaeaNoteObjectDocument addObject(PangaeaNoteObject value) {
         if (values == null) {
             values = new ArrayList<>();
         }
         values.add(value);
-        return this;
-    }
-
-    public PangaeaNoteObjectDocument setValues(List<PangaeaNoteObject> values) {
-        this.values = values;
         return this;
     }
 
@@ -62,7 +59,7 @@ public class PangaeaNoteObjectDocument {
         descriptor.addField(descr);
         if (values != null) {
             for (PangaeaNoteObject o : values) {
-                if (o.getFields()==null || !o.getFields().stream().anyMatch(x -> Objects.equals(x.getName(), descr.getName()))) {
+                if (o.getFields() == null || !o.getFields().stream().anyMatch(x -> Objects.equals(x.getName(), descr.getName()))) {
                     o.addField(new PangaeaNoteField().setName(descr.getName()).setValue(descr.getDefaultValue()));
                 }
             }
@@ -72,7 +69,7 @@ public class PangaeaNoteObjectDocument {
 
     public void removeField(String fieldName) {
         if (descriptor != null && descriptor.getFields() != null) {
-            for (Iterator<PangaeaNoteFieldDescriptor> it = descriptor.getFields().iterator(); it.hasNext();) {
+            for (Iterator<PangaeaNoteFieldDescriptor> it = descriptor.getFields().iterator(); it.hasNext(); ) {
                 PangaeaNoteFieldDescriptor field = it.next();
                 if (Objects.equals(field.getName(), fieldName)) {
                     it.remove();
@@ -81,7 +78,7 @@ public class PangaeaNoteObjectDocument {
         }
         if (values != null) {
             for (PangaeaNoteObject o : values) {
-                for (Iterator<PangaeaNoteField> it = o.getFields().iterator(); it.hasNext();) {
+                for (Iterator<PangaeaNoteField> it = o.getFields().iterator(); it.hasNext(); ) {
                     PangaeaNoteField field = it.next();
                     if (Objects.equals(field.getName(), fieldName)) {
                         it.remove();
@@ -92,6 +89,9 @@ public class PangaeaNoteObjectDocument {
     }
 
     public void renameField(String from, String to) {
+        if (from.equals(to)) {
+            return;
+        }
         if (descriptor != null && descriptor.getFields() != null) {
             for (PangaeaNoteFieldDescriptor field : descriptor.getFields()) {
                 if (Objects.equals(field.getName(), from)) {
@@ -116,10 +116,112 @@ public class PangaeaNoteObjectDocument {
             theField = descriptor.findField(fieldName);
         }
         if (theField != null) {
-            theField.setContentType(contentType);
+            theField.getOptions().setContentType(contentType);
         }
     }
-    
+
+    public boolean changeStructure(PangaeaNoteObjectDescriptor newDescr) {
+        List<PangaeaNoteFieldDescriptor> fieldDescs = newDescr.getFields();
+        if (fieldDescs.isEmpty()) {
+            throw new IllegalArgumentException("missing fields");
+        }
+        Map<String, PangaeaNoteFieldDescriptor> fieldDescMapByName = new LinkedHashMap<>();
+        Map<String, PangaeaNoteFieldDescriptor> fieldDescMapByLabel = new LinkedHashMap<>();
+        for (PangaeaNoteFieldDescriptor field : newDescr.getFields()) {
+            String n1 = NutsUtilStrings.trim(field.getName());
+            if (n1.isEmpty()) {
+                throw new IllegalArgumentException("empty field name");
+            }
+            if (fieldDescMapByName.containsKey(n1)) {
+                throw new IllegalArgumentException("field name clash: " + n1);
+            }
+            field = field.copy();
+            if (field.getType() == null) {
+                field.setType(PangaeaNoteFieldType.TEXT);
+            }
+            //this is the new name!
+            field.getOptions().setLabelName(PangaeaNoteFormUtils.getFieldName(field));
+            if (fieldDescMapByLabel.containsKey(field.getOptions().getLabelName())) {
+                throw new IllegalArgumentException("field name clash: " + n1);
+            }
+            fieldDescMapByName.put(n1, field);
+            fieldDescMapByLabel.put(field.getOptions().getLabelName(), field);
+        }
+        List<PangaeaNoteObject> newValues = new ArrayList<>();
+        for (PangaeaNoteObject value : values) {
+            PangaeaNoteObject value2 = new PangaeaNoteObject();
+            for (PangaeaNoteField field : value.getFields()) {
+                String n1 = NutsUtilStrings.trim(field.getName());
+                PangaeaNoteFieldDescriptor fdesc = fieldDescMapByName.get(n1);
+                if (fdesc != null) {
+                    String fn1 = PangaeaNoteFormUtils.getFieldName(fdesc);
+                    field = field.copy();
+                    field.setName(fn1);
+                    //reset label if it matches the new field desc name
+                    if (NutsUtilStrings.trim(field.getOptions().getLabelName()).equals(fn1)) {
+                        field.getOptions().setLabelName(null);
+                    }
+                    if (!PangaeaNoteFormUtils.isBlank(field)) {
+                        PangaeaNoteFieldDescriptor oldFieldDescriptor = descriptor.findField(n1);
+                        PangaeaNoteFieldType oldType = oldFieldDescriptor.getType();
+                        PangaeaNoteFieldType newType = fdesc.getType();
+                        if (oldType == null) {
+                            oldType = newType;
+                        }
+                        if (oldType != newType) {
+                            PangaeaNoteFormUtils.changeFieldType(field, oldType, newType, fdesc.getValues());
+                        }
+                        value2.addField(field);
+                    }
+                } else {
+                    //field is removed!
+                }
+            }
+            newValues.add(value2);
+        }
+
+        //fix new names
+        for (PangaeaNoteFieldDescriptor value : fieldDescMapByName.values()) {
+            value.setName(value.getOptions().getLabelName());
+            value.getOptions().setLabelName(null);
+        }
+        PangaeaNoteObjectDescriptor newDescriptor = new PangaeaNoteObjectDescriptor().setName(NutsUtilStrings.trim(newDescr.getName()))
+                .addFields(fieldDescMapByName.values().toArray(new PangaeaNoteFieldDescriptor[0]));
+
+        //
+        setDescriptor(newDescriptor);
+        setValues(newValues);
+        return true;
+    }
+
+    public boolean changeField(String fieldName, PangaeaNoteFieldDescriptor newDescr) {
+        PangaeaNoteFieldDescriptor oldDescr = null;
+        if (descriptor != null) {
+            oldDescr = descriptor.findField(fieldName);
+        }
+        if (oldDescr != null) {
+            if (newDescr != null) {
+                if (!Objects.equals(newDescr.getName(), oldDescr.getName())) {
+                    renameField(oldDescr.getName(), newDescr.getName());
+                }
+                PangaeaNoteFieldOptions newOptions = newDescr.getOptions();
+                if (newOptions == null) {
+                    throw new IllegalArgumentException("missing options");
+                }
+                if (!Objects.equals(newOptions.getContentType(), oldDescr.getOptions().getContentType())) {
+                    changeContentType(oldDescr.getName(), oldDescr.getOptions().getContentType());
+                }
+                if (!Objects.equals(newDescr.getType(), oldDescr.getType())) {
+                    changeType(oldDescr.getName(), newDescr.getType());
+                }
+                oldDescr.setOptions(newOptions);
+                return true;
+            }
+
+        }
+        return false;
+    }
+
     public void changeType(String fieldName, PangaeaNoteFieldType newFieldType) {
         PangaeaNoteFieldDescriptor theField = null;
         if (descriptor != null) {
@@ -283,11 +385,11 @@ public class PangaeaNoteObjectDocument {
 
     public void moveFieldDown(String name) {
         int from = descriptor.indexOfField(name);
-        OtherUtils.switchListValues(descriptor.getFields(), from, from + 1);
+        PNoteUtils.switchListValues(descriptor.getFields(), from, from + 1);
     }
 
     public void moveFieldUp(String name) {
         int from = descriptor.indexOfField(name);
-        OtherUtils.switchListValues(descriptor.getFields(), from, from - 1);
+        PNoteUtils.switchListValues(descriptor.getFields(), from, from - 1);
     }
 }

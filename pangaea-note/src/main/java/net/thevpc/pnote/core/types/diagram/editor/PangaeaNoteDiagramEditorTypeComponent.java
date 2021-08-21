@@ -19,7 +19,7 @@ import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
 import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
 import net.thevpc.pnote.core.types.diagram.ser.JDiagramBoundsMapper;
 import net.thevpc.pnote.core.types.diagram.ser.JDiagramGeometryMapper;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 import java.util.Set;
 import net.thevpc.pnote.api.model.PangaeaNote;

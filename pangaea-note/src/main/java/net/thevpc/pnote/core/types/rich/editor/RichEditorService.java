@@ -1,10 +1,9 @@
 package net.thevpc.pnote.core.types.rich.editor;
 
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
-import net.thevpc.pnote.core.types.rich.editor.PangaeaNoteRichEditorTypeComponent;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 
 public class RichEditorService implements PangaeaNoteEditorService {

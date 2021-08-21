@@ -8,7 +8,8 @@ package net.thevpc.pnote.core.types.forms.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import net.thevpc.pnote.util.OtherUtils;
+
+import net.thevpc.pnote.util.PNoteUtils;
 
 /**
  *
@@ -19,9 +20,26 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
     private String name;
     private String defaultValue;
     private PangaeaNoteFieldType type;
-    private String contentType;
     private List<String> values;
+    private PangaeaNoteFieldOptions options;
+
+    @Deprecated
+    private String contentType;
+    @Deprecated
     private String pattern;
+
+    public PangaeaNoteFieldDescriptor() {
+        options=new PangaeaNoteFieldOptions();
+    }
+
+    public PangaeaNoteFieldOptions getOptions() {
+        return options;
+    }
+
+    public PangaeaNoteFieldDescriptor setOptions(PangaeaNoteFieldOptions options) {
+        this.options = options;
+        return this;
+    }
 
     public String getName() {
         return name;
@@ -70,29 +88,14 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
         return this;
     }
 
-    public String getPattern() {
-        return pattern;
-    }
-
-    public PangaeaNoteFieldDescriptor setPattern(String pattern) {
-        this.pattern = pattern;
-        return this;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public PangaeaNoteFieldDescriptor setContentType(String contentType) {
-        this.contentType = contentType;
-        return this;
-    }
-
     public PangaeaNoteFieldDescriptor copy() {
         try {
             PangaeaNoteFieldDescriptor d = (PangaeaNoteFieldDescriptor) super.clone();
             if (d.values != null) {
                 d.values = new ArrayList<>(d.values);
+            }
+            if(d.options!=null){
+                d.options=d.options.copy();
             }
             return d;
         } catch (Exception ex) {
@@ -107,8 +110,9 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
         hash = 29 * hash + Objects.hashCode(this.defaultValue);
         hash = 29 * hash + Objects.hashCode(this.type);
         hash = 29 * hash + Objects.hashCode(this.values);
-        hash = 29 * hash + Objects.hashCode(this.pattern);
-        hash = 29 * hash + Objects.hashCode(this.contentType);
+        hash = 29 * hash + Objects.hashCode(this.options);
+//        hash = 29 * hash + Objects.hashCode(this.pattern);
+//        hash = 29 * hash + Objects.hashCode(this.contentType);
         return hash;
     }
 
@@ -130,10 +134,13 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
         if (!Objects.equals(this.defaultValue, other.defaultValue)) {
             return false;
         }
-        if (!Objects.equals(this.pattern, other.pattern)) {
-            return false;
-        }
-        if (!Objects.equals(this.contentType, other.contentType)) {
+//        if (!Objects.equals(this.pattern, other.pattern)) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.contentType, other.contentType)) {
+//            return false;
+//        }
+        if (!Objects.equals(this.options, other.options)) {
             return false;
         }
         if (this.type != other.type) {
@@ -147,7 +154,8 @@ public class PangaeaNoteFieldDescriptor implements Cloneable {
 
     @Override
     public String toString() {
-        return OtherUtils.toEscapedName(name) + ":" + (type == null ? "<null>" : type.toString().toLowerCase());
+        return PNoteUtils.toEscapedName(name) + ":" + (type == null ? "<null>" : type.toString().toLowerCase());
     }
+
 
 }

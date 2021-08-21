@@ -5,6 +5,7 @@ import net.thevpc.common.props.Props;
 import net.thevpc.common.props.WritableList;
 import net.thevpc.common.props.WritableValue;
 import net.thevpc.echo.*;
+import net.thevpc.echo.api.AppContainerChildren;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.api.components.AppContainer;
 import net.thevpc.echo.constraints.*;
@@ -16,10 +17,12 @@ public class DataPane<T> extends BorderPane {
     public static PaneLayout VERTICAL = new Vertical(1);
     public static PaneLayout HORIZONTAL = new Horizontal(1);
     public static PaneLayout TABS = new Tabs();
+    boolean withSeparator = true;
+    boolean containerAcceptsSeparator = false;
     private WritableValue<PaneLayout> paneLayout = Props.of("paneLayout").valueOf(PaneLayout.class, VERTICAL);
     private WritableList<T> values;
     private DataPaneRenderer<T> renderer;
-    private WritableValue<AppContainer> container=Props.of("container").valueOf(AppContainer.class);
+    private WritableValue<AppContainer> container = Props.of("container").valueOf(AppContainer.class);
 
     public DataPane(Class componentType, DataPaneRenderer<T> renderer, Application app) {
         super(app);
@@ -66,6 +69,7 @@ public class DataPane<T> extends BorderPane {
                         ContainerGrow.TOP_ROW
                 );
                 container = p;
+                containerAcceptsSeparator = true;
             } else if (newLayout instanceof Horizontal) {
                 int rows = ((Horizontal) newLayout).rows;
                 if (rows == 1) {
@@ -78,13 +82,15 @@ public class DataPane<T> extends BorderPane {
                     container = p;
                     p.parentConstraints().addAll(AllMargins.of(3), ContainerGrow.TOP_LEFT_CORNER);
                 }
+                containerAcceptsSeparator = true;
             } else if (newLayout instanceof Tabs) {
                 container = new TabPane(app());
+                containerAcceptsSeparator = false;
             } else {
                 throw new IllegalArgumentException("not supported yet " + newLayout);
             }
             children().clear();
-            container.userObjects().put(PaneLayout.class.getName(),newLayout);
+            container.userObjects().put(PaneLayout.class.getName(), newLayout);
             container.anchor().set(Anchor.CENTER);
             children().add(container);
             this.container.set(container);
@@ -93,38 +99,67 @@ public class DataPane<T> extends BorderPane {
                 //re-render
                 for (int i = 0; i < old.size(); i++) {
                     //T value=(T) old.get(i).userObjects().get(DataPane.class.getName()+":value");
-                    T value=values.get(i);
-                    renderer.set(i,value,old.get(i),this);
+                    T value = values.get(i);
+                    renderer.set(i, value, old.get(i), this);
                 }
             }
         }
     }
 
+    private boolean isEffectiveWithSeparator() {
+        return withSeparator && containerAcceptsSeparator;
+    }
+
+    private int indexOfElement(int i) {
+        if (i < 0) {
+            return i;
+        }
+        if (isEffectiveWithSeparator()) {
+            return i * 2;
+        }
+        return i;
+    }
 
     protected void valuesChanged(PropertyEvent event) {
+        AppContainerChildren<AppComponent> containerChildren = this.container().get().children();
         switch (event.eventType()) {
             case ADD: {
                 AppComponent c = renderer.create(this);
                 T newValue = event.newValue();
-                c.userObjects().put(DataPane.class.getName()+":value",newValue);
+                c.userObjects().put(DataPane.class.getName() + ":value", newValue);
                 renderer.set((Integer) event.index(), newValue, c, this);
-                this.container().get().children().add(c);
+                if (isEffectiveWithSeparator()) {
+                    if (containerChildren.size() > 0) {
+                        int index = containerChildren.size() / 2;
+                        containerChildren.add(createSeparator(index, c));
+                    }
+                }
+                containerChildren.add(c);
                 break;
             }
             case REMOVE: {
-                AppComponent c = this.container().get().children().removeAt((Integer) event.index());
+                int ii = indexOfElement((Integer) event.index());
+                AppComponent c = containerChildren.removeAt(ii);
+                if (isEffectiveWithSeparator()) {
+                    containerChildren.removeAt(ii - 1);
+                }
                 renderer.dispose(c, this);
-                c.userObjects().put(DataPane.class.getName()+":value",null);
+                c.userObjects().put(DataPane.class.getName() + ":value", null);
                 break;
             }
             case UPDATE: {
-                AppComponent c = this.container().get().children().get((Integer) event.index());
+                int ii = indexOfElement((Integer) event.index());
+                AppComponent c = containerChildren.get(ii);
                 T newValue = event.newValue();
-                c.userObjects().put(DataPane.class.getName()+":value",newValue);
+                c.userObjects().put(DataPane.class.getName() + ":value", newValue);
                 renderer.set(event.index(), newValue, c, this);
                 break;
             }
         }
+    }
+
+    protected AppComponent createSeparator(int index, AppComponent c) {
+        return new Separator(app());
     }
 
 

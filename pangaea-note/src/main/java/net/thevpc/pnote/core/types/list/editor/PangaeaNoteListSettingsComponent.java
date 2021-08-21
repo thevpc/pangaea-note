@@ -13,7 +13,7 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.list.PangaeaNoteListService;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListLayout;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListModel;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

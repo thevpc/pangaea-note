@@ -18,8 +18,8 @@ import net.thevpc.pnote.core.viewers.image.ImageViewer;
 import net.thevpc.pnote.core.viewers.libreoffice.LibreOfficeViewer;
 import net.thevpc.pnote.core.viewers.pdf.PdfViewer;
 import net.thevpc.pnote.core.viewers.web.WebViewer;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.service.DefaultPangaeaNoteSourceCodeService;
 import net.thevpc.pnote.service.refactor.EmptySourceContentTypeReplacer;
 

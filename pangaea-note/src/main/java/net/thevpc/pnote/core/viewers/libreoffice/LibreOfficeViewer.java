@@ -12,9 +12,9 @@ import java.util.function.Consumer;
 
 import net.thevpc.echo.api.SupportSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
+import net.thevpc.pnote.core.types.file.editor.URLViewer;
+import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**

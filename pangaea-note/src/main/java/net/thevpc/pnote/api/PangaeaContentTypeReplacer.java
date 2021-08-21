@@ -7,7 +7,7 @@ package net.thevpc.pnote.api;
 
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 /**
  *

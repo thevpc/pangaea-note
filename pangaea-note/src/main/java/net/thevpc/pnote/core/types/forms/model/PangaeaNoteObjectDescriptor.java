@@ -6,6 +6,7 @@
 package net.thevpc.pnote.core.types.forms.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +52,11 @@ public class PangaeaNoteObjectDescriptor implements Cloneable {
         return -1;
     }
 
+    public PangaeaNoteObjectDescriptor addFields(PangaeaNoteFieldDescriptor ...f) {
+        getFields().addAll(Arrays.asList(f));
+        return this;
+    }
+
     public PangaeaNoteObjectDescriptor addField(PangaeaNoteFieldDescriptor f) {
         if (fields == null) {
             fields = new ArrayList<>();
@@ -62,6 +68,9 @@ public class PangaeaNoteObjectDescriptor implements Cloneable {
     }
 
     public List<PangaeaNoteFieldDescriptor> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<>();
+        }
         return fields;
     }
 

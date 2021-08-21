@@ -1,7 +1,7 @@
 package net.thevpc.pnote.api;
 
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 public interface PangaeaNoteEditorService {
     PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win);

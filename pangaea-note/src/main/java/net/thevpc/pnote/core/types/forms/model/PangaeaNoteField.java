@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.core.types.forms.model;
 
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.pnote.util.PNoteUtils;
 
 /**
  *
@@ -15,9 +15,12 @@ public class PangaeaNoteField {
 
     private String name;
     private String value;
+    @Deprecated
     private boolean hidden;
+    private PangaeaNoteFieldOptions options;
 
     public PangaeaNoteField() {
+        options=new PangaeaNoteFieldOptions();
     }
 
     public PangaeaNoteField(String name, String value) {
@@ -44,22 +47,22 @@ public class PangaeaNoteField {
     }
 
     public PangaeaNoteField copy() {
-        return new PangaeaNoteField().setName(name).setValue(value).setHidden(hidden);
+        return new PangaeaNoteField().setName(name).setValue(value)
+                .setOptions(options==null?null:options.copy());
+    }
+
+    public PangaeaNoteFieldOptions getOptions() {
+        return options;
+    }
+
+    public PangaeaNoteField setOptions(PangaeaNoteFieldOptions options) {
+        this.options = options;
+        return this;
     }
 
     @Override
     public String toString() {
-        return OtherUtils.toEscapedName(name)
-                + "=" + OtherUtils.toEscapedValue(value);
+        return PNoteUtils.toEscapedName(name)
+                + "=" + PNoteUtils.toEscapedValue(value);
     }
-
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    public PangaeaNoteField setHidden(boolean hidden) {
-        this.hidden = hidden;
-        return this;
-    }
-
 }

@@ -18,6 +18,10 @@ public class PangaeaNoteObject {
 
     private List<PangaeaNoteField> fields;
 
+    public PangaeaNoteField findField(String name) {
+        return findFields(name).stream().findFirst().orElse(null);
+    }
+
     public List<PangaeaNoteField> findFields(String name) {
         return fields==null?null:fields.stream().filter(x->x!=null && Objects.equals(name, x.getName())).collect(Collectors.toList());
     }

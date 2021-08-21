@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.core.types.plain;
 
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.service.refactor.AnythingToPlainContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;

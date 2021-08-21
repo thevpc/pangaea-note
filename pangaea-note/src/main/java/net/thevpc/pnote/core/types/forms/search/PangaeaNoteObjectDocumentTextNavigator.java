@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.NutsUtilStrings;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteField;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;
@@ -20,7 +20,7 @@ import net.thevpc.pnote.service.search.strsearch.StringToPatternPortionImpl;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 /**
  *
@@ -46,7 +46,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
         List<DocumentTextPart<PangaeaNote>> all = new ArrayList<>();
         if (document.getDescriptor().getFields() != null) {
             for (PangaeaNoteFieldDescriptor value : document.getDescriptor().getFields()) {
-                if (!Applications.isBlank(value.getName())) {
+                if (!NutsUtilStrings.isBlank(value.getName())) {
                     //String key, String text, T object, String stringValue
                     all.add(new StringToPatternPortionImpl<PangaeaNote>("fieldDescriptor", value.getName(), note, value, value.getName()));
                 }
@@ -56,7 +56,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
             for (PangaeaNoteObject value : document.getValues()) {
                 for (PangaeaNoteField field : value.getFields()) {
                     String s = field.getValue();
-                    if (!Applications.isBlank(s)) {
+                    if (!NutsUtilStrings.isBlank(s)) {
                         all.add(new StringToPatternPortionImpl("fieldValue", s, note, field, s));
                     }
                 }

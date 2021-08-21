@@ -14,8 +14,8 @@
 //import java.util.Objects;
 //import java.util.Set;
 //import net.thevpc.nuts.NutsElement;
-//import net.thevpc.pnote.gui.util.PangaeaNoteError;
-//import net.thevpc.pnote.util.OtherUtils;
+//import net.thevpc.pnote.frame.util.PangaeaNoteError;
+//import net.thevpc.pnote.util.PNoteUtils;
 //
 ///**
 // *
@@ -460,11 +460,11 @@
 //    }
 //
 //    public void moveDown(int from) {
-//        OtherUtils.switchListValues(children, from, from + 1);
+//        PNoteUtils.switchListValues(children, from, from + 1);
 //    }
 //
 //    public void moveUp(int from) {
-//        OtherUtils.switchListValues(children, from, from - 1);
+//        PNoteUtils.switchListValues(children, from, from - 1);
 //    }
 //
 //    public void moveLast(int from) {

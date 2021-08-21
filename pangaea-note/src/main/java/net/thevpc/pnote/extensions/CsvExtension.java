@@ -29,7 +29,7 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObject;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**

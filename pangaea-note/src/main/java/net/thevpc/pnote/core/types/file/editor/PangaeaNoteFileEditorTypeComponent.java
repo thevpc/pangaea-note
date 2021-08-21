@@ -7,9 +7,7 @@ package net.thevpc.pnote.core.types.file.editor;
 
 import java.util.Objects;
 
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerListener;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
 

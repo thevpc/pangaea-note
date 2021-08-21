@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
+import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;

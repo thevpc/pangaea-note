@@ -12,10 +12,12 @@ import java.util.List;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;
+import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldType;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
 import net.thevpc.pnote.core.types.forms.templates.UrlCardTemplate;
@@ -29,7 +31,7 @@ import net.thevpc.pnote.core.types.forms.templates.CreditCardAccountTemplate;
 import net.thevpc.pnote.core.types.forms.templates.EthernetConnectionTemplate;
 import net.thevpc.pnote.core.types.forms.templates.UrlBookmarkTemplate;
 import net.thevpc.pnote.core.types.forms.templates.WifiConnectionTemplate;
-import net.thevpc.pnote.gui.PangaeaNoteTypes;
+import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
 import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
 /**
@@ -94,7 +96,20 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     @Override
     public NutsElement createDefaultContent() {
         return getContentAsElement(new PangaeaNoteObjectDocument()
-                .setDescriptor(new PangaeaNoteObjectDescriptor())
+                .setDescriptor(
+                        new PangaeaNoteObjectDescriptor()
+                                .setName("Item")
+                                .addField(
+                                        new PangaeaNoteFieldDescriptor()
+                                                .setName("Title")
+                                                .setType(PangaeaNoteFieldType.TEXT)
+                                )
+                                .addField(
+                                        new PangaeaNoteFieldDescriptor()
+                                                .setName("Observation")
+                                                .setType(PangaeaNoteFieldType.TEXTAREA)
+                                )
+                )
                 .setValues(new ArrayList<>())
         );
     }

@@ -9,7 +9,7 @@ import net.thevpc.echo.ScrollPane;
 import net.thevpc.echo.*;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
  * @author vpc

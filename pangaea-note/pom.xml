@@ -6,8 +6,18 @@
     <artifactId>pnote</artifactId>
     <version>0.8.1.1</version><!--published NONE-->
     <packaging>jar</packaging>
-    <name>net.thevpc.pnote.pnote</name>
+    <name>Pangaea Note</name>
     <description>Pangaea Note Taking Application</description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <github.global.server>github</github.global.server>
+        <nuts.application>true</nuts.application>
+        <nuts.genericName>Note Taking Application</nuts.genericName>
+        <nuts.category>/Utilities</nuts.category>
+        <nuts.icon>classpath://net/thevpc/pnote/icon.png</nuts.icon>
+    </properties>
 
     <organization>
         <name>vpc open source initiative</name>
@@ -40,13 +50,6 @@
         </license>
     </licenses>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <github.global.server>github</github.global.server>
-        <nuts.application>true</nuts.application>
-    </properties>
 
     <distributionManagement>
         <site>

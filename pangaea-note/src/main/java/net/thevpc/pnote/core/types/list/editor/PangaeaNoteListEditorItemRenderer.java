@@ -5,7 +5,7 @@ import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.special.DataPane;
 import net.thevpc.pnote.core.special.DataPaneRenderer;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 class PangaeaNoteListEditorItemRenderer implements DataPaneRenderer<PangaeaNote> {
 

@@ -8,9 +8,9 @@ package net.thevpc.pnote.core.viewers.folder;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
+import net.thevpc.pnote.core.types.file.editor.URLViewer;
+import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 
 import java.io.File;
 import java.util.Objects;

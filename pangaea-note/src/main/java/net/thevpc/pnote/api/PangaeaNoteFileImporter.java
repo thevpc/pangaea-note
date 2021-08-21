@@ -3,7 +3,7 @@ package net.thevpc.pnote.api;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
 import java.io.InputStream;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 public interface PangaeaNoteFileImporter {
     String getName();

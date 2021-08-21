@@ -5,8 +5,7 @@
  */
 package net.thevpc.pnote.api;
 
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.api.EditTypeComponent;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**

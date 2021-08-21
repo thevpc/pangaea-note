@@ -6,9 +6,9 @@
 package net.thevpc.pnote.core.viewers.image;
 
 import net.thevpc.echo.ImageView;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewer;
-import net.thevpc.pnote.gui.editor.editorcomponents.urlviewer.URLViewerComponent;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
+import net.thevpc.pnote.core.types.file.editor.URLViewer;
+import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 
 import java.util.function.Consumer;
 

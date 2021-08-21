@@ -6,11 +6,13 @@ import net.thevpc.echo.api.AppColor;
 import net.thevpc.echo.api.AppFont;
 import net.thevpc.echo.api.AppImage;
 import net.thevpc.echo.api.components.AppEventType;
+import net.thevpc.echo.api.components.AppTextControl;
+import net.thevpc.echo.api.components.AppToggleControl;
 import net.thevpc.echo.constraints.Anchor;
+import net.thevpc.pnote.core.frame.util.PangaeaNoteLabelHelper;
 import net.thevpc.pnote.core.special.DataPane;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.editor.PangaeaNoteEditor;
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.editor.PangaeaNoteEditor;
 
 import net.thevpc.pnote.api.model.PangaeaNote;
 
@@ -99,6 +101,28 @@ class PangaeaNoteListEditorItem extends BorderPane {
                         .with(p -> p.anchor().set(Anchor.CENTER))
         );
     }
+
+    public static PangaeaNoteLabelHelper.LabelFormat formatOf(PangaeaNote n,PangaeaNoteApp app) {
+        return new PangaeaNoteLabelHelper.LabelFormat()
+                .setForegroundColor(n.getTitleForeground())
+                .setBackgroundColor(n.getTitleBackground())
+                .setText(n.getName())
+                .setIcon(app.getNoteIcon(n))
+                .setStriked(n.isTitleStriked())
+                .setItalic(n.isTitleItalic())
+                .setBold(n.isTitleBold())
+                .setUnderlined(n.isTitleUnderlined())
+                ;
+    }
+
+    public static void applyTitle(PangaeaNote n, AppTextControl textControl, boolean selected) {
+        if (n == null) {
+            return;
+        }
+        PangaeaNoteApp app = (PangaeaNoteApp) textControl.app();
+        PangaeaNoteLabelHelper.formalLabel(formatOf(n,app),textControl);
+    }
+
     boolean isSelectableItem(){
         return parent.isSelectableItems();
     }
@@ -116,7 +140,7 @@ class PangaeaNoteListEditorItem extends BorderPane {
 
         checkBox.text().set(Str.empty());
         checkBox.selected().set(parent.isSelectedIndex(value));
-        OtherUtils.applyTitle(value,label,false);
+        applyTitle(value,label,false);
         String prefix;
         if(parent.isShowNumbers()){
             prefix = (pos + 1) + " - ";

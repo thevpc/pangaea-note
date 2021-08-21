@@ -7,22 +7,23 @@ package net.thevpc.pnote.core.types.forms.editor;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
+import net.thevpc.echo.api.AppAlertResult;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
+import net.thevpc.pnote.api.model.PangaeaNote;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.special.DataPane;
 import net.thevpc.pnote.core.special.DataPaneRenderer;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObject;
+import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
-import net.thevpc.pnote.gui.PangaeaNoteApp;
-import net.thevpc.pnote.gui.PangaeaNoteFrame;
-import net.thevpc.pnote.util.OtherUtils;
+import net.thevpc.pnote.util.PNoteUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.echo.api.AppAlertResult;
 
 /**
  * @author vpc
@@ -82,6 +83,23 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
     protected void prepareToolBar() {
         frame.findOrCreateToolBar("Forms", editToolBar -> {
             PangaeaNoteApp app = frame.app();
+            editToolBar.children().add(new Button("editForm", event -> {
+                //KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()
+                FormsDataPane q = resolveFormsDataPane();
+                if (q != null) {
+                    if (q.editable().get()) {
+                        q.onEditForm();
+                    }
+                }
+            }, app).with(
+                    x -> installEnabler(() -> {
+                        FormsDataPane q = resolveFormsDataPane();
+                        x.enabled().set(q != null);
+                        x.visible().set(
+                                !app.hideDisabled().get() || (q != null)
+                        );
+                    })
+            ));
             editToolBar.children().add(new Button("addToObjectList", event -> {
                 //KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner()
                 FormsDataPane q = resolveFormsDataPane();
@@ -176,6 +194,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
 //            bar.children().add(new Button("moveLastInObjectList", () -> formsDataPane.onMoveLastAt(pos), app()));
 //            bar.children().addSeparator();
 //            bar.children().add(new Button("removeInObjectList", () -> formsDataPane.onRemoveObjectAt(pos), app()));
+            children().add(new Label(Str.of("Hello"), win.app()));
             children().add(bar);
             children().add(e);
         }
@@ -274,6 +293,18 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
             container().get().parentConstraints().addAll(Layout.GRID, ColumnCount.of(1), ContainerGrow.TOP_ROW, AllMargins.of(3), AllGrow.HORIZONTAL, AllFill.HORIZONTAL);
         }
 
+        private void onEditForm() {
+            if (currentNote != null) {
+                PangaeaNoteObjectDescriptor newDesc = new EditFormFieldsPanel(frame)
+                        .setObjectDescriptor(dynamicDocument.getDescriptor())
+                        .showDialogObjectDescriptor();
+                if (newDesc != null) {
+                    dynamicDocument.changeStructure(newDesc);
+                    onListValuesChangedImpl();
+                }
+            }
+        }
+
         private void onAddObject() {
             if (currentNote != null) {
                 dynamicDocument.addObject(dynamicDocument.getDescriptor().createObject());
@@ -358,7 +389,7 @@ public class PangaeaNoteFormsEditorTypeComponent extends BorderPane implements P
         }
 
         private boolean _onSwitchValues(int index1, int index2) {
-            return OtherUtils.switchListValues(dynamicDocument.getValues(), index1, index2);
+            return PNoteUtils.switchListValues(dynamicDocument.getValues(), index1, index2);
         }
 
         private void onMoveFirstAt(int from) {

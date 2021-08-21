@@ -11,20 +11,21 @@ package net.thevpc.pnote.core.types.forms.model;
  */
 public enum PangaeaNoteFieldType {
     TEXT,
-    DATE,
-    STARS,
-    TIME,
-    YEAR,
-    DAY_OF_WEEK,
-    MONTH,
-    DATETIME,
+    TEXTAREA,
     URL,
     PASSWORD,
+    STARS,
     COMBOBOX,
     CHECKBOX,
     RADIOBUTTON,
     TOGGLE,
-    TEXTAREA;
+    DATE,
+    TIME,
+    DATETIME,
+    DAY_OF_WEEK,
+    MONTH,
+    YEAR,
+    ;
 
     public boolean isSelectMulti() {
         return this == PangaeaNoteFieldType.CHECKBOX
