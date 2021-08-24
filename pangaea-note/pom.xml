@@ -15,8 +15,11 @@
         <github.global.server>github</github.global.server>
         <nuts.application>true</nuts.application>
         <nuts.genericName>Note Taking Application</nuts.genericName>
-        <nuts.category>/Utilities</nuts.category>
-        <nuts.icon>classpath://net/thevpc/pnote/icon.png</nuts.icon>
+        <nuts.categories>/Utilities</nuts.categories>
+        <nuts.icons>
+            classpath://net/thevpc/pnote/icon.png
+            classpath://net/thevpc/pnote/icon.ico
+        </nuts.icons>
     </properties>
 
     <organization>
@@ -150,19 +153,9 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.0</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -260,6 +253,31 @@
                         <phase>deploy</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
