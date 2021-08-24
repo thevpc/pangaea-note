@@ -11,4 +11,15 @@
   <modules>
       <module>pangaea-note</module>
   </modules>
+
+    <properties>
+
+    </properties>
+
+    <build>
+        <plugins>
+        </plugins>
+    </build>
+
+
 </project>
