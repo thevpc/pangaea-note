@@ -3,8 +3,8 @@ package net.thevpc.pnote.core.types.list.editor;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.core.special.DataPane;
-import net.thevpc.pnote.core.special.DataPaneRenderer;
+import net.thevpc.echo.DataPane;
+import net.thevpc.echo.DataPaneRenderer;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 class PangaeaNoteListEditorItemRenderer implements DataPaneRenderer<PangaeaNote> {

@@ -7,10 +7,9 @@ import net.thevpc.echo.api.AppFont;
 import net.thevpc.echo.api.AppImage;
 import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.api.components.AppTextControl;
-import net.thevpc.echo.api.components.AppToggleControl;
 import net.thevpc.echo.constraints.Anchor;
 import net.thevpc.pnote.core.frame.util.PangaeaNoteLabelHelper;
-import net.thevpc.pnote.core.special.DataPane;
+import net.thevpc.echo.DataPane;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.editor.PangaeaNoteEditor;
 

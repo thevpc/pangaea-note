@@ -2,22 +2,23 @@ package net.thevpc.pnote.core.types.list.editor;
 
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.Alert;
+import net.thevpc.echo.api.AppAlertResult;
 import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.echo.constraints.*;
+import net.thevpc.echo.constraints.AllAnchors;
+import net.thevpc.echo.constraints.AllGrow;
+import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.nuts.NutsElementType;
 import net.thevpc.nuts.NutsObjectElement;
 import net.thevpc.nuts.NutsObjectElementBuilder;
 import net.thevpc.pnote.api.model.PangaeaNote;
-import net.thevpc.pnote.core.special.DataPane;
+import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
+import net.thevpc.echo.DataPane;
 import net.thevpc.pnote.core.types.list.PangaeaNoteListService;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListLayout;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListModel;
 import net.thevpc.pnote.core.types.plain.PangaeaNotePlainTextService;
-import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
-
-import net.thevpc.pnote.core.frame.PangaeaNoteApp;
-import net.thevpc.echo.api.AppAlertResult;
 
 public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
 
@@ -172,7 +173,7 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
         }
         values().setAll(note.getChildren().toArray(new PangaeaNote[0]));
         int index = 0;
-        for (AppComponent child : container().get().children()) {
+        for (AppComponent child : renderedComponents()) {
             PangaeaNoteListEditorItem item = (PangaeaNoteListEditorItem) child;
             item.setValue(item.getValue(), index);
             index++;
