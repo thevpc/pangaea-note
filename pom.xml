@@ -6,7 +6,7 @@
   <groupId>net.thevpc.pnote</groupId>
   <artifactId>pnote-builder</artifactId>
   <name>net.thevpc.pnote</name>
-  <version>0.8.1.0</version><!--published NONE-->
+  <version>0.8.2.0</version><!--published NONE-->
   <packaging>pom</packaging>
   <modules>
       <module>pangaea-note</module>
