@@ -15,7 +15,9 @@
         <github.global.server>github</github.global.server>
         <nuts.application>true</nuts.application>
         <nuts.genericName>Note Taking Application</nuts.genericName>
-        <nuts.categories>/Utilities</nuts.categories>
+        <nuts.categories>
+            /Utilities
+        </nuts.categories>
         <nuts.icons>
             classpath://net/thevpc/pnote/icon.png
             classpath://net/thevpc/pnote/icon.ico
