@@ -20,10 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.thevpc.nuts.NutsIOException;
-import net.thevpc.nuts.NutsLogVerb;
-import net.thevpc.nuts.NutsSession;
-import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.nuts.*;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -109,19 +106,19 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                 b.setErrorHandler(new ErrorHandler() {
                     @Override
                     public void warning(SAXParseException exception) throws SAXException {
-                        session.getWorkspace().log().of(PangaeaNoteApp.class).with().session(session)
+                        session.log().of(PangaeaNoteApp.class).with().session(session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
                     }
 
                     @Override
                     public void error(SAXParseException exception) throws SAXException {
-                        session.getWorkspace().log().of(PangaeaNoteApp.class).with().session(session)
+                        session.log().of(PangaeaNoteApp.class).with().session(session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
                     }
 
                     @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
-                        session.getWorkspace().log().of(PangaeaNoteApp.class).with().session(session)
+                        session.log().of(PangaeaNoteApp.class).with().session(session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(exception.toString());
                     }
                 });
@@ -180,7 +177,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
         }
 
         public RichText addStyle(String k, String v) {
-            if (!NutsUtilStrings.isBlank(v)) {
+            if (!NutsBlankable.isBlank(v)) {
                 this.style.put(k, v);
             }
             return this;
@@ -212,14 +209,14 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                         Attr a = (Attr) attr;
                         String k = a.getName();
                         String v = a.getValue();
-                        if (!NutsUtilStrings.isBlank(k)) {
+                        if (!NutsBlankable.isBlank(k)) {
                             switch (k) {
                                 case "name": {
                                     nn.setName(v);
                                     break;
                                 }
                                 case "tags": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         nn.setTags(
                                                 Arrays.asList(
                                                         v.split("[ ,;:]")
@@ -230,7 +227,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "custom_icon_id": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         int x = 0;
                                         try {
                                             x = Integer.parseInt(v);
@@ -245,31 +242,31 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "foregournd": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         nn.setTitleForeground(v);
                                     }
                                     break;
                                 }
                                 case "background": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         nn.setTitleBackground(v);
                                     }
                                     break;
                                 }
                                 case "readonly": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         nn.setReadOnly(Boolean.parseBoolean(v));
                                     }
                                     break;
                                 }
                                 case "is_bold": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         nn.setTitleBold(Boolean.parseBoolean(v));
                                     }
                                     break;
                                 }
                                 case "ts_creation": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         double d = 0;
                                         try {
                                             d = Double.parseDouble(v);
@@ -289,7 +286,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "ts_lastsave": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         double d = 0;
                                         try {
                                             d = Double.parseDouble(v);
@@ -309,7 +306,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 case "prog_lang": {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         switch (v) {
                                             case "java": {
                                                 nn.setContentType("text/java");
@@ -336,7 +333,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                                     break;
                                 }
                                 default: {
-                                    if (!NutsUtilStrings.isBlank(v)) {
+                                    if (!NutsBlankable.isBlank(v)) {
                                         nn.getProperties().put(k, v);
                                     }
                                 }
@@ -354,7 +351,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                             nn.getChildren().add(parseCherryTreeXmlNote(e2, app));
                         } else if (e2.getTagName().equals("rich_text")) {
                             String link = e.getAttribute("link");
-                            if (!NutsUtilStrings.isBlank(link)) {
+                            if (!NutsBlankable.isBlank(link)) {
                                 richTexts.add(
                                         new RichText()
                                                 .addStyle("foreground", e2.getAttribute("foreground"))

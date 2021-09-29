@@ -8,6 +8,7 @@ package net.thevpc.pnote.core.frame.dialogs;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.ComboBox;
 import net.thevpc.echo.SimpleItem;
+import net.thevpc.nuts.NutsBlankable;
 import net.thevpc.nuts.NutsUtilStrings;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
@@ -114,7 +115,7 @@ public class PangaeaNoteTypesComboBox extends ComboBox<SimpleItem> {
         if (options.showTemplates) {
             for (PangaeaNoteTemplate template : frame.app().getTemplates()) {
                 String g = template.getGroup();
-                if (NutsUtilStrings.isBlank(g)) {
+                if (NutsBlankable.isBlank(g)) {
                     g = "templates";
                 }
                 if (accept(options,template.getContentType(), g)) {

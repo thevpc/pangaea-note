@@ -572,7 +572,7 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public String getValidLastOpenPath() {
         String p = config.getLastOpenPath();
-        if (!NutsUtilStrings.isBlank(p)) {
+        if (!NutsBlankable.isBlank(p)) {
             File f = new File(p);
             if (f.isDirectory()) {
                 return f.getPath();

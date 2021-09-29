@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.thevpc.nuts.NutsBlankable;
 import net.thevpc.nuts.NutsElement;
 import net.thevpc.nuts.NutsUtilStrings;
 import net.thevpc.pnote.api.model.PangaeaNote;
@@ -46,7 +47,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
         List<DocumentTextPart<PangaeaNote>> all = new ArrayList<>();
         if (document.getDescriptor().getFields() != null) {
             for (PangaeaNoteFieldDescriptor value : document.getDescriptor().getFields()) {
-                if (!NutsUtilStrings.isBlank(value.getName())) {
+                if (!NutsBlankable.isBlank(value.getName())) {
                     //String key, String text, T object, String stringValue
                     all.add(new StringToPatternPortionImpl<PangaeaNote>("fieldDescriptor", value.getName(), note, value, value.getName()));
                 }
@@ -56,7 +57,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
             for (PangaeaNoteObject value : document.getValues()) {
                 for (PangaeaNoteField field : value.getFields()) {
                     String s = field.getValue();
-                    if (!NutsUtilStrings.isBlank(s)) {
+                    if (!NutsBlankable.isBlank(s)) {
                         all.add(new StringToPatternPortionImpl("fieldValue", s, note, field, s));
                     }
                 }

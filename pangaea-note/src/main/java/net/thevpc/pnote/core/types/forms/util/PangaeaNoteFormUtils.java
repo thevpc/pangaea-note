@@ -2,6 +2,7 @@ package net.thevpc.pnote.core.types.forms.util;
 
 import net.thevpc.echo.Color;
 import net.thevpc.echo.api.components.AppComponent;
+import net.thevpc.nuts.NutsBlankable;
 import net.thevpc.nuts.NutsUtilStrings;
 import net.thevpc.pnote.core.frame.util.PangaeaNoteLabelHelper;
 import net.thevpc.pnote.core.types.forms.model.*;
@@ -15,29 +16,29 @@ import java.util.Set;
 public class PangaeaNoteFormUtils {
     public static boolean isBlank(PangaeaNoteField field) {
         if (field != null) {
-            if (!NutsUtilStrings.isBlank(field.getValue())) {
+            if (!NutsBlankable.isBlank(field.getValue())) {
                 return false;
             }
             if (field.getOptions() != null) {
-                if (!NutsUtilStrings.isBlank(field.getOptions().getContentType())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getContentType())) {
                     return false;
                 }
-                if (!NutsUtilStrings.isBlank(field.getOptions().getValuePattern())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getValuePattern())) {
                     return false;
                 }
-                if (!NutsUtilStrings.isBlank(field.getOptions().getLabelName())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getLabelName())) {
                     return false;
                 }
-                if (!NutsUtilStrings.isBlank(field.getOptions().getLabelBackgroundColor())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getLabelBackgroundColor())) {
                     return false;
                 }
-                if (!NutsUtilStrings.isBlank(field.getOptions().getLabelForegroundColor())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getLabelForegroundColor())) {
                     return false;
                 }
-                if (!NutsUtilStrings.isBlank(field.getOptions().getLabelIcon())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getLabelIcon())) {
                     return false;
                 }
-                if (!NutsUtilStrings.isBlank(field.getOptions().getLabelIcon())) {
+                if (!NutsBlankable.isBlank(field.getOptions().getLabelIcon())) {
                     return false;
                 }
                 if (field.getOptions().getHidden() != null) {

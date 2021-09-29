@@ -9,6 +9,7 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
+import net.thevpc.nuts.NutsBlankable;
 import net.thevpc.nuts.NutsUtilStrings;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
@@ -165,7 +166,7 @@ public class PangaeaNoteTypesList extends BorderPane {
 
         for (PangaeaNoteTemplate template : frame.app().getTemplates()) {
             String g = template.getGroup();
-            if (NutsUtilStrings.isBlank(g)) {
+            if (NutsBlankable.isBlank(g)) {
                 g = "templates";
             }
             List<SimpleItem> li = selectors.get(g);

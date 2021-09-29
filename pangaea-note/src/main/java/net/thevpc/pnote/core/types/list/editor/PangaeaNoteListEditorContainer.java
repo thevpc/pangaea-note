@@ -171,13 +171,14 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
         if (this.noteListModel == null) {
             this.noteListModel = new PangaeaNoteListModel();
         }
-        values().setAll(note.getChildren().toArray(new PangaeaNote[0]));
-        int index = 0;
-        for (AppComponent child : renderedComponents()) {
-            PangaeaNoteListEditorItem item = (PangaeaNoteListEditorItem) child;
-            item.setValue(item.getValue(), index);
-            index++;
-        }
+        values().clear();
+//        values().setAll(note.getChildren().toArray(new PangaeaNote[0]));
+//        int index = 0;
+//        for (AppComponent child : renderedComponents()) {
+//            PangaeaNoteListEditorItem item = (PangaeaNoteListEditorItem) child;
+//            item.setValue(item.getValue(), index);
+//            index++;
+//        }
         PangaeaNoteListLayout layout = noteListModel.getLayout();
         if (layout == null) {
             layout = PangaeaNoteListLayout.VERTICAL;
@@ -222,6 +223,13 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
                 paneLayout().set(VERTICAL);
                 container().get().parentConstraints().addAll(AllMargins.of(5), AllAnchors.LEFT, AllGrow.HORIZONTAL);
             }
+        }
+        values().setAll(note.getChildren().toArray(new PangaeaNote[0]));
+        int index = 0;
+        for (AppComponent child : renderedComponents()) {
+            PangaeaNoteListEditorItem item = (PangaeaNoteListEditorItem) child;
+            item.setValue(item.getValue(), index);
+            index++;
         }
         setEditable(!note.isReadOnly());
     }
