@@ -316,7 +316,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         super("swing");
         this.appContext = appContext;
         hideDisabled().set(true);
-        this.executorService().set(appContext.getWorkspace().concurrent().executorService());
+        this.executorService().set(appContext.getSession().concurrent().executorService());
         registerCypher(new PangaeaNoteCypher_v100(appContext));
         registerCypher(new PangaeaNoteCypher_v101(appContext));
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
@@ -551,7 +551,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NutsElementFormat elem() {
-        return appContext().getWorkspace().elem()
+        return appContext().getSession().elem()
                 .setSession(appContext().getSession());
     }
 
@@ -592,7 +592,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public File getDefaultDocumentsFolder() {
-        return new File(appContext().getWorkspace().locations().getStoreLocation(NutsStoreLocation.VAR));
+        return new File(appContext().getSession().locations().getStoreLocation(NutsStoreLocation.VAR));
     }
 
     public String stringifyAny(Object value) {
@@ -1266,7 +1266,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             String tempFile = null;
             try {
                 try {
-                    tempFile = appContext().getWorkspace().io().tmp().createTempFile("temp-snippet-");
+                    tempFile = appContext().getSession().io().tmp().createTempFile("temp-snippet-");
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
                 } finally {

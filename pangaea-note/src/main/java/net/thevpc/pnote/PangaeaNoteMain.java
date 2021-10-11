@@ -37,15 +37,15 @@ public class PangaeaNoteMain implements NutsApplication {
     }
 
     private NutsWorkspaceCustomCommand findDefaultAlias(NutsApplicationContext applicationContext) {
-        NutsWorkspace ws = applicationContext.getWorkspace();
+        NutsSession session = applicationContext.getSession();
         NutsId appId = applicationContext.getAppId();
-        return ws.commands().findCommand(PREFERRED_ALIAS, appId, appId);
+        return session.commands().findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
     @Override
     public void onInstallApplication(NutsApplicationContext applicationContext) {
-        NutsWorkspace ws = applicationContext.getWorkspace();
-        ws.env().addLauncher(new NutsLauncherOptions()
+        NutsSession session = applicationContext.getSession();
+        session.env().addLauncher(new NutsLauncherOptions()
                 .setId(applicationContext.getAppId())
                 .setAlias(PREFERRED_ALIAS)
                 .setCreateAlias(true)
@@ -61,8 +61,8 @@ public class PangaeaNoteMain implements NutsApplication {
 
     @Override
     public void onUninstallApplication(NutsApplicationContext applicationContext) {
-        NutsWorkspace ws = applicationContext.getWorkspace();
-        ws.commands().removeCommandIfExists(PREFERRED_ALIAS);
+        NutsSession session = applicationContext.getSession();
+        session.commands().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
     @Override

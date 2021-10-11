@@ -30,11 +30,10 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
         if (password == null || password.length() == 0) {
             throw new CancelException();
         }
-        String s = context.getWorkspace().elem()
+        String s = context.getSession().elem()
                 .setContentType(NutsContentType.JSON)
                 .setValue(a)
                 .setCompact(true)
-                .setSession(context.getSession())
                 .setNtf(false)
                 .format().filteredText();
         return new CypherInfo(getId(),
@@ -57,11 +56,10 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
         } catch (Exception ex) {
             throw new InvalidSecretException();
         }
-        return context.getWorkspace().elem()
+        return context.getSession().elem()
                 .setContentType(NutsContentType.JSON)
                 .setValue(password)
                 .setCompact(true)
-                .setSession(context.getSession())
                 .parse(s, PangaeaNote.class);
     }
 

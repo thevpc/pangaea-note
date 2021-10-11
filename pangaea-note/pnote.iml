@@ -69,12 +69,10 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.formdev:flatlaf:1.1.2" level="project" />
     <orderEntry type="module" module-name="shef-core" scope="RUNTIME" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.sf.jtidy:jtidy:r938" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.jeep:jeep-swing-editor:1.2.8" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.jeep:jeep:1.2.8" level="project" />
-    <orderEntry type="module" module-name="thevpc-common-text-source" scope="RUNTIME" />
-    <orderEntry type="module" module-name="thevpc-common-text-source-log" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jeep-swing-editor" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jeep" scope="RUNTIME" />
     <orderEntry type="module" module-name="thevpc-common-classpath" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.thevpc.jeep:jeep-swing-editorkits:1.2.8" level="project" />
+    <orderEntry type="module" module-name="jeep-swing-editorkits" scope="RUNTIME" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
