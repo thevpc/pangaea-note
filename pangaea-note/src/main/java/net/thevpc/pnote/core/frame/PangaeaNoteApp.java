@@ -1266,7 +1266,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             String tempFile = null;
             try {
                 try {
-                    tempFile = appContext().getSession().io().tmp().createTempFile("temp-snippet-");
+                    tempFile = appContext().getSession().io().tmp().createTempFile("temp-snippet-").toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
                 } finally {
