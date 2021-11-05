@@ -14,6 +14,7 @@ import net.thevpc.echo.api.AppFont;
 import net.thevpc.echo.constraints.Anchor;
 import net.thevpc.echo.constraints.Layout;
 import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.NutsElements;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
 import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
@@ -227,8 +228,9 @@ public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements
                     s.onChange((a) -> getDiagram().setGridX(a.newValue()));
                 }),Path.of("/Default/Grid/*")
         );
-        frame.getNutsWorkspace().elem().setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
-        frame.getNutsWorkspace().elem().setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
+        NutsElements elems = NutsElements.of(frame.getNutsSession());
+        elems.setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
+        elems.setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
     }
 
     @Override
