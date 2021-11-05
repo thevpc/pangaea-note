@@ -40,7 +40,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             startCheckVersion = true;
             nextVersion = null;
             updateMessage();
-            appContext().getSession().concurrent().executorService().submit(
+            appContext().getSession().config().executorService().submit(
                     () -> {
                         long start = System.currentTimeMillis();
                         try {

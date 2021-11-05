@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.UserControl;
 import net.thevpc.echo.impl.Applications;
+import net.thevpc.nuts.NutsSession;
+import net.thevpc.nuts.NutsTmp;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.file.editor.URLViewer;
 import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
@@ -61,7 +63,8 @@ public class LibreOfficeToPdfViewerComponent extends BorderPane implements URLVi
         if (u != null) {
             File targetFile = null;
             try {
-                targetFile = frame.app().appContext().getSession().io().tmp().createTempFile("a.pdf").toFile().toFile();
+                NutsSession session = frame.app().appContext().getSession();
+                targetFile = NutsTmp.of(session).createTempFile("a.pdf").toFile().toFile();
                 File sourceFile = u;
                 LocalConverter.builder()
                         .build()

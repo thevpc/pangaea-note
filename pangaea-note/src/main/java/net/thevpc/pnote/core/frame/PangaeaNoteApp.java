@@ -316,7 +316,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         super("swing");
         this.appContext = appContext;
         hideDisabled().set(true);
-        this.executorService().set(appContext.getSession().concurrent().executorService());
+        this.executorService().set(appContext.getSession().config().executorService());
         registerCypher(new PangaeaNoteCypher_v100(appContext));
         registerCypher(new PangaeaNoteCypher_v101(appContext));
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
@@ -550,9 +550,9 @@ public class PangaeaNoteApp extends DefaultApplication {
         return new ArrayList<>(extra.values());
     }
 
-    public NutsElementFormat elem() {
-        return appContext().getSession().elem()
-                .setSession(appContext().getSession());
+    public NutsElements elem() {
+        NutsSession session = appContext().getSession();
+        return NutsElements.of(session);
     }
 
     public NutsApplicationContext appContext() {
@@ -597,7 +597,7 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public String stringifyAny(Object value) {
         return elem().setValue(value)
-                .setContentType(NutsContentType.JSON)
+                .json()
                 .setCompact(true)
                 .setNtf(false)
                 .format().filteredText();
@@ -609,7 +609,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         }
         try {
             return elem()
-                    .setContentType(NutsContentType.JSON)
+                    .json()
                     .parse(s, cls);
         } catch (Exception ex) {
             return null;
@@ -781,12 +781,12 @@ public class PangaeaNoteApp extends DefaultApplication {
                         n2.setLastModified(document.getLastModified());
                         n2.setCypherInfo(ci);
                         elem()
-                                .setContentType(NutsContentType.JSON)
+                                .json()
                                 .setValue(n2)
                                 .println(f);
                     } else {
                         elem()
-                                .setContentType(NutsContentType.JSON)
+                                .json()
                                 .setValue(document)
                                 .println(f);
                     }
@@ -849,7 +849,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             pf.mkdirs();
         }
         elem()
-                .setContentType(NutsContentType.JSON)
+                .json()
                 .setValue(c)
                 .println(configFilePath);
     }
@@ -857,7 +857,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
         try {
             PangaeaNoteConfig n = elem()
-                    .setContentType(NutsContentType.JSON)
+                    .json()
                     .parse(getConfigFilePath(),
                             PangaeaNoteConfig.class);
             if (n != null) {
@@ -885,7 +885,7 @@ public class PangaeaNoteApp extends DefaultApplication {
                 nodePath = nodePath == null ? "" : nodePath.trim();
                 if (nodePath.length() > 0) {
                     PangaeaNote rawNode = elem()
-                            .setContentType(NutsContentType.JSON).setSession(appContext().getSession())
+                            .json()
                             .parse(new File(nodePath), PangaeaNote.class);
                     n.copyFrom(rawNode);
                     CypherInfo cypherInfo = n.getCypherInfo();
@@ -1266,7 +1266,8 @@ public class PangaeaNoteApp extends DefaultApplication {
             String tempFile = null;
             try {
                 try {
-                    tempFile = appContext().getSession().io().tmp().createTempFile("temp-snippet-").toString();
+                    NutsSession session = appContext().getSession();
+                    tempFile = NutsTmp.of(session).createTempFile("temp-snippet-").toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
                 } finally {

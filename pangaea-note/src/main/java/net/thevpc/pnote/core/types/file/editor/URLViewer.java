@@ -330,7 +330,7 @@ public class URLViewer extends BorderPane {
         public void doSysLoad() {
             String ll = getContentString();
             if (!ll.trim().isEmpty()) {
-                frame.getNutsSession().getWorkspace().concurrent()
+                frame.getNutsSession().getWorkspace().config()
                         .executorService().submit(() -> {
                             try {
                                 frame.getNutsSession().getWorkspace().exec()

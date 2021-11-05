@@ -106,13 +106,13 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                 b.setErrorHandler(new ErrorHandler() {
                     @Override
                     public void warning(SAXParseException exception) throws SAXException {
-                        session.log().of(PangaeaNoteApp.class).with().session(session)
+                        NutsLoggerOp.of(PangaeaNoteApp.class,session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING).log(NutsMessage.plain(exception.toString()));
                     }
 
                     @Override
                     public void error(SAXParseException exception) throws SAXException {
-                        session.log().of(PangaeaNoteApp.class).with().session(session)
+                        NutsLoggerOp.of(PangaeaNoteApp.class,session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING)
                                 .error(exception)
                                 .log(NutsMessage.plain(exception.toString()));
@@ -120,7 +120,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
 
                     @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
-                        session.log().of(PangaeaNoteApp.class).with().session(session)
+                        NutsLoggerOp.of(PangaeaNoteApp.class,session)
                                 .level(Level.FINEST).verb(NutsLogVerb.WARNING)
                                 .error(exception)
                                 .log(NutsMessage.plain(exception.toString()));
