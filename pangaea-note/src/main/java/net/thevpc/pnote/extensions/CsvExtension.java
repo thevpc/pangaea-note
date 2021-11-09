@@ -34,7 +34,7 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class CsvExtension implements PangaeaNoteFileImporter, PangaeaNoteAppExtension {
 

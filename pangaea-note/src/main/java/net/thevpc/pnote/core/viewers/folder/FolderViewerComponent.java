@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class FolderViewerComponent extends FolderView implements URLViewerComponent {
 

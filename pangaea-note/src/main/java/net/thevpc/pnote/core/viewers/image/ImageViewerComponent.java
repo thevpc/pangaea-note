@@ -13,7 +13,7 @@ import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 import java.util.function.Consumer;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class ImageViewerComponent extends ImageView implements URLViewerComponent {
 

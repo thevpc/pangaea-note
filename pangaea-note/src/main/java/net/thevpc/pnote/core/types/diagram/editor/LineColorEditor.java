@@ -19,7 +19,7 @@ import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class LineColorEditor extends JLineColorChooser {
 

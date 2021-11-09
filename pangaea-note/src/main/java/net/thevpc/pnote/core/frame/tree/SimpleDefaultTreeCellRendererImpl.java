@@ -20,7 +20,7 @@ import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 class SimpleDefaultTreeCellRendererImpl implements AppTreeItemRenderer<PangaeaNote> {
 

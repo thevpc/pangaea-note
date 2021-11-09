@@ -11,7 +11,7 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteObjectExt {
     private PangaeaNoteObject object;

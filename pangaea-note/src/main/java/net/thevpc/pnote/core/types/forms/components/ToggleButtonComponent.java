@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class ToggleButtonComponent extends ToggleButtonGroup<String> implements FormComponent {
 

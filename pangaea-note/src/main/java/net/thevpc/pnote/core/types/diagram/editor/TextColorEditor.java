@@ -18,7 +18,7 @@ import net.thevpc.diagram4j.model.JDiagramListener;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class TextColorEditor extends JColorChooser {
 

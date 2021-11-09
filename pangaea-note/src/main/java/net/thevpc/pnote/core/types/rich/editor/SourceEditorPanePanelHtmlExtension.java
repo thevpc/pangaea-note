@@ -37,7 +37,7 @@
 //
 ///**
 // *
-// * @author vpc
+// * @author thevpc
 // */
 //public class SourceEditorPanePanelHtmlExtension extends AbstractSourceEditorPaneExtension {
 //

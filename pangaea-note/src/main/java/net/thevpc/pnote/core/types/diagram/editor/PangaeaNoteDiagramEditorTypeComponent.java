@@ -26,7 +26,7 @@ import java.util.Set;
 import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteDiagramEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 

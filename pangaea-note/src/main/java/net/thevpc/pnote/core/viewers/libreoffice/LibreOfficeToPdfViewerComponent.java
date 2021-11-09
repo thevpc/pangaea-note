@@ -27,7 +27,7 @@ import org.jodconverter.office.LocalOfficeManager;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class LibreOfficeToPdfViewerComponent extends BorderPane implements URLViewerComponent {
 

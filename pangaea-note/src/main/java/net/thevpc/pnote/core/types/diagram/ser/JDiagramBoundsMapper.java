@@ -16,7 +16,7 @@ import net.thevpc.nuts.NutsObjectElement;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class JDiagramBoundsMapper implements NutsElementMapper<JDiagramBounds> {
     

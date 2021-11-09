@@ -7,7 +7,7 @@ package net.thevpc.pnote.core.types.list.model;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public enum PangaeaNoteListLayout {
     VERTICAL,

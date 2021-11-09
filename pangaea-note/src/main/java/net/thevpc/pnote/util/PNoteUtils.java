@@ -10,7 +10,7 @@ import net.thevpc.common.props.WritableList;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PNoteUtils {
 

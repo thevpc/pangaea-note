@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class DateFieldComponent extends TemporalField<LocalDate> implements FormComponent {
 

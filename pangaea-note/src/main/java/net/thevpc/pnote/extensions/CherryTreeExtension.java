@@ -40,7 +40,7 @@ import org.xml.sax.SAXParseException;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNoteAppExtension {
 

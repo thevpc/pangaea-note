@@ -16,7 +16,7 @@ import net.thevpc.pnote.service.search.strsearch.SearchProgressMonitor;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class DefaultVNoteSearchFilter implements VNoteSearchFilter {
 

@@ -68,7 +68,7 @@ import net.thevpc.pnote.service.security.PangaeaNoteCypher_v101;
 import net.thevpc.pnote.service.security.PasswordHandler;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteApp extends DefaultApplication {
 

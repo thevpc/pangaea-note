@@ -13,7 +13,7 @@
 //import net.thevpc.pnote.frame.PangaeaNoteFrame;
 //
 ///**
-// * @author vpc
+// * @author thevpc
 // */
 //public class DateFieldComponentOld extends TextField implements FormComponent {
 //

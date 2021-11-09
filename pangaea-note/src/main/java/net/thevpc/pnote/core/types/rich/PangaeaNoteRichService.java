@@ -24,7 +24,7 @@ import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
 

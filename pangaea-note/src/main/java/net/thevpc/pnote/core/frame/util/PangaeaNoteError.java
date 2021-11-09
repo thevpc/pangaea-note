@@ -7,7 +7,7 @@ package net.thevpc.pnote.core.frame.util;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteError {
     private Exception ex;

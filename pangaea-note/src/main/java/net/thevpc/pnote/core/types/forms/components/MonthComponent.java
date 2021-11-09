@@ -20,7 +20,7 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldOptions;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class MonthComponent extends ComboBox<String> implements FormComponent {
 

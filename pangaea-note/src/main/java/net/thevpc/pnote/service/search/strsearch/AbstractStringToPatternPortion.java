@@ -7,7 +7,7 @@ package net.thevpc.pnote.service.search.strsearch;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public abstract class AbstractStringToPatternPortion<T> implements DocumentTextPart<T> {
     final String stringValue;

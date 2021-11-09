@@ -14,7 +14,7 @@ import net.thevpc.pnote.core.types.forms.util.PangaeaNoteFormUtils;
 import java.util.List;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public interface FormComponent {
 

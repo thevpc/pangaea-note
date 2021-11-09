@@ -24,7 +24,7 @@ import net.thevpc.nuts.NutsObjectElement;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class JDiagramGeometryMapper implements NutsElementMapper<JDiagramGeometry> {
 

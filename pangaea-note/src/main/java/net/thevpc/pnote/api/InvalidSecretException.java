@@ -7,7 +7,7 @@ package net.thevpc.pnote.api;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class InvalidSecretException extends RuntimeException{
     

@@ -12,7 +12,7 @@ import net.thevpc.echo.FrameDisplayMode;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteConfig {
 

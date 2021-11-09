@@ -11,7 +11,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface URLViewerComponent extends AppComponent{
 

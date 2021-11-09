@@ -11,7 +11,7 @@ import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldOptions;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class NumberFieldComponent extends TextField implements FormComponent {
 

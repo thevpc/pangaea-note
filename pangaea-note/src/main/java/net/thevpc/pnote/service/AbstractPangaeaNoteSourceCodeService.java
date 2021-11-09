@@ -18,7 +18,7 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPangaeaNoteTypeService {
 

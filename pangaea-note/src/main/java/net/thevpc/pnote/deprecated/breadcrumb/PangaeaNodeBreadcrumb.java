@@ -12,7 +12,7 @@
 //
 ///**
 // *
-// * @author vpc
+// * @author thevpc
 // */
 //public class PangaeaNodeBreadcrumb extends HorizontalPane {
 //

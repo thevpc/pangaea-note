@@ -13,7 +13,7 @@ import net.thevpc.pnote.service.search.strsearch.StringSearchResult;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteExtSearchResult {
 

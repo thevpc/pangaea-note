@@ -19,7 +19,7 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class LibreOfficeViewer implements PangaeaNoteFileViewerManager {
 

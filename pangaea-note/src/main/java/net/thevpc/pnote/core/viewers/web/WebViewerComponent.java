@@ -16,7 +16,7 @@ import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class WebViewerComponent extends WebView implements URLViewerComponent {
 

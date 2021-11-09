@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class StarsComponent extends StarsField<Integer> implements FormComponent {
 

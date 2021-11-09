@@ -7,7 +7,7 @@ package net.thevpc.pnote.core.frame;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface SelectableElement {
     String getSelectedText();

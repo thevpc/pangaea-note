@@ -9,7 +9,7 @@ import net.thevpc.pnote.util.PNoteUtils;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteField {
 

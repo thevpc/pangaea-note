@@ -9,7 +9,7 @@ import net.thevpc.echo.*;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaSearchDialog extends SearchDialog{
 

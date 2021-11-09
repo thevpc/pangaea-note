@@ -12,7 +12,7 @@ import net.thevpc.pnote.util.PNoteUtils;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteObjectDocument {
 

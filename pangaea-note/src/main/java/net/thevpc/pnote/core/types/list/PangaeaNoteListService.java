@@ -28,7 +28,7 @@ import net.thevpc.pnote.core.types.list.editor.PangaeaNoteListSettingsComponent;
 import net.thevpc.pnote.api.EditTypeComponent;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
 

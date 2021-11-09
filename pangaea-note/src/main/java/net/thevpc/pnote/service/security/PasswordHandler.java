@@ -7,7 +7,7 @@ package net.thevpc.pnote.service.security;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface PasswordHandler {
 

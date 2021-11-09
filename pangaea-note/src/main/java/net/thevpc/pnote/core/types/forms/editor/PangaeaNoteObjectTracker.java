@@ -6,7 +6,7 @@
 package net.thevpc.pnote.core.types.forms.editor;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public interface PangaeaNoteObjectTracker {
 

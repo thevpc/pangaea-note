@@ -31,7 +31,7 @@ import net.thevpc.diagram4j.render.strokes.SloppyStroke;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class JLineColorChooser extends JPanel {
 

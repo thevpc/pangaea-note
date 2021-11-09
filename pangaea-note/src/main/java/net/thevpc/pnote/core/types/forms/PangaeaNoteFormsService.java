@@ -36,7 +36,7 @@ import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     public static final PangaeaNoteMimeType FORMS = PangaeaNoteMimeType.of("application/x-pangaea-note-forms");

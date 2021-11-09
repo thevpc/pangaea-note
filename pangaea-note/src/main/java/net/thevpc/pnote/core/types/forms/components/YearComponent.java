@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class YearComponent extends ComboBox<String> implements FormComponent {
 

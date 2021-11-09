@@ -13,7 +13,7 @@ import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteAppExtensionHandlerImpl implements PangaeaNoteAppExtensionHandler {
 

@@ -7,7 +7,7 @@ package net.thevpc.pnote.api.model;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public enum ReturnType {
     SUCCESS,FAIL,CANCEL

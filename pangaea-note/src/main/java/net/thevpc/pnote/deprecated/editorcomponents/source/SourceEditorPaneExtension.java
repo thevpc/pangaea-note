@@ -10,7 +10,7 @@
 //
 ///**
 // *
-// * @author vpc
+// * @author thevpc
 // */
 //public interface SourceEditorPaneExtension {
 //

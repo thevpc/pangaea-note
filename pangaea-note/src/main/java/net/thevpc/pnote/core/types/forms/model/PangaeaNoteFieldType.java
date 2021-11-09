@@ -7,7 +7,7 @@ package net.thevpc.pnote.core.types.forms.model;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public enum PangaeaNoteFieldType {
     TEXT,

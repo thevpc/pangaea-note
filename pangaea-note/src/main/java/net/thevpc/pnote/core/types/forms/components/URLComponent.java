@@ -12,7 +12,7 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldOptions;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class URLComponent extends TextField implements FormComponent {
     private Runnable callback;

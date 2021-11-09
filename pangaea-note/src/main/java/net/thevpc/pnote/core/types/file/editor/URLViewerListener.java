@@ -7,7 +7,7 @@ package net.thevpc.pnote.core.types.file.editor;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface URLViewerListener {
 

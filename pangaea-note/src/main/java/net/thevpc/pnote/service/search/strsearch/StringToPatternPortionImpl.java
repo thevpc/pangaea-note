@@ -7,7 +7,7 @@ package net.thevpc.pnote.service.search.strsearch;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class StringToPatternPortionImpl<T> extends AbstractStringToPatternPortion<T> {
 

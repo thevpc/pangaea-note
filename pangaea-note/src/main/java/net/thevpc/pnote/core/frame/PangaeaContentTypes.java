@@ -11,7 +11,7 @@ import net.thevpc.pnote.core.types.rich.PangaeaNoteRichService;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaContentTypes {
 

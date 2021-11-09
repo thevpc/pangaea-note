@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class CheckboxesComponent extends CheckBoxGroup<String> implements FormComponent {
 

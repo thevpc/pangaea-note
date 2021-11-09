@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteCypher_v101 extends PangaeaNoteCypherBase {
 

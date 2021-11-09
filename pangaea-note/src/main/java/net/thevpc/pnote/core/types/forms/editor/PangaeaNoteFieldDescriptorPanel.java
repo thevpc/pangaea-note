@@ -20,7 +20,7 @@ import net.thevpc.pnote.util.PNoteUtils;
 import java.util.*;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 class PangaeaNoteFieldDescriptorPanel {
 

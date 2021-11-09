@@ -16,7 +16,7 @@ import net.thevpc.nuts.NutsApplicationContext;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteCypher_v100 extends PangaeaNoteCypherBase {
     public static final String ID="v1.0.0";

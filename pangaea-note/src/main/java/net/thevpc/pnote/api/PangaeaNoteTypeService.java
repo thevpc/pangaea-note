@@ -15,7 +15,7 @@ import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface PangaeaNoteTypeService extends PangaeaNoteTypeServiceBase {
 

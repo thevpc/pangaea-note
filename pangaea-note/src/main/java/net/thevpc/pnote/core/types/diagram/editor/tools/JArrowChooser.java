@@ -25,7 +25,7 @@ import net.thevpc.diagram4j.util.DiagramArrowTypeIcon;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class JArrowChooser extends JPanel {
 

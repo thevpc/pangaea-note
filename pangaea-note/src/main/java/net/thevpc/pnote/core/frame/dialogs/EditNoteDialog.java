@@ -21,7 +21,7 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class EditNoteDialog {
 

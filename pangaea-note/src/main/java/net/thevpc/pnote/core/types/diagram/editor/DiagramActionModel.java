@@ -11,7 +11,7 @@ import net.thevpc.diagram4j.JDiagramEditorAction;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class DiagramActionModel implements AppToolToggleModel {
 

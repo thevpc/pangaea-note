@@ -21,7 +21,7 @@ import net.thevpc.diagram4j.model.shapes.SegmentShape;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class ArrowEditor extends JArrowChooser {
 

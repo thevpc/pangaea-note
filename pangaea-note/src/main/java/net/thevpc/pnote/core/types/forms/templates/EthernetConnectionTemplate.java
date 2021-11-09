@@ -18,7 +18,7 @@ import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class EthernetConnectionTemplate extends AbstractPangaeaNoteTemplate {
 

@@ -12,7 +12,7 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteListEditorTypeComponent extends BorderPane implements PangaeaNoteEditorTypeComponent {
 

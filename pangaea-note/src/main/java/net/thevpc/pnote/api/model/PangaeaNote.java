@@ -19,7 +19,7 @@ import net.thevpc.pnote.core.frame.util.PangaeaNoteError;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNote implements Cloneable {
 

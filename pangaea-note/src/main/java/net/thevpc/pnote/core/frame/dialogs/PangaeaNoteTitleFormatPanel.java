@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteTitleFormatPanel extends GridPane {
 

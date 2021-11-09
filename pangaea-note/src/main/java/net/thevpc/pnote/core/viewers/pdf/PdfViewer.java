@@ -15,7 +15,7 @@ import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 import java.util.function.Consumer;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PdfViewer implements PangaeaNoteFileViewerManager {
 

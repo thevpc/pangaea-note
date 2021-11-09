@@ -24,7 +24,7 @@ import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteEmptyNoteEditorTypeComponent extends GridPane/*GradientPanel*/ implements PangaeaNoteEditorTypeComponent {
 

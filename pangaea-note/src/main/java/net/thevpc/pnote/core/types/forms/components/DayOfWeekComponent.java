@@ -20,7 +20,7 @@ import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldOptions;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class DayOfWeekComponent extends ComboBox<String> implements FormComponent {
 

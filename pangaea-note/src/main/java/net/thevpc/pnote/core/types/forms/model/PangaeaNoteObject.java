@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteObject {
 

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteListSettingsComponent extends GridPane implements EditTypeComponent {
 

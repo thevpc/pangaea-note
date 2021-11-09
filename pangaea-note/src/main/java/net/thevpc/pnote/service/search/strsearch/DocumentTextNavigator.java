@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface DocumentTextNavigator<T> {
 

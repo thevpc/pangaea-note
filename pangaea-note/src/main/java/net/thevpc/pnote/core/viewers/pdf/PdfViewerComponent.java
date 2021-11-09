@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PdfViewerComponent extends UserControl implements URLViewerComponent {
 

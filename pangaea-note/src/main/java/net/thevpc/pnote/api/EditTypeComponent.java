@@ -10,7 +10,7 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public interface EditTypeComponent extends AppComponent{
     void loadFrom(PangaeaNote note);

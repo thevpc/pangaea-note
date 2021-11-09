@@ -23,7 +23,7 @@ import java.io.UncheckedIOException;
 import java.net.URL;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class NewNoteDialog {
 

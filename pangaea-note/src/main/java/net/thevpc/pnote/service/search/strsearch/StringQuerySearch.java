@@ -20,7 +20,7 @@ import net.thevpc.echo.SearchQuery;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class StringQuerySearch<T> {
 

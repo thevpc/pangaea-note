@@ -19,7 +19,7 @@ import net.thevpc.echo.iconset.IconSets;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteIconsList extends BorderPane implements AppAlertInputPane {
 

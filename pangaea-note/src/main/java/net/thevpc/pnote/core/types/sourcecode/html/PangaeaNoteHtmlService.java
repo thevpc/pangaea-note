@@ -13,7 +13,7 @@ import net.thevpc.pnote.service.AbstractPangaeaNoteSourceCodeService;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteHtmlService extends AbstractPangaeaNoteSourceCodeService {
 

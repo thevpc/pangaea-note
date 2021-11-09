@@ -11,7 +11,7 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 import java.util.function.Supplier;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public interface PangaeaNoteCypher {
 

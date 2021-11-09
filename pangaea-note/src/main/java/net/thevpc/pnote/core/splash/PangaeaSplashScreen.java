@@ -8,7 +8,7 @@ package net.thevpc.pnote.core.splash;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaSplashScreen {
 

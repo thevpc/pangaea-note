@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class StringDocumentTextNavigator<T> implements DocumentTextNavigator<T> {
 

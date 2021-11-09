@@ -18,7 +18,7 @@ import net.thevpc.pnote.core.types.diagram.editor.tools.JPaintChooser;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class FillColorEditor extends JPaintChooser {
 

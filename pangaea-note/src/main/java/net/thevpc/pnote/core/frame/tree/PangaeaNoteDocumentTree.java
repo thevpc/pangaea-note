@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteDocumentTree extends BorderPane {
 

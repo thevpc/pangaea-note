@@ -17,7 +17,7 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 
 /**
  *
- * @author vpc
+ * @author thevpc
  */
 public class NoteEditorToViewer implements PangaeaNoteFileViewerManager {
 

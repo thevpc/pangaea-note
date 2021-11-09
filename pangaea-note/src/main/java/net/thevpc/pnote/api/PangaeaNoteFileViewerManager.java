@@ -12,7 +12,7 @@ import net.thevpc.pnote.core.types.file.editor.URLViewer;
 import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public interface PangaeaNoteFileViewerManager {
     SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType probedContentType, URLViewer viewer, PangaeaNoteFrame win);

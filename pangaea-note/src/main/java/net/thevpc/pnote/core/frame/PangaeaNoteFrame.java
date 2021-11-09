@@ -50,7 +50,7 @@ import net.thevpc.pnote.service.security.OpenWallet;
 import net.thevpc.echo.PasswordErrorHandler;
 
 /**
- * @author vpc
+ * @author thevpc
  */
 public class PangaeaNoteFrame extends Frame {
 
