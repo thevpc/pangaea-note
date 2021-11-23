@@ -260,12 +260,12 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
                 NutsElement cd = note.getChildData();
                 NutsObjectElementBuilder cdb;
                 if (cd == null || cd.isNull()) {
-                    cdb = app().elem().forObject();
+                    cdb = app().elem().ofObject();
                 } else if (!cd.isObject()) {
-                    cdb = app().elem().forObject();
+                    cdb = app().elem().ofObject();
                     cdb.set("value", cd);
                 } else {
-                    cdb = app().elem().forObject().add(cd.asObject());
+                    cdb = app().elem().ofObject().add(cd.asObject());
                 }
                 cdb.set("selected", sel);
                 note.setChildData(cdb.build());

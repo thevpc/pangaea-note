@@ -584,15 +584,15 @@ public class PangaeaNoteApp extends DefaultApplication {
                 }
             }
         }
-        return getDefaultDocumentsFolder().getPath();
+        return getDefaultDocumentsFolder().toString();
     }
 
     public PangaeaNoteConfig config() {
         return config;
     }
 
-    public File getDefaultDocumentsFolder() {
-        return new File(appContext().getSession().locations().getStoreLocation(NutsStoreLocation.VAR));
+    public NutsPath getDefaultDocumentsFolder() {
+        return appContext().getSession().locations().getStoreLocation(NutsStoreLocation.VAR);
     }
 
     public String stringifyAny(Object value) {
@@ -638,7 +638,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NutsElement stringToElement(String string) {
-        return elem().forString(string);
+        return elem().ofString(string);
     }
 
     public String elementToString(NutsElement string) {
@@ -843,11 +843,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         if (c == null) {
             c = new PangaeaNoteConfig();
         }
-        java.nio.file.Path configFilePath = getConfigFilePath();
-        File pf = configFilePath.toFile().getParentFile();
-        if (pf != null) {
-            pf.mkdirs();
-        }
+        NutsPath configFilePath = getConfigFilePath();
+        NutsPath pf = configFilePath.mkParentDirs();
         elem()
                 .json()
                 .setValue(c)
@@ -869,8 +866,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         return defaultValue == null ? null : defaultValue.get();
     }
 
-    public java.nio.file.Path getConfigFilePath() {
-        return Paths.get(appContext().getConfigFolder()).resolve("pangaea-note.config");
+    public NutsPath getConfigFilePath() {
+        return appContext().getConfigFolder().resolve("pangaea-note.config");
     }
 
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {
