@@ -78,16 +78,16 @@ public class PangaeaNoteMain implements NutsApplication {
             if (appContext.configureFirst(cmdLine)) {
                 //
             } else if ((a = cmdLine.nextBoolean("-i", "--interactive")) != null) {
-                if (a.isEnabled()) {
-                    interactive = a.getValue().getBoolean();
+                if (a.isActive()) {
+                    interactive = a.getBooleanValue();
                 }
             } else if ((a = cmdLine.nextBoolean("-w", "--gui")) != null) {
-                if (a.isEnabled()) {
-                    gui = a.getValue().getBoolean();
+                if (a.isActive()) {
+                    gui = a.getBooleanValue();
                 }
             } else if ((a = cmdLine.nextBoolean("--cui")) != null) {
-                if (a.isEnabled()) {
-                    cui = a.getValue().getBoolean();
+                if (a.isActive()) {
+                    cui = a.getBooleanValue();
                 }
             } else {
                 cmdLine.unexpectedArgument();
