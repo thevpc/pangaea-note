@@ -56,7 +56,7 @@
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:log4j-over-slf4j:1.7.25" level="project" />
     <orderEntry type="module" module-name="nuts" />
-    <orderEntry type="module" module-name="diagram4j" />
+    <orderEntry type="library" name="Maven: net.thevpc.diagram4j:diagram4j:0.1.1" level="project" />
     <orderEntry type="module" module-name="iconset-feather" />
     <orderEntry type="module" module-name="iconset-svgrepo-color" />
     <orderEntry type="module" module-name="echo" />
