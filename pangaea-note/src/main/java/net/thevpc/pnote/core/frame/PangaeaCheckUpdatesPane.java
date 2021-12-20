@@ -9,6 +9,7 @@ import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.nuts.NutsApplicationContext;
 import net.thevpc.nuts.NutsId;
+import net.thevpc.nuts.NutsScheduler;
 import net.thevpc.nuts.NutsVersion;
 
 public class PangaeaCheckUpdatesPane extends GridPane {
@@ -40,7 +41,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             startCheckVersion = true;
             nextVersion = null;
             updateMessage();
-            appContext().getSession().config().executorService().submit(
+            NutsScheduler.of(appContext().getSession()).executorService().submit(
                     () -> {
                         long start = System.currentTimeMillis();
                         try {

@@ -316,7 +316,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         super("swing");
         this.appContext = appContext;
         hideDisabled().set(true);
-        this.executorService().set(appContext.getSession().config().executorService());
+        NutsSession session = appContext.getSession();
+        this.executorService().set(NutsScheduler.of(session).executorService());
         registerCypher(new PangaeaNoteCypher_v100(appContext));
         registerCypher(new PangaeaNoteCypher_v101(appContext));
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {

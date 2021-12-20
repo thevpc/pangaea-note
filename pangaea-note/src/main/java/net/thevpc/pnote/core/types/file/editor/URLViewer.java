@@ -11,6 +11,8 @@ import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NutsExecutionType;
+import net.thevpc.nuts.NutsScheduler;
+import net.thevpc.nuts.NutsSession;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 
@@ -330,10 +332,10 @@ public class URLViewer extends BorderPane {
         public void doSysLoad() {
             String ll = getContentString();
             if (!ll.trim().isEmpty()) {
-                frame.getNutsSession().getWorkspace().config()
-                        .executorService().submit(() -> {
+                NutsSession session = frame.getNutsSession();
+                NutsScheduler.of(session).executorService().submit(() -> {
                             try {
-                                frame.getNutsSession().getWorkspace().exec()
+                                session.exec()
                                         .setExecutionType(NutsExecutionType.OPEN)
                                         .setCommand(ll)
                                         .run();
