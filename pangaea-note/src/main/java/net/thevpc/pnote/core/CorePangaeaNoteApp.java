@@ -4,7 +4,7 @@ import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.editors.SourceEditorService;
-import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
+//import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
 import net.thevpc.pnote.core.types.embedded.PangaeaNoteEmbeddedService;
 import net.thevpc.pnote.core.types.file.PangaeaNoteFileService;
 import net.thevpc.pnote.core.types.forms.PangaeaNoteFormsService;
@@ -104,9 +104,9 @@ public class CorePangaeaNoteApp {
         }
 
         app.installNoteTypeService(new PangaeaNoteHtmlService());
-        if (false) {
-            app.installNoteTypeService(new PangaeaNoteDiaService());
-        }
+//        if (false) {
+//            app.installNoteTypeService(new PangaeaNoteDiaService());
+//        }
 
         app.installTypeReplacer(new EmptySourceContentTypeReplacer());
         app.installEditorService(new SourceEditorService());

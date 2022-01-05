@@ -21,9 +21,9 @@ import net.thevpc.pnote.core.types.file.editor.URLViewerComponent;
 import org.icepdf.ri.common.ComponentKeyBinding;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
-import org.jodconverter.LocalConverter;
-import org.jodconverter.office.InstalledOfficeManagerHolder;
-import org.jodconverter.office.LocalOfficeManager;
+import org.jodconverter.core.office.InstalledOfficeManagerHolder;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
 
 /**
  *
