@@ -17,8 +17,8 @@ import net.thevpc.echo.iconset.IconConfig;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.echo.impl.controls.ExtraControls;
 import net.thevpc.echo.util.ClipboardHelper;
-import net.thevpc.nuts.NutsSession;
-import net.thevpc.nuts.NutsWorkspace;
+import net.thevpc.nuts.NSession;
+import net.thevpc.nuts.NWorkspace;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
@@ -134,11 +134,11 @@ public class PangaeaNoteFrame extends Frame {
         });
     }
 
-    public NutsWorkspace getNutsWorkspace() {
+    public NWorkspace getNutsWorkspace() {
         return app().getNutsWorkspace();
     }
 
-    public NutsSession getNutsSession() {
+    public NSession getNutsSession() {
         return app().getNutsSession();
     }
 

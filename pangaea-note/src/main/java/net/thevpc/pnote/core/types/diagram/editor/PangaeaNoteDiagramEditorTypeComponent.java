@@ -13,8 +13,8 @@
 //import net.thevpc.echo.api.AppFont;
 //import net.thevpc.echo.constraints.Anchor;
 //import net.thevpc.echo.constraints.Layout;
-//import net.thevpc.nuts.NutsElement;
-//import net.thevpc.nuts.NutsElements;
+//import net.thevpc.nuts.NElement;
+//import net.thevpc.nuts.NElements;
 //import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 //import net.thevpc.pnote.core.types.diagram.PangaeaNoteDiaService;
 //import net.thevpc.pnote.core.types.diagram.editor.tools.StrokeUtils;
@@ -228,7 +228,7 @@
 //                    s.onChange((a) -> getDiagram().setGridX(a.newValue()));
 //                }),Path.of("/Default/Grid/*")
 //        );
-//        NutsElements elems = NutsElements.of(frame.getNutsSession());
+//        NElements elems = NElements.of(frame.getNutsSession());
 //        elems.setMapper(JDiagramBounds.class, new JDiagramBoundsMapper());
 //        elems.setMapper(JDiagramGeometry.class, new JDiagramGeometryMapper());
 //    }
@@ -280,7 +280,7 @@
 //
 //    public void setNote(PangaeaNote note) {
 //        this.note = note;
-//        NutsElement cnt = note.getContent();
+//        NElement cnt = note.getContent();
 //        PangaeaNoteDiaService service = (PangaeaNoteDiaService) frame.app().getContentTypeService(PangaeaNoteDiaService.DIAGRAM);
 //        canvas.setDiagram(service.elementToDiagram(cnt));
 //    }

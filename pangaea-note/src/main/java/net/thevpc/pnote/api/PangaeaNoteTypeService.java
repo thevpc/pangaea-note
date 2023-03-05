@@ -5,10 +5,10 @@
  */
 package net.thevpc.pnote.api;
 
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
@@ -37,9 +37,9 @@ public interface PangaeaNoteTypeService extends PangaeaNoteTypeServiceBase {
         return null;
     }
 
-    NutsElement createDefaultContent();
+    NElement createDefaultContent();
 
-    boolean isEmptyContent(NutsElement content);
+    boolean isEmptyContent(NElement content);
 
     default int getFileNameSupport(String fileName, String extension, String probedContentType){
         return -1;

@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.thevpc.nuts.NutsBlankable;
-import net.thevpc.nuts.NutsElement;
-import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.nuts.NBlankable;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteField;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;
@@ -33,7 +32,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
     private PangaeaNoteObjectDocument document;
     private PangaeaNote note;
 
-    public PangaeaNoteObjectDocumentTextNavigator(PangaeaNoteApp app, PangaeaNote note, NutsElement source) {
+    public PangaeaNoteObjectDocumentTextNavigator(PangaeaNoteApp app, PangaeaNote note, NElement source) {
         this.app = app;
         this.note = note;
         PangaeaNoteFormsService s = (PangaeaNoteFormsService) app.getContentTypeService(PangaeaNoteFormsService.FORMS);
@@ -47,7 +46,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
         List<DocumentTextPart<PangaeaNote>> all = new ArrayList<>();
         if (document.getDescriptor().getFields() != null) {
             for (PangaeaNoteFieldDescriptor value : document.getDescriptor().getFields()) {
-                if (!NutsBlankable.isBlank(value.getName())) {
+                if (!NBlankable.isBlank(value.getName())) {
                     //String key, String text, T object, String stringValue
                     all.add(new StringToPatternPortionImpl<PangaeaNote>("fieldDescriptor", value.getName(), note, value, value.getName()));
                 }
@@ -57,7 +56,7 @@ public class PangaeaNoteObjectDocumentTextNavigator implements DocumentTextNavig
             for (PangaeaNoteObject value : document.getValues()) {
                 for (PangaeaNoteField field : value.getFields()) {
                     String s = field.getValue();
-                    if (!NutsBlankable.isBlank(s)) {
+                    if (!NBlankable.isBlank(s)) {
                         all.add(new StringToPatternPortionImpl("fieldValue", s, note, field, s));
                     }
                 }

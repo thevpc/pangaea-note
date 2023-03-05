@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -51,16 +51,16 @@ public abstract class AbstractPangaeaNoteTypeService implements PangaeaNoteTypeS
         return contentType;
     }
 
-    public NutsElement getContentAsElement(String s) {
+    public NElement getContentAsElement(String s) {
         return app.stringToElement(s);
     }
 
-    public String getContentAsString(NutsElement s) {
+    public String getContentAsString(NElement s) {
         return app.elementToString(s);
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NElement content) {
         if (content == null) {
             return true;
         }

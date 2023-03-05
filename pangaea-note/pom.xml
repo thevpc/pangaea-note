@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.pnote</groupId>
     <artifactId>pnote</artifactId>
-    <version>0.8.3.0</version>
+    <version>0.8.4.0</version>
     <packaging>jar</packaging>
     <name>Pangaea Note</name>
     <url>https://github.com/thevpc/pangaea-note</url>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>net.thevpc.nuts</groupId>
             <artifactId>nuts</artifactId>
-            <version>0.8.3</version>
+            <version>0.8.4</version>
         </dependency>
 
 <!--        <dependency>-->
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>net.thevpc.echo</groupId>
             <artifactId>echo-swing</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
             <scope>runtime</scope>
         </dependency>
         <!--        <dependency>-->

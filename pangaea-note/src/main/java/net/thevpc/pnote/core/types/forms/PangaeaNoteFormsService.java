@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -94,7 +94,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public NutsElement createDefaultContent() {
+    public NElement createDefaultContent() {
         return getContentAsElement(new PangaeaNoteObjectDocument()
                 .setDescriptor(
                         new PangaeaNoteObjectDescriptor()
@@ -114,19 +114,19 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
         );
     }
 
-    public NutsElement getContentAsElement(PangaeaNoteObjectDocument dynamicDocument) {
+    public NElement getContentAsElement(PangaeaNoteObjectDocument dynamicDocument) {
         return app().elem().toElement(dynamicDocument);
     }
 
-    public PangaeaNoteObjectDocument getContentAsObject(NutsElement s) {
+    public PangaeaNoteObjectDocument getContentAsObject(NElement s) {
         if (s != null && s.isString()) {
-            return app().elem().parse(s.asString(), PangaeaNoteObjectDocument.class);
+            return app().elem().parse(s.asString().get(), PangaeaNoteObjectDocument.class);
         }
         return app().elem().convert(s, PangaeaNoteObjectDocument.class);
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NElement content) {
         PangaeaNoteObjectDocument a = getContentAsObject(content);
         if (a == null) {
             return true;

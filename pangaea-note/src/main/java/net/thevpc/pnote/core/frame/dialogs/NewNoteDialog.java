@@ -10,7 +10,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -100,7 +100,7 @@ public class NewNoteDialog {
             n.setIcon(z.getIcon());
             z.prepare(n, frame.app());
         } else {
-            NutsElement dv = frame.app().getContentTypeService(ct).createDefaultContent();
+            NElement dv = frame.app().getContentTypeService(ct).createDefaultContent();
             n.setContent(dv);
         }
 //        }

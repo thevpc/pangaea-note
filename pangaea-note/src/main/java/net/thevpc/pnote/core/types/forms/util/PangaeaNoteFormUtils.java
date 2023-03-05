@@ -2,8 +2,8 @@ package net.thevpc.pnote.core.types.forms.util;
 
 import net.thevpc.echo.Color;
 import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.nuts.NutsBlankable;
-import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.nuts.NBlankable;
+import net.thevpc.nuts.util.NStringUtils;
 import net.thevpc.pnote.core.frame.util.PangaeaNoteLabelHelper;
 import net.thevpc.pnote.core.types.forms.model.*;
 import net.thevpc.pnote.util.PNoteUtils;
@@ -16,29 +16,29 @@ import java.util.Set;
 public class PangaeaNoteFormUtils {
     public static boolean isBlank(PangaeaNoteField field) {
         if (field != null) {
-            if (!NutsBlankable.isBlank(field.getValue())) {
+            if (!NBlankable.isBlank(field.getValue())) {
                 return false;
             }
             if (field.getOptions() != null) {
-                if (!NutsBlankable.isBlank(field.getOptions().getContentType())) {
+                if (!NBlankable.isBlank(field.getOptions().getContentType())) {
                     return false;
                 }
-                if (!NutsBlankable.isBlank(field.getOptions().getValuePattern())) {
+                if (!NBlankable.isBlank(field.getOptions().getValuePattern())) {
                     return false;
                 }
-                if (!NutsBlankable.isBlank(field.getOptions().getLabelName())) {
+                if (!NBlankable.isBlank(field.getOptions().getLabelName())) {
                     return false;
                 }
-                if (!NutsBlankable.isBlank(field.getOptions().getLabelBackgroundColor())) {
+                if (!NBlankable.isBlank(field.getOptions().getLabelBackgroundColor())) {
                     return false;
                 }
-                if (!NutsBlankable.isBlank(field.getOptions().getLabelForegroundColor())) {
+                if (!NBlankable.isBlank(field.getOptions().getLabelForegroundColor())) {
                     return false;
                 }
-                if (!NutsBlankable.isBlank(field.getOptions().getLabelIcon())) {
+                if (!NBlankable.isBlank(field.getOptions().getLabelIcon())) {
                     return false;
                 }
-                if (!NutsBlankable.isBlank(field.getOptions().getLabelIcon())) {
+                if (!NBlankable.isBlank(field.getOptions().getLabelIcon())) {
                     return false;
                 }
                 if (field.getOptions().getHidden() != null) {
@@ -69,8 +69,8 @@ public class PangaeaNoteFormUtils {
     }
 
     public static String getFieldName(PangaeaNoteFieldDescriptor fdesc) {
-        String fn1 = NutsUtilStrings.trim(fdesc.getName());
-        String fn2 = NutsUtilStrings.trim(fdesc.getOptions().getLabelName());
+        String fn1 = NStringUtils.trim(fdesc.getName());
+        String fn2 = NStringUtils.trim(fdesc.getOptions().getLabelName());
         if (fn2.length() > 0) {
             fn1 = fn2;
         }

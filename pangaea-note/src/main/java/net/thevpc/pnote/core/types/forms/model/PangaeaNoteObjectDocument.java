@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.core.types.forms.model;
 
-import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.nuts.util.NStringUtils;
 import net.thevpc.pnote.core.types.forms.util.PangaeaNoteFormUtils;
 import net.thevpc.pnote.util.PNoteUtils;
 
@@ -128,7 +128,7 @@ public class PangaeaNoteObjectDocument {
         Map<String, PangaeaNoteFieldDescriptor> fieldDescMapByName = new LinkedHashMap<>();
         Map<String, PangaeaNoteFieldDescriptor> fieldDescMapByLabel = new LinkedHashMap<>();
         for (PangaeaNoteFieldDescriptor field : newDescr.getFields()) {
-            String n1 = NutsUtilStrings.trim(field.getName());
+            String n1 = NStringUtils.trim(field.getName());
             if (n1.isEmpty()) {
                 throw new IllegalArgumentException("empty field name");
             }
@@ -151,14 +151,14 @@ public class PangaeaNoteObjectDocument {
         for (PangaeaNoteObject value : values) {
             PangaeaNoteObject value2 = new PangaeaNoteObject();
             for (PangaeaNoteField field : value.getFields()) {
-                String n1 = NutsUtilStrings.trim(field.getName());
+                String n1 = NStringUtils.trim(field.getName());
                 PangaeaNoteFieldDescriptor fdesc = fieldDescMapByName.get(n1);
                 if (fdesc != null) {
                     String fn1 = PangaeaNoteFormUtils.getFieldName(fdesc);
                     field = field.copy();
                     field.setName(fn1);
                     //reset label if it matches the new field desc name
-                    if (NutsUtilStrings.trim(field.getOptions().getLabelName()).equals(fn1)) {
+                    if (NStringUtils.trim(field.getOptions().getLabelName()).equals(fn1)) {
                         field.getOptions().setLabelName(null);
                     }
                     if (!PangaeaNoteFormUtils.isBlank(field)) {
@@ -185,7 +185,7 @@ public class PangaeaNoteObjectDocument {
             value.setName(value.getOptions().getLabelName());
             value.getOptions().setLabelName(null);
         }
-        PangaeaNoteObjectDescriptor newDescriptor = new PangaeaNoteObjectDescriptor().setName(NutsUtilStrings.trim(newDescr.getName()))
+        PangaeaNoteObjectDescriptor newDescriptor = new PangaeaNoteObjectDescriptor().setName(NStringUtils.trim(newDescr.getName()))
                 .addFields(fieldDescMapByName.values().toArray(new PangaeaNoteFieldDescriptor[0]));
 
         //

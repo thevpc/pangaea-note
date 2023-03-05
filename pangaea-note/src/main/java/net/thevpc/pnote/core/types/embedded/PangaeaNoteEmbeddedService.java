@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.core.types.embedded;
 
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
@@ -64,7 +64,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public NutsElement createDefaultContent() {
+    public NElement createDefaultContent() {
         return app.elem().toElement(app.newDocument());
     }
 
@@ -93,23 +93,23 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NElement content) {
         return app.isEmptyContent(content);
     }
 
-    public NutsElement getContentValueAsElement(PangaeaNoteDocumentInfo contentString) {
+    public NElement getContentValueAsElement(PangaeaNoteDocumentInfo contentString) {
         if (contentString == null) {
             contentString = new PangaeaNoteDocumentInfo();
         }
         return app.elem().toElement(contentString);
     }
 
-    public PangaeaNoteDocumentInfo getContentValueAsInfo(NutsElement content) {
+    public PangaeaNoteDocumentInfo getContentValueAsInfo(NElement content) {
         if(content==null || content.isNull()){
             return null;
         }
         if(content.isString()){
-            return new PangaeaNoteDocumentInfo().setPath(content.asString());
+            return new PangaeaNoteDocumentInfo().setPath(content.asString().get());
         }
         return app.elem().convert(content, PangaeaNoteDocumentInfo.class);
     }

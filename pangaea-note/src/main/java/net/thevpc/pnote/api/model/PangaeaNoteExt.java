@@ -13,7 +13,7 @@
 //import java.util.Map;
 //import java.util.Objects;
 //import java.util.Set;
-//import net.thevpc.nuts.NutsElement;
+//import net.thevpc.nuts.NElement;
 //import net.thevpc.pnote.frame.util.PangaeaNoteError;
 //import net.thevpc.pnote.util.PNoteUtils;
 //
@@ -31,7 +31,7 @@
 //    private String icon;
 //    private String contentType;
 //    private String editorType;
-//    private NutsElement content;
+//    private NElement content;
 //    private boolean readOnly;
 //    private transient boolean loaded;
 //    private Set<String> tags = new HashSet<String>();
@@ -196,13 +196,13 @@
 //        }
 //    }
 //
-//    public NutsElement getContent() {
+//    public NElement getContent() {
 //        return content;
 //    }
 //
-//    public void setContent(NutsElement value) {
+//    public void setContent(NElement value) {
 //        if (!Objects.equals(this.content, value)) {
-//            NutsElement old = this.content;
+//            NElement old = this.content;
 //            this.content = value;
 //            fireChangeEvent(this, "content", old, value);
 //        }

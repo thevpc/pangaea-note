@@ -10,8 +10,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NutsBlankable;
-import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.nuts.NBlankable;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.frame.dialogs.PangaeaNoteIconsButton;
@@ -138,7 +137,7 @@ public class EditFormFieldPanel extends GridPane {
         setEditDescriptor(allRecordsMode);
         options = options.copy();
         descr = descr.copy();
-        if (NutsBlankable.isBlank(options.getLabelName())) {
+        if (NBlankable.isBlank(options.getLabelName())) {
             options.setLabelName(descr.getName());
         }
         this.options = options;

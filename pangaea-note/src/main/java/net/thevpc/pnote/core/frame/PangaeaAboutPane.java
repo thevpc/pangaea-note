@@ -5,6 +5,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
+import net.thevpc.nuts.NEnvs;
 
 public class PangaeaAboutPane extends TabPane {
     public PangaeaAboutPane(PangaeaNoteApp app) {
@@ -40,25 +41,25 @@ public class PangaeaAboutPane extends TabPane {
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.architecture"),app),
-                                            new TextField(Str.of(app.getNutsWorkspace().env().getArch().toString()),app)
+                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getArch().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.os"),app),
-                                            new TextField(Str.of(app.getNutsWorkspace().env().getOs().toString()),app)
+                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getOs().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.osDistribution"),app),
-                                            new TextField(Str.of(app.getNutsWorkspace().env().getOsDist().toString()),app)
+                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getOsDist().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.platform"),app),
-                                            new TextField(Str.of(app.getNutsWorkspace().env().getPlatform().toString()),app)
+                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getPlatform().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);

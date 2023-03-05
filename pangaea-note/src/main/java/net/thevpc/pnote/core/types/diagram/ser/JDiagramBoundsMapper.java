@@ -9,10 +9,10 @@
 //import java.util.LinkedHashMap;
 //import java.util.Map;
 //import net.thevpc.diagram4j.model.JDiagramBounds;
-//import net.thevpc.nuts.NutsElement;
+//import net.thevpc.nuts.NElement;
 //import net.thevpc.nuts.NutsElementFactoryContext;
 //import net.thevpc.nuts.NutsElementMapper;
-//import net.thevpc.nuts.NutsObjectElement;
+//import net.thevpc.nuts.NObjectElement;
 //
 ///**
 // *
@@ -34,13 +34,13 @@
 //    }
 //
 //    @Override
-//    public NutsElement createElement(JDiagramBounds src, Type typeOfSrc, NutsElementFactoryContext context) {
+//    public NElement createElement(JDiagramBounds src, Type typeOfSrc, NutsElementFactoryContext context) {
 //        return context.defaultObjectToElement(destruct(src, typeOfSrc, context), typeOfSrc);
 //    }
 //
 //    @Override
-//    public JDiagramBounds createObject(NutsElement o, Type typeOfResult, NutsElementFactoryContext context) {
-//        NutsObjectElement oo = o.asObject();
+//    public JDiagramBounds createObject(NElement o, Type typeOfResult, NutsElementFactoryContext context) {
+//        NObjectElement oo = o.asObject();
 //        return new JDiagramBounds(oo.getInt("minX"), oo.getInt("minY"), oo.getInt("maxX"), oo.getInt("maxY"));
 //    }
 //

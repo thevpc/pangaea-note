@@ -7,10 +7,7 @@ import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.AllAnchors;
 import net.thevpc.echo.constraints.AllGrow;
 import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.nuts.NutsElement;
-import net.thevpc.nuts.NutsElementType;
-import net.thevpc.nuts.NutsObjectElement;
-import net.thevpc.nuts.NutsObjectElementBuilder;
+import net.thevpc.nuts.elem.*;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
@@ -240,12 +237,12 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
         }
         String name = note.getName();
         if (this.currentNote != null && this.noteListModel != null) {
-            NutsElement cd = note.getChildData();
-            if (!(cd instanceof NutsObjectElement)) {
+            NElement cd = note.getChildData();
+            if (!(cd instanceof NObjectElement)) {
                 return false;
             }
-            NutsObjectElement obj = cd.asObject();
-            return obj.type() == NutsElementType.BOOLEAN && obj.getBoolean("selected");
+            NObjectElement obj = cd.asObject().get();
+            return obj.type() == NElementType.BOOLEAN && obj.getBoolean("selected").get();
         }
         return false;
     }
@@ -257,15 +254,16 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
         if (this.currentNote != null && this.noteListModel != null) {
 //            Set<String> n = this.noteListModel.getSelectedNames();
             if (isSelectedIndex(note) != sel) {
-                NutsElement cd = note.getChildData();
-                NutsObjectElementBuilder cdb;
+                NElement cd = note.getChildData();
+                NObjectElementBuilder cdb;
                 if (cd == null || cd.isNull()) {
                     cdb = app().elem().ofObject();
                 } else if (!cd.isObject()) {
                     cdb = app().elem().ofObject();
                     cdb.set("value", cd);
                 } else {
-                    cdb = app().elem().ofObject().add(cd.asObject());
+                    NObjectElement z = cd.asObject().get();
+                    cdb = app().elem().ofObject().addAll(z);
                 }
                 cdb.set("selected", sel);
                 note.setChildData(cdb.build());

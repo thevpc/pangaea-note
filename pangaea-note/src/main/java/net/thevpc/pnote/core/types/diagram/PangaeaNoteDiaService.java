@@ -9,7 +9,7 @@
 //import java.util.Iterator;
 //import java.util.List;
 //
-//import net.thevpc.nuts.NutsElement;
+//import net.thevpc.nuts.NElement;
 //import net.thevpc.pnote.core.types.diagram.editor.DiagramEditorService;
 //import net.thevpc.diagram4j.model.JDiagramModel;
 //import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -63,7 +63,7 @@
 //    }
 //
 //    @Override
-//    public boolean isEmptyContent(NutsElement element) {
+//    public boolean isEmptyContent(NElement element) {
 //        String content = app().elementToString(element);
 //        if (content == null || content.trim().length() == 0) {
 //            return true;
@@ -71,11 +71,11 @@
 //        return extractTextFromDiagram(content).trim().isEmpty();
 //    }
 //
-//    public NutsElement diagramToElement(JDiagramModel elem) {
+//    public NElement diagramToElement(JDiagramModel elem) {
 //        return app().elem().toElement(elem);
 //    }
 //
-//    public JDiagramModel elementToDiagram(NutsElement elem) {
+//    public JDiagramModel elementToDiagram(NElement elem) {
 //        if (elem.isNull() || elem.isString()) {
 //            return new JDiagramModel();
 //        }
@@ -91,7 +91,7 @@
 //    }
 //
 //    @Override
-//    public NutsElement createDefaultContent() {
+//    public NElement createDefaultContent() {
 //        JDiagramModel dm = new JDiagramModel();
 //        dm.getConfig().setFillColor("random");
 //        dm.getConfig().setLineColor("random");

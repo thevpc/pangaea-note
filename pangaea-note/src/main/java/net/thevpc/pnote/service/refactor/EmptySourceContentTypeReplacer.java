@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.service.refactor;
 
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -22,7 +22,7 @@ public class EmptySourceContentTypeReplacer implements PangaeaContentTypeReplace
 
     @Override
     public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
-        NutsElement c = toUpdate.getContent();
+        NElement c = toUpdate.getContent();
         if (app.getContentTypeService(oldContentType).isEmptyContent(c)) {
             return 10;
         }

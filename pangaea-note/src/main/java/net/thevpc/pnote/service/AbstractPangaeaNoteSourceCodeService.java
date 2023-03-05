@@ -5,11 +5,11 @@
  */
 package net.thevpc.pnote.service;
 
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.nuts.NutsElement;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
@@ -48,7 +48,7 @@ public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPanga
     }
 
     @Override
-    public NutsElement createDefaultContent() {
+    public NElement createDefaultContent() {
         return app().stringToElement("");
     }
 

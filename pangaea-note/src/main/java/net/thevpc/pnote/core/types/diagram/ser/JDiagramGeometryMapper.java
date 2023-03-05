@@ -17,10 +17,10 @@
 //import net.thevpc.diagram4j.model.shapes.SegmentShape;
 //import net.thevpc.diagram4j.model.shapes.SquareShape;
 //import net.thevpc.diagram4j.model.shapes.TextShape;
-//import net.thevpc.nuts.NutsElement;
+//import net.thevpc.nuts.NElement;
 //import net.thevpc.nuts.NutsElementFactoryContext;
 //import net.thevpc.nuts.NutsElementMapper;
-//import net.thevpc.nuts.NutsObjectElement;
+//import net.thevpc.nuts.NObjectElement;
 //
 ///**
 // *
@@ -63,13 +63,13 @@
 //    }
 //
 //    @Override
-//    public NutsElement createElement(JDiagramGeometry src, Type typeOfSrc, NutsElementFactoryContext context) {
+//    public NElement createElement(JDiagramGeometry src, Type typeOfSrc, NutsElementFactoryContext context) {
 //        return context.objectToElement(destruct(src, typeOfSrc, context), null);
 //    }
 //
 //    @Override
-//    public JDiagramGeometry createObject(NutsElement o, Type typeOfResult, NutsElementFactoryContext context) {
-//        NutsObjectElement oo = o.asObject();
+//    public JDiagramGeometry createObject(NElement o, Type typeOfResult, NutsElementFactoryContext context) {
+//        NObjectElement oo = o.asObject();
 //        String clazz = oo.getString("class");
 //        String clz = shortNameToClass.get(clazz);
 //        if (clz == null) {

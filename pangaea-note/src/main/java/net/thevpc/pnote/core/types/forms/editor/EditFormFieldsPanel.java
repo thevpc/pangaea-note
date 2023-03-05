@@ -4,7 +4,7 @@ import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.Anchor;
-import net.thevpc.nuts.NutsUtilStrings;
+import net.thevpc.nuts.util.NStringUtils;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.forms.model.*;
 import net.thevpc.pnote.util.PNoteUtils;
@@ -173,7 +173,7 @@ public class EditFormFieldsPanel extends BorderPane {
         for (EditFormFieldPanel value : list.values()) {
 //            String fn = value.getLabelName().text().get().value();
             String fl = value.getFieldName().text().get().value();
-            if (NutsUtilStrings.trim(fl).equals(NutsUtilStrings.trim(name))) {
+            if (NStringUtils.trim(fl).equals(NStringUtils.trim(name))) {
                 return value;
             }
         }
@@ -186,7 +186,7 @@ public class EditFormFieldsPanel extends BorderPane {
         }
         int x = 1;
         while (true) {
-            String n = NutsUtilStrings.trim(prefix + ((x <= 0) ? "" : String.valueOf(x)));
+            String n = NStringUtils.trim(prefix + ((x <= 0) ? "" : String.valueOf(x)));
             EditFormFieldPanel a = findFieldPanel(n);
             if (a == null) {
                 return n;

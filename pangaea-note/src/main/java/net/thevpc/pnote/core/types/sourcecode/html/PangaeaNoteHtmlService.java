@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.core.types.sourcecode.html;
 
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.types.sourcecode.html.refactor.PlainToHtmlContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
@@ -30,7 +30,7 @@ public class PangaeaNoteHtmlService extends AbstractPangaeaNoteSourceCodeService
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement element) {
+    public boolean isEmptyContent(NElement element) {
         String content = app().elementToString(element);
         if (content == null || content.trim().length() == 0) {
             return true;

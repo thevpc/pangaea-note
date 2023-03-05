@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import net.thevpc.echo.impl.TreeNode;
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.core.frame.util.PangaeaNoteError;
 
 /**
@@ -37,13 +37,13 @@ public class PangaeaNote implements Cloneable {
     private String folderIcon;
     private String contentType;
     private String editorType;
-    private NutsElement content;
+    private NElement content;
 
     /**
      * any structured information that can be used by parent notes and that are
      * related to this note
      */
-    private NutsElement childData;
+    private NElement childData;
     private boolean readOnly;
     private Set<String> tags = new HashSet<String>();
     private List<PangaeaNote> children = new ArrayList<>();
@@ -79,11 +79,11 @@ public class PangaeaNote implements Cloneable {
         this.editorType = editorType;
     }
 
-    public NutsElement getContent() {
+    public NElement getContent() {
         return content;
     }
 
-    public PangaeaNote setContent(NutsElement content) {
+    public PangaeaNote setContent(NElement content) {
         this.content = content;
         return this;
     }
@@ -370,11 +370,11 @@ public class PangaeaNote implements Cloneable {
         this.titleBackground = titleBackground;
     }
 
-    public NutsElement getChildData() {
+    public NElement getChildData() {
         return childData;
     }
 
-    public void setChildData(NutsElement childData) {
+    public void setChildData(NElement childData) {
         this.childData = childData;
     }
 

@@ -8,7 +8,7 @@ package net.thevpc.pnote.core.types.file;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
@@ -73,12 +73,12 @@ public class PangaeaNoteFileService extends AbstractPangaeaNoteTypeService {
 
         
     @Override
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NElement content) {
         return app().isEmptyContent(content);
     }
 
     @Override
-    public NutsElement createDefaultContent() {
+    public NElement createDefaultContent() {
         return app().stringToElement("");
     }
     

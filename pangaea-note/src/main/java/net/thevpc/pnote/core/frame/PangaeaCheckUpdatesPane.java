@@ -7,14 +7,15 @@ import net.thevpc.echo.Label;
 import net.thevpc.echo.ProgressBar;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.nuts.NutsApplicationContext;
-import net.thevpc.nuts.NutsId;
-import net.thevpc.nuts.NutsScheduler;
-import net.thevpc.nuts.NutsVersion;
+import net.thevpc.nuts.NApplicationContext;
+import net.thevpc.nuts.NId;
+import net.thevpc.nuts.NSearchCommand;
+import net.thevpc.nuts.NVersion;
+import net.thevpc.nuts.concurrent.NScheduler;
 
 public class PangaeaCheckUpdatesPane extends GridPane {
     private int minSeconds = 4;
-    private NutsVersion nextVersion;
+    private NVersion nextVersion;
     private Label label;
     private Button button;
     private ProgressBar progressBar;
@@ -41,11 +42,11 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             startCheckVersion = true;
             nextVersion = null;
             updateMessage();
-            NutsScheduler.of(appContext().getSession()).executorService().submit(
+            NScheduler.of(appContext().getSession()).executorService().submit(
                     () -> {
                         long start = System.currentTimeMillis();
                         try {
-                            NutsId q = appContext().getSession().search()
+                            NId q = NSearchCommand.of(appContext().getSession())
                                     .setId(appContext().getAppId().builder().setVersion("").build())
                                     .setLatest(true)
                                     .getResultIds().first();
@@ -99,7 +100,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             button.enabled().set(allowRecheck);
             progressBar.indeterminate().set(false);
             progressBar.visible().set(false);
-            NutsApplicationContext c = appContext();
+            NApplicationContext c = appContext();
             int x = c.getAppId().getVersion().compareTo(nextVersion);
             if (x < 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.newVersionAvailable", nextVersion));
@@ -114,7 +115,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
         }
     }
 
-    private NutsApplicationContext appContext() {
+    private NApplicationContext appContext() {
         return ((PangaeaNoteApp) app()).appContext();
     }
 }

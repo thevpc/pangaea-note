@@ -11,6 +11,11 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.iconset.NoIconSet;
 import net.thevpc.echo.impl.DefaultApplication;
 import net.thevpc.nuts.*;
+import net.thevpc.nuts.concurrent.NScheduler;
+import net.thevpc.nuts.elem.NElement;
+import net.thevpc.nuts.elem.NElements;
+import net.thevpc.nuts.io.NPath;
+import net.thevpc.nuts.spi.NPaths;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
@@ -72,7 +77,7 @@ import net.thevpc.pnote.service.security.PasswordHandler;
  */
 public class PangaeaNoteApp extends DefaultApplication {
 
-    private NutsApplicationContext appContext;
+    private NApplicationContext appContext;
     private WritableList<PangaeaNoteFrame> windows = Props.of("windows").listOf(PangaeaNoteFrame.class);
     private CorePangaeaNoteApp core = new CorePangaeaNoteApp();
     private List<PangaeaNoteAppExtensionHandler> appExtensions = new ArrayList<>();
@@ -312,12 +317,12 @@ public class PangaeaNoteApp extends DefaultApplication {
     private PangaeaNoteConfig config;
     private int maxRecentContentTypes = 4;
 
-    public PangaeaNoteApp(NutsApplicationContext appContext) {
+    public PangaeaNoteApp(NApplicationContext appContext) {
         super("swing");
         this.appContext = appContext;
         hideDisabled().set(true);
-        NutsSession session = appContext.getSession();
-        this.executorService().set(NutsScheduler.of(session).executorService());
+        NSession session = appContext.getSession();
+        this.executorService().set(NScheduler.of(session).executorService());
         registerCypher(new PangaeaNoteCypher_v100(appContext));
         registerCypher(new PangaeaNoteCypher_v101(appContext));
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
@@ -487,15 +492,15 @@ public class PangaeaNoteApp extends DefaultApplication {
         return getAppExtensions().stream().filter(x -> x.checkLoaded()).collect(Collectors.toList());
     }
 
-    public NutsApplicationContext nutsAppContext() {
+    public NApplicationContext nutsAppContext() {
         return appContext;
     }
 
-    public NutsWorkspace getNutsWorkspace() {
+    public NWorkspace getNutsWorkspace() {
         return appContext.getWorkspace();
     }
 
-    public NutsSession getNutsSession() {
+    public NSession getNutsSession() {
         return appContext.getSession();
     }
 
@@ -551,12 +556,12 @@ public class PangaeaNoteApp extends DefaultApplication {
         return new ArrayList<>(extra.values());
     }
 
-    public NutsElements elem() {
-        NutsSession session = appContext().getSession();
-        return NutsElements.of(session);
+    public NElements elem() {
+        NSession session = appContext().getSession();
+        return NElements.of(session);
     }
 
-    public NutsApplicationContext appContext() {
+    public NApplicationContext appContext() {
         return appContext;
     }
 
@@ -573,7 +578,7 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public String getValidLastOpenPath() {
         String p = config.getLastOpenPath();
-        if (!NutsBlankable.isBlank(p)) {
+        if (!NBlankable.isBlank(p)) {
             File f = new File(p);
             if (f.isDirectory()) {
                 return f.getPath();
@@ -592,8 +597,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         return config;
     }
 
-    public NutsPath getDefaultDocumentsFolder() {
-        return appContext().getSession().locations().getStoreLocation(NutsStoreLocation.VAR);
+    public NPath getDefaultDocumentsFolder() {
+        return NLocations.of(appContext().getSession()).getStoreLocation(NStoreLocation.VAR);
     }
 
     public String stringifyAny(Object value) {
@@ -638,11 +643,11 @@ public class PangaeaNoteApp extends DefaultApplication {
         return false;
     }
 
-    public NutsElement stringToElement(String string) {
+    public NElement stringToElement(String string) {
         return elem().ofString(string);
     }
 
-    public String elementToString(NutsElement string) {
+    public String elementToString(NElement string) {
         if (string == null) {
             return null;
         }
@@ -650,12 +655,12 @@ public class PangaeaNoteApp extends DefaultApplication {
             return null;
         }
         if (string.isString()) {
-            return string.asString();
+            return string.asString().get();
         }
         return string.toString();
     }
 
-    public boolean isEmptyContent(NutsElement content) {
+    public boolean isEmptyContent(NElement content) {
         if (content == null) {
             return true;
         }
@@ -844,8 +849,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         if (c == null) {
             c = new PangaeaNoteConfig();
         }
-        NutsPath configFilePath = getConfigFilePath();
-        NutsPath pf = configFilePath.mkParentDirs();
+        NPath configFilePath = getConfigFilePath();
+        NPath pf = configFilePath.mkParentDirs();
         elem()
                 .json()
                 .setValue(c)
@@ -867,7 +872,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         return defaultValue == null ? null : defaultValue.get();
     }
 
-    public NutsPath getConfigFilePath() {
+    public NPath getConfigFilePath() {
         return appContext().getConfigFolder().resolve("pangaea-note.config");
     }
 
@@ -1264,8 +1269,8 @@ public class PangaeaNoteApp extends DefaultApplication {
             String tempFile = null;
             try {
                 try {
-                    NutsSession session = appContext().getSession();
-                    tempFile = NutsTmp.of(session).createTempFile("temp-snippet-").toString();
+                    NSession session = appContext().getSession();
+                    tempFile = NPaths.of(session).createTempFile("temp-snippet-").toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
                 } finally {
@@ -1290,7 +1295,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         return null;
     }
 
-    public NutsElement documentInfoToElement(PangaeaNoteDocumentInfo info) {
+    public NElement documentInfoToElement(PangaeaNoteDocumentInfo info) {
         if (info == null) {
             info = new PangaeaNoteDocumentInfo();
         }

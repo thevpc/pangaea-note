@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.thevpc.echo.RichHtmlEditor;
-import net.thevpc.nuts.NutsElement;
+import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.core.types.rich.editor.RichEditorService;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
@@ -65,7 +65,7 @@ public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public boolean isEmptyContent(NutsElement element) {
+    public boolean isEmptyContent(NElement element) {
         String content = app().elementToString(element);
         if (content == null || content.trim().length() == 0) {
             return true;
@@ -79,7 +79,7 @@ public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public NutsElement createDefaultContent() {
+    public NElement createDefaultContent() {
         return app().stringToElement("");
     }
 }
