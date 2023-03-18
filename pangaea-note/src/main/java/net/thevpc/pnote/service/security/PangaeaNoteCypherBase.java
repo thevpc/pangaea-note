@@ -1,7 +1,6 @@
 package net.thevpc.pnote.service.security;
 
 import net.thevpc.echo.api.CancelException;
-import net.thevpc.nuts.NApplicationContext;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.pnote.api.InvalidSecretException;
@@ -12,12 +11,12 @@ import net.thevpc.pnote.api.model.PangaeaNote;
 import java.util.function.Supplier;
 
 public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
-    protected NApplicationContext context;
+    protected NSession session;
     private String id;
 
-    public PangaeaNoteCypherBase(String id, NApplicationContext context) {
+    public PangaeaNoteCypherBase(String id, NSession session) {
         this.id = id;
-        this.context = context;
+        this.session = session;
     }
 
     @Override
@@ -31,7 +30,6 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
         if (password == null || password.length() == 0) {
             throw new CancelException();
         }
-        NSession session = context.getSession();
         String s = NElements.of(session)
                 .json()
                 .setValue(a)
@@ -58,7 +56,6 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
         } catch (Exception ex) {
             throw new InvalidSecretException();
         }
-        NSession session = context.getSession();
         return NElements.of(session)
                 .json()
                 .setValue(password)

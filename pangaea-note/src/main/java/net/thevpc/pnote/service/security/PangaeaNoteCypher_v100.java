@@ -5,6 +5,8 @@
  */
 package net.thevpc.pnote.service.security;
 
+import net.thevpc.nuts.NSession;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,7 +14,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import net.thevpc.nuts.NApplicationContext;
 
 /**
  *
@@ -20,8 +21,8 @@ import net.thevpc.nuts.NApplicationContext;
  */
 public class PangaeaNoteCypher_v100 extends PangaeaNoteCypherBase {
     public static final String ID="v1.0.0";
-    public PangaeaNoteCypher_v100(NApplicationContext context) {
-        super(ID,context);
+    public PangaeaNoteCypher_v100(NSession session) {
+        super(ID,session);
     }
 
 

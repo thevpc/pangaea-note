@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.service.security;
 
-import net.thevpc.nuts.NApplicationContext;
+import net.thevpc.nuts.NSession;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -24,8 +24,8 @@ public class PangaeaNoteCypher_v101 extends PangaeaNoteCypherBase {
 
     public static final String ID = "v1.0.1";
 
-    public PangaeaNoteCypher_v101(NApplicationContext context) {
-        super(ID, context);
+    public PangaeaNoteCypher_v101(NSession session) {
+        super(ID, session);
     }
 
     private static KeyInfo createKeyInfo(String password) {

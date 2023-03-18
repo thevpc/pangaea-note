@@ -99,7 +99,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                     documentFactory.setValidating(false);
                 }
                 DocumentBuilder b;
-                NSession session = service.appContext().getSession();
+                NSession session = service.session().getSession();
                 try {
                     b = documentFactory.newDocumentBuilder();
                 } catch (ParserConfigurationException ex) {

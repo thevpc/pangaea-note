@@ -1,7 +1,6 @@
 package net.thevpc.pnote;
 
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.cmdline.NArg;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.util.NRef;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -27,29 +26,27 @@ public class PangaeaNoteMain implements NApplication {
         new PangaeaNoteMain().runAndExit(args);
     }
 
-    private void runGui(NApplicationContext appContext) {
-        new PangaeaNoteApp(appContext).run();
+    private void runGui(NSession session) {
+        new PangaeaNoteApp(session).run();
     }
 
-    private void runInteractiveConsole(NApplicationContext appContext) {
+    private void runInteractiveConsole(NSession session) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void runNonInteractiveConsole(NApplicationContext appContext) {
+    private void runNonInteractiveConsole(NSession session) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private NCustomCommand findDefaultAlias(NApplicationContext applicationContext) {
-        NSession session = applicationContext.getSession();
-        NId appId = applicationContext.getAppId();
+    private NCustomCommand findDefaultAlias(NSession session) {
+        NId appId = session.getAppId();
         return NCommands.of(session).findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
     @Override
-    public void onInstallApplication(NApplicationContext applicationContext) {
-        NSession session = applicationContext.getSession();
+    public void onInstallApplication(NSession session) {
         NEnvs.of(session).addLauncher(new NLauncherOptions()
-                .setId(applicationContext.getAppId())
+                .setId(session.getAppId())
                 .setAlias(PREFERRED_ALIAS)
                 .setCreateAlias(true)
                 .setCreateMenuLauncher(NSupportMode.PREFERRED)
@@ -58,20 +55,19 @@ public class PangaeaNoteMain implements NApplication {
     }
 
     @Override
-    public void onUpdateApplication(NApplicationContext applicationContext) {
-        onInstallApplication(applicationContext);
+    public void onUpdateApplication(NSession session) {
+        onInstallApplication(session);
     }
 
     @Override
-    public void onUninstallApplication(NApplicationContext applicationContext) {
-        NSession session = applicationContext.getSession();
+    public void onUninstallApplication(NSession session) {
         NCommands.of(session).removeCommandIfExists(PREFERRED_ALIAS);
     }
 
     @Override
-    public void run(NApplicationContext appContext) {
+    public void run(NSession session) {
         PangaeaSplashScreen.get().tic();
-        NCmdLine cmdLine = appContext.getCommandLine();
+        NCmdLine cmdLine = session.getAppCommandLine();
         NRef<Boolean> interactive = NRef.of(false);
         NRef<Boolean> console = NRef.of(false);
         NRef<Boolean> gui = NRef.of(false);
@@ -94,11 +90,11 @@ public class PangaeaNoteMain implements NApplication {
         gui.set(true);//force for now
         PangaeaSplashScreen.get().tic();
         if (cui.get() || gui.get()) {
-            runGui(appContext);
+            runGui(session);
         } else if (interactive.get()) {
-            runInteractiveConsole(appContext);
+            runInteractiveConsole(session);
         } else {
-            runNonInteractiveConsole(appContext);
+            runNonInteractiveConsole(session);
         }
     }
 

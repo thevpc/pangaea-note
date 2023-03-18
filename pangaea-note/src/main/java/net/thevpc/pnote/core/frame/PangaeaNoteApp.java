@@ -77,7 +77,7 @@ import net.thevpc.pnote.service.security.PasswordHandler;
  */
 public class PangaeaNoteApp extends DefaultApplication {
 
-    private NApplicationContext appContext;
+    private NSession session;
     private WritableList<PangaeaNoteFrame> windows = Props.of("windows").listOf(PangaeaNoteFrame.class);
     private CorePangaeaNoteApp core = new CorePangaeaNoteApp();
     private List<PangaeaNoteAppExtensionHandler> appExtensions = new ArrayList<>();
@@ -317,14 +317,13 @@ public class PangaeaNoteApp extends DefaultApplication {
     private PangaeaNoteConfig config;
     private int maxRecentContentTypes = 4;
 
-    public PangaeaNoteApp(NApplicationContext appContext) {
+    public PangaeaNoteApp(NSession session) {
         super("swing");
-        this.appContext = appContext;
+        this.session = session;
         hideDisabled().set(true);
-        NSession session = appContext.getSession();
         this.executorService().set(NScheduler.of(session).executorService());
-        registerCypher(new PangaeaNoteCypher_v100(appContext));
-        registerCypher(new PangaeaNoteCypher_v101(appContext));
+        registerCypher(new PangaeaNoteCypher_v100(session));
+        registerCypher(new PangaeaNoteCypher_v101(session));
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
             {
                 checkLoaded();
@@ -492,16 +491,12 @@ public class PangaeaNoteApp extends DefaultApplication {
         return getAppExtensions().stream().filter(x -> x.checkLoaded()).collect(Collectors.toList());
     }
 
-    public NApplicationContext nutsAppContext() {
-        return appContext;
-    }
-
     public NWorkspace getNutsWorkspace() {
-        return appContext.getWorkspace();
+        return session.getWorkspace();
     }
 
     public NSession getNutsSession() {
-        return appContext.getSession();
+        return session;
     }
 
     public List<PangaeaNoteAppExtensionHandler> getAppExtensions() {
@@ -557,12 +552,12 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NElements elem() {
-        NSession session = appContext().getSession();
+        NSession session = session();
         return NElements.of(session);
     }
 
-    public NApplicationContext appContext() {
-        return appContext;
+    public NSession session() {
+        return session;
     }
 
     public PangaeaNote unloadNode(PangaeaNote n) {
@@ -598,7 +593,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getDefaultDocumentsFolder() {
-        return NLocations.of(appContext().getSession()).getStoreLocation(NStoreLocation.VAR);
+        return NLocations.of(session()).getStoreLocation(NStoreLocation.VAR);
     }
 
     public String stringifyAny(Object value) {
@@ -766,7 +761,7 @@ public class PangaeaNoteApp extends DefaultApplication {
                     }
 
                     if (document.getVersion() == null || document.getVersion().length() == 0) {
-                        document.setVersion(appContext().getAppVersion().toString());
+                        document.setVersion(session().getAppVersion().toString());
                     }
                     Instant now = Instant.now();
                     if (document.getCreationTime() == null) {
@@ -873,7 +868,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getConfigFilePath() {
-        return appContext().getConfigFolder().resolve("pangaea-note.config");
+        return session().getAppConfigFolder().resolve("pangaea-note.config");
     }
 
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {
@@ -1269,7 +1264,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             String tempFile = null;
             try {
                 try {
-                    NSession session = appContext().getSession();
+                    NSession session = session();
                     tempFile = NPaths.of(session).createTempFile("temp-snippet-").toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
