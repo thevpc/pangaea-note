@@ -593,7 +593,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getDefaultDocumentsFolder() {
-        return NLocations.of(session()).getStoreLocation(NStoreLocation.VAR);
+        return NLocations.of(session()).getStoreLocation(NStoreType.VAR);
     }
 
     public String stringifyAny(Object value) {
@@ -868,7 +868,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getConfigFilePath() {
-        return session().getAppConfigFolder().resolve("pangaea-note.config");
+        return session().getAppConfFolder().resolve("pangaea-note.config");
     }
 
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {
@@ -1265,7 +1265,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             try {
                 try {
                     NSession session = session();
-                    tempFile = NPaths.of(session).createTempFile("temp-snippet-").toString();
+                    tempFile = NPath.ofTempFile("temp-snippet-",session).toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
                 } finally {
