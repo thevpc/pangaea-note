@@ -9,7 +9,7 @@ import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
+
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
@@ -42,9 +42,8 @@ public abstract class AbstractPangaeaNoteSourceCodeService extends AbstractPanga
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
-        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", getContentAsString(note.getContent())).iterator()
-        );
+    public Iterator<DocumentTextPart<PangaeaNote>> resolveTextNavigators(PangaeaNote note) {
+        return new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", getContentAsString(note.getContent())).iterator();
     }
 
     @Override

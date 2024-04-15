@@ -2,7 +2,7 @@ package net.thevpc.pnote.core.types.forms.util;
 
 import net.thevpc.echo.Color;
 import net.thevpc.echo.api.components.AppComponent;
-import net.thevpc.nuts.NBlankable;
+import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NStringUtils;
 import net.thevpc.pnote.core.frame.util.PangaeaNoteLabelHelper;
 import net.thevpc.pnote.core.types.forms.model.*;
@@ -38,7 +38,7 @@ public class PangaeaNoteFormUtils {
                 if (!NBlankable.isBlank(field.getOptions().getLabelIcon())) {
                     return false;
                 }
-                if (!NBlankable.isBlank(field.getOptions().getLabelIcon())) {
+                if (!NBlankable.isBlank(field.getOptions().getLabelName())) {
                     return false;
                 }
                 if (field.getOptions().getHidden() != null) {

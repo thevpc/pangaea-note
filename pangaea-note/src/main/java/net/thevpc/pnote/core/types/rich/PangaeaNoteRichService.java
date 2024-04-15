@@ -7,7 +7,6 @@ package net.thevpc.pnote.core.types.rich;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 import net.thevpc.echo.RichHtmlEditor;
 import net.thevpc.nuts.elem.NElement;
@@ -23,7 +22,6 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
 /**
- *
  * @author thevpc
  */
 public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
@@ -56,12 +54,10 @@ public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
+    public Iterator<DocumentTextPart<PangaeaNote>> resolveTextNavigators(PangaeaNote note) {
         String content = getContentAsString(note.getContent());
         content = extractTextFromHtml(content);
-        return Arrays.asList(
-                new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", content).iterator()
-        );
+        return new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", content).iterator();
     }
 
     @Override
@@ -74,7 +70,7 @@ public class PangaeaNoteRichService extends AbstractPangaeaNoteTypeService {
     }
 
     private String extractTextFromHtml(String content) {
-        RichHtmlEditor ed = new RichHtmlEditor(content,app());
+        RichHtmlEditor ed = new RichHtmlEditor(content, app());
         return ed.getText(0, ed.getTextLength());
     }
 

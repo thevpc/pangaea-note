@@ -8,7 +8,7 @@ package net.thevpc.pnote.api;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
 import java.util.Iterator;
-import java.util.List;
+
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
@@ -31,7 +31,7 @@ public interface PangaeaNoteTypeService extends PangaeaNoteTypeServiceBase {
 
     public String normalizeEditorType(String editorType);
 
-    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note);
+    Iterator<DocumentTextPart<PangaeaNote>> resolveTextNavigators(PangaeaNote note);
 
     default PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode) {
         return null;

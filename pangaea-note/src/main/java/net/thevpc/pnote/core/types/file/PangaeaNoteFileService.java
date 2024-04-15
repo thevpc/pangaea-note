@@ -7,7 +7,7 @@ package net.thevpc.pnote.core.types.file;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
+
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -64,9 +64,8 @@ public class PangaeaNoteFileService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
-        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", getContentAsString(note.getContent())).iterator()
-        );
+    public Iterator<DocumentTextPart<PangaeaNote>> resolveTextNavigators(PangaeaNote note) {
+        return new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", getContentAsString(note.getContent())).iterator();
     }
 
 

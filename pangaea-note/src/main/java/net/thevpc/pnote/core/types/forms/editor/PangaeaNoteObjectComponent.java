@@ -11,9 +11,7 @@ import net.thevpc.echo.ScrollPane;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
-import net.thevpc.pnote.core.frame.util.PangaeaNoteLabelHelper;
 import net.thevpc.pnote.core.types.forms.model.*;
-import net.thevpc.pnote.core.types.forms.util.PangaeaNoteFormUtils;
 import net.thevpc.pnote.util.PNoteUtils;
 
 import java.util.*;
@@ -29,7 +27,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
     private PangaeaNoteObjectExt currentValue;
     private List<PangaeaNoteFieldDescriptorPanel> components = new ArrayList<>();
     private PangaeaNoteObjectTracker objectTracker;
-    private PangaeaNoteFormsEditorTypeComponent.FormsDataItem parentDataItem;
+    private FormsDataItem parentDataItem;
     private PangaeaNoteFrame frame;
     private PangaeaNoteObjectTracker dynamicObjectTrackerAdapter = new PangaeaNoteObjectTracker() {
         @Override
@@ -55,7 +53,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
 
     };
 
-    public PangaeaNoteObjectComponent(PangaeaNoteFormsEditorTypeComponent.FormsDataItem parent, PangaeaNoteObjectTracker objectTracker, PangaeaNoteFrame frame) {
+    public PangaeaNoteObjectComponent(FormsDataItem parent, PangaeaNoteObjectTracker objectTracker, PangaeaNoteFrame frame) {
         super(frame.app());
         this.objectTracker = objectTracker;
         this.parentDataItem = parent;
@@ -243,7 +241,7 @@ public class PangaeaNoteObjectComponent extends GridPane {
         }
     }
 
-    public PangaeaNoteFormsEditorTypeComponent.FormsDataItem getParentDataItem() {
+    public FormsDataItem getParentDataItem() {
         return parentDataItem;
     }
 

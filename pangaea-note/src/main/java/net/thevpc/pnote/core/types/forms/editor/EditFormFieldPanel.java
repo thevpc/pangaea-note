@@ -10,7 +10,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NBlankable;
+import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.frame.dialogs.PangaeaNoteIconsButton;

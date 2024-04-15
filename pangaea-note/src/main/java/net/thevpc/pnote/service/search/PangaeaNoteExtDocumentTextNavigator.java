@@ -14,6 +14,7 @@ import net.thevpc.pnote.service.search.strsearch.DocumentTextNavigator;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
+import net.thevpc.pnote.util.IteratorList;
 
 /**
  *
@@ -31,18 +32,12 @@ public class PangaeaNoteExtDocumentTextNavigator implements DocumentTextNavigato
 
     @Override
     public Iterator<DocumentTextPart<PangaeaNote>> iterator() {
-        List<Iterator<DocumentTextPart<PangaeaNote>>> parts = new ArrayList<>();
+        IteratorList<DocumentTextPart<PangaeaNote>> parts=new IteratorList<>();
         parts.add(new StringDocumentTextNavigator("name", note, "name", note.getName()).iterator());
         parts.add(new StringDocumentTextNavigator("tags", note, "tags", String.join(" ", note.getTags())).iterator());
         PangaeaNoteMimeType ct = app.normalizeContentType(note.getContentType());
-        List<? extends Iterator<DocumentTextPart<PangaeaNote>>> i = app.getContentTypeService(ct)
-                .resolveTextNavigators(note);
-        parts.addAll(i);
-        List<DocumentTextPart<PangaeaNote>> li = new ArrayList<>();
-        for (Iterator<DocumentTextPart<PangaeaNote>> o : parts) {
-            o.forEachRemaining(li::add);
-        }
-        return li.iterator();
+        parts.add(app.getContentTypeService(ct).resolveTextNavigators(note));
+        return parts;
     }
 
     @Override

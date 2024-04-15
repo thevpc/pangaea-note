@@ -8,7 +8,7 @@ package net.thevpc.pnote.core.frame.dialogs;
 import net.thevpc.common.i18n.Str;
 import net.thevpc.echo.ComboBox;
 import net.thevpc.echo.SimpleItem;
-import net.thevpc.nuts.NBlankable;
+import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.PangaeaNoteTemplate;
 import net.thevpc.pnote.api.PangaeaNoteTypeService;
 import net.thevpc.pnote.api.model.ContentTypeSelector;

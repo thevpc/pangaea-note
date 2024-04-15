@@ -23,7 +23,7 @@ import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
+
 import net.thevpc.pnote.core.types.list.editor.PangaeaNoteListSettingsComponent;
 import net.thevpc.pnote.api.EditTypeComponent;
 
@@ -48,12 +48,11 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
-        return Arrays.asList(new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", ""/**
+    public Iterator<DocumentTextPart<PangaeaNote>> resolveTextNavigators(PangaeaNote note) {
+        return new StringDocumentTextNavigator<PangaeaNote>("content", note, "content", ""/**
          * nothing here*
          */
-        ).iterator()
-        );
+        ).iterator();
     }
 
     @Override

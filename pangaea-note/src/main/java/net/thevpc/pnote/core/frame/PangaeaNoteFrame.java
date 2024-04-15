@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import net.thevpc.echo.util.RichHtmlToolBarHelper;
 import net.thevpc.pnote.service.security.OpenWallet;
 import net.thevpc.echo.PasswordErrorHandler;
@@ -69,6 +70,7 @@ public class PangaeaNoteFrame extends Frame {
     private BreadCrumb<PangaeaNote> breadCrumb;
     private OpenWallet openWallet = new OpenWallet();
     private ValuesMenu<String> recenFilesMenu;
+    private ProgressBar<Integer> frameProgress;
 
     public PangaeaNoteFrame(String id, PangaeaNoteApp app, boolean splash) {
         super(id, app);
@@ -125,9 +127,9 @@ public class PangaeaNoteFrame extends Frame {
                 }
         );
         state().adjusters().add(e -> {
-            WindowStateSet s=e.newValue();
-            if(s.is(WindowState.CLOSING)){
-                if(trySaveChangesOrDiscard()==ReturnType.CANCEL){
+            WindowStateSet s = e.newValue();
+            if (s.is(WindowState.CLOSING)) {
+                if (trySaveChangesOrDiscard() == ReturnType.CANCEL) {
                     e.doNothing();
                 }
             }
@@ -324,6 +326,8 @@ public class PangaeaNoteFrame extends Frame {
         ticSplash();
         ticSplash();
         ticSplash();
+        frameProgress = new ProgressBar<>(Integer.class, app());
+        app().components().add(frameProgress, pathOf("/statusBar/Default/progress"));
         app().components().add(ExtraControls.createDateLabel(app(), "yyy-MM-dd HH:mm:ss"), pathOf("/statusBar/Default/calendar"));
         ticSplash();
         app().components().addSeparator(pathOf("/statusBar/Default/*"));
@@ -339,7 +343,7 @@ public class PangaeaNoteFrame extends Frame {
                             b.accelerator().set("control N");
                         }),
                 pathOf("/menuBar/File/*")
-        //                , pathOf("/toolBar/Default/NewFile")
+                //                , pathOf("/toolBar/Default/NewFile")
         );
 
 //        newfileAction.mnemonic().set(KeyEvent.VK_N);
@@ -349,23 +353,23 @@ public class PangaeaNoteFrame extends Frame {
         f.mnemonic().set(KeyCode.F);
 
         app().components().add(new Button("OpenLastFile", this::openLastDiscardNoDiscard, app())
-                .with((Button b) -> {
-                    b.accelerator().set("control shift O");
-                }),
+                        .with((Button b) -> {
+                            b.accelerator().set("control shift O");
+                        }),
                 pathOf("/menuBar/File/*"));
 
         app().components().add(new Button("Open", this::openDocumentNoDiscard, app())
-                .with((Button b) -> {
-                    b.mnemonic().set(KeyCode.O);
-                    b.accelerator().set("control O");
-                }),
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyCode.O);
+                            b.accelerator().set("control O");
+                        }),
                 pathOf("/menuBar/File/*"));
 
         app().components().add(new Button("Reload", this::reloadDocumentNoDiscard, app())
-                .with((Button b) -> {
-                    b.mnemonic().set(KeyCode.R);
-                    b.accelerator().set("control R");
-                }),
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyCode.R);
+                            b.accelerator().set("control R");
+                        }),
                 pathOf("/menuBar/File/*"));
 
         ticSplash();
@@ -377,10 +381,10 @@ public class PangaeaNoteFrame extends Frame {
         ticSplash();
 
         app().components().addMulti(new Button("Save", this::saveDocument, app())
-                .with((Button b) -> {
-                    b.mnemonic().set(KeyCode.S);
-                    b.accelerator().set("control S");
-                }),
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyCode.S);
+                            b.accelerator().set("control S");
+                        }),
                 pathOf("/menuBar/File/*"), pathOf("/toolBar/Default/*"));
 
         ticSplash();
@@ -399,10 +403,10 @@ public class PangaeaNoteFrame extends Frame {
         app().components().add(new Button("CloseWindow", this::close, app()), pathOf("/menuBar/File/*"));
 
         app().components().add(new Button("Exit", this::exitApp, app())
-                .with((Button b) -> {
-                    b.mnemonic().set(KeyCode.X);
-                    b.accelerator().set("control X");
-                }),
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyCode.X);
+                            b.accelerator().set("control X");
+                        }),
                 pathOf("/menuBar/File/*")
         );
 
@@ -418,20 +422,20 @@ public class PangaeaNoteFrame extends Frame {
         RichHtmlToolBarHelper.prepareToolBar(this, false, true);
 
         app().components().addMulti(new Button("AddNote", this::addNote, app())
-                .with((Button b) -> {
-                    b.mnemonic().set(KeyCode.B);
-                    b.accelerator().set("control B");
-                }),
+                        .with((Button b) -> {
+                            b.mnemonic().set(KeyCode.B);
+                            b.accelerator().set("control B");
+                        }),
                 pathOf("/menuBar/Edit/AddNote"), pathOf("/toolBar/Default/*")
         );
         app().components().addMulti(new Button("Search", this::searchNote, app())
-                .with((Button b)
-                        -> {
-                    b.mnemonic().set(KeyCode.F);
-                    b.accelerator().set("control shift F");
+                        .with((Button b)
+                                        -> {
+                                    b.mnemonic().set(KeyCode.F);
+                                    b.accelerator().set("control shift F");
 
-                }
-                ),
+                                }
+                        ),
                 pathOf("/menuBar/Edit/Search"), pathOf("/toolBar/Default/*"));
 
         app().components().addFolder(pathOf("/menuBar/Help"));
@@ -521,19 +525,44 @@ public class PangaeaNoteFrame extends Frame {
 //        app.waitFor();
     }
 
-    public void updateSelectedNote(){
-        PangaeaNote n = getSelectedNote();
+    protected void doAsyncWithProgress(Str msg, Runnable r) {
+        new Thread(() -> {
+            doSyncWithProgress(msg, r);
+        }).start();
+    }
+
+    protected void doSyncWithProgress(Str msg, Runnable r) {
         try {
-            noteEditor.setNote(n);
-            //noteEditor.requestFocus();
-        } catch (Exception ex) {
-            app().errors().add(ex);
+            frameProgress.visible().set(true);
+            frameProgress.indeterminate().set(true);
+            frameProgress.value().set(50);
+            frameProgress.textPainted().set(true);
+            frameProgress.text().set(msg == null ? Str.of("working...") : msg);
+            r.run();
+        } finally {
+            frameProgress.value().set(100);
+            frameProgress.textPainted().set(false);
+            frameProgress.text().set(Str.of(""));
+            frameProgress.indeterminate().set(false);
+            frameProgress.visible().set(false);
         }
-        if (n == null) {
-            breadCrumb.values().clear();
-        } else {
-            breadCrumb.values().setAll(treePane().nodePath(n, false));
-        }
+    }
+
+    public void updateSelectedNote() {
+        PangaeaNote n = getSelectedNote();
+        doSyncWithProgress(Str.of("render node..."), () -> {
+            try {
+                noteEditor.setNote(n);
+                //noteEditor.requestFocus();
+            } catch (Exception ex) {
+                app().errors().add(ex);
+            }
+            if (n == null) {
+                breadCrumb.values().clear();
+            } else {
+                breadCrumb.values().setAll(treePane().nodePath(n, false));
+            }
+        });
     }
 
     private ReturnType reloadDocumentNoDiscard() {
@@ -1316,9 +1345,9 @@ public class PangaeaNoteFrame extends Frame {
         }
         Set<String> existingNames = parent.getChildren() == null ? new HashSet<>()
                 : parent.getChildren().stream()
-                        .filter(x -> x != child) // !!!
-                        .map(x -> x.getName() == null ? "" : x.getName())
-                        .collect(Collectors.toSet());
+                .filter(x -> x != child) // !!!
+                .map(x -> x.getName() == null ? "" : x.getName())
+                .collect(Collectors.toSet());
         int i = 1;
         while (true) {
             String n = (i == 1) ? base : base + (" " + i);
@@ -1345,7 +1374,7 @@ public class PangaeaNoteFrame extends Frame {
         }
         Set<String> existingNames = note.getChildren() == null ? new HashSet<>()
                 : note.getChildren().stream().map(x -> x.getName() == null ? "" : x.getName())
-                        .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
         int i = 1;
         while (true) {
             String n = (i == 1) ? base : base + (" " + i);

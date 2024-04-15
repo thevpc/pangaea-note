@@ -3,6 +3,7 @@ package net.thevpc.pnote;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NCmdLine;
 import net.thevpc.nuts.util.NRef;
+import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
@@ -38,7 +39,7 @@ public class PangaeaNoteMain implements NApplication {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private NCustomCommand findDefaultAlias(NSession session) {
+    private NCustomCmd findDefaultAlias(NSession session) {
         NId appId = session.getAppId();
         return NCommands.of(session).findCommand(PREFERRED_ALIAS, appId, appId);
     }
@@ -67,7 +68,7 @@ public class PangaeaNoteMain implements NApplication {
     @Override
     public void run(NSession session) {
         PangaeaSplashScreen.get().tic();
-        NCmdLine cmdLine = session.getAppCommandLine();
+        NCmdLine cmdLine = session.getAppCmdLine();
         NRef<Boolean> interactive = NRef.of(false);
         NRef<Boolean> console = NRef.of(false);
         NRef<Boolean> gui = NRef.of(false);

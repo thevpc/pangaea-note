@@ -15,7 +15,7 @@ import net.thevpc.nuts.concurrent.NScheduler;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.spi.NPaths;
+import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;

@@ -8,7 +8,7 @@ package net.thevpc.pnote.core.types.forms;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
+
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
@@ -18,19 +18,14 @@ import net.thevpc.pnote.api.model.ContentTypeSelector;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldType;
+import net.thevpc.pnote.core.types.forms.templates.*;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDocument;
-import net.thevpc.pnote.core.types.forms.templates.UrlCardTemplate;
 import net.thevpc.pnote.core.types.forms.refactor.FormsToAnythingContentTypeReplacer;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.types.forms.editor.PangaeaNoteFormsEditorTypeComponent;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteObjectDescriptor;
 import net.thevpc.pnote.core.types.forms.search.PangaeaNoteObjectDocumentTextNavigator;
-import net.thevpc.pnote.core.types.forms.templates.BankAccountTemplate;
-import net.thevpc.pnote.core.types.forms.templates.CreditCardAccountTemplate;
-import net.thevpc.pnote.core.types.forms.templates.EthernetConnectionTemplate;
-import net.thevpc.pnote.core.types.forms.templates.UrlBookmarkTemplate;
-import net.thevpc.pnote.core.types.forms.templates.WifiConnectionTemplate;
 import net.thevpc.pnote.core.frame.PangaeaNoteTypes;
 import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 
@@ -59,12 +54,15 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     public void onInstall(PangaeaNoteApp app) {
         super.onInstall(app);
         app.installTypeReplacer(new FormsToAnythingContentTypeReplacer());
-        app.register(new UrlCardTemplate());
+        app.register(new WebAccountTemplate());
         app.register(new EthernetConnectionTemplate());
         app.register(new WifiConnectionTemplate());
         app.register(new UrlBookmarkTemplate());
         app.register(new BankAccountTemplate());
         app.register(new CreditCardAccountTemplate());
+        app.register(new EmailAccountTemplate());
+        app.register(new ServerAccountTemplate());
+        app.register(new AppAccountTemplate());
         app.installEditorService(new PangaeaNoteEditorService() {
             @Override
             public PangaeaNoteEditorTypeComponent createEditor(String name, boolean compactMode, PangaeaNoteFrame win) {
@@ -88,9 +86,8 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
     }
 
     @Override
-    public List<? extends Iterator<DocumentTextPart<PangaeaNote>>> resolveTextNavigators(PangaeaNote note) {
-        return Arrays.asList(new PangaeaNoteObjectDocumentTextNavigator(app(), note, note.getContent()).iterator()
-        );
+    public Iterator<DocumentTextPart<PangaeaNote>> resolveTextNavigators(PangaeaNote note) {
+        return new PangaeaNoteObjectDocumentTextNavigator(app(), note, note.getContent()).iterator();
     }
 
     @Override

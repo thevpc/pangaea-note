@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.thevpc.nuts.NBlankable;
 import net.thevpc.nuts.elem.NElement;
+import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.model.PangaeaNote;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteField;
 import net.thevpc.pnote.core.types.forms.model.PangaeaNoteFieldDescriptor;

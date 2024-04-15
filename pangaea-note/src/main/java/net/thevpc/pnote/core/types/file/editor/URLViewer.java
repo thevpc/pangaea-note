@@ -10,7 +10,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NExecCommand;
+import net.thevpc.nuts.NExecCmd;
 import net.thevpc.nuts.NExecutionType;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.concurrent.NScheduler;
@@ -336,7 +336,7 @@ public class URLViewer extends BorderPane {
                 NSession session = frame.getNutsSession();
                 NScheduler.of(session).executorService().submit(() -> {
                             try {
-                                NExecCommand.of(session)
+                                NExecCmd.of(session)
                                         .setExecutionType(NExecutionType.OPEN)
                                         .setCommand(ll)
                                         .run();

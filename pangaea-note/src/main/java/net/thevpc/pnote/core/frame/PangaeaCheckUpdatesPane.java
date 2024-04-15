@@ -8,7 +8,7 @@ import net.thevpc.echo.ProgressBar;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.nuts.NId;
-import net.thevpc.nuts.NSearchCommand;
+import net.thevpc.nuts.NSearchCmd;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.NVersion;
 import net.thevpc.nuts.concurrent.NScheduler;
@@ -46,7 +46,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
                     () -> {
                         long start = System.currentTimeMillis();
                         try {
-                            NId q = NSearchCommand.of(session())
+                            NId q = NSearchCmd.of(session())
                                     .setId(session().getAppId().builder().setVersion("").build())
                                     .setLatest(true)
                                     .getResultIds()
