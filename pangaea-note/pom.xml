@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.pnote</groupId>
     <artifactId>pnote</artifactId>
-    <version>0.8.4.0</version>
+    <version>0.8.5.0</version>
     <packaging>jar</packaging>
     <name>Pangaea Note</name>
     <url>https://github.com/thevpc/pangaea-note</url>
@@ -89,8 +89,8 @@
 
         <dependency>
             <groupId>net.thevpc.nuts</groupId>
-            <artifactId>nuts</artifactId>
-            <version>0.8.4</version>
+            <artifactId>nuts-api</artifactId>
+            <version>0.8.5</version>
         </dependency>
 
 <!--        <dependency>-->
