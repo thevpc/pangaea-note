@@ -8,9 +8,11 @@ import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
 public class PangaeaNoteMain implements NApplication {
+
     String PREFERRED_ALIAS = "pnote";
 
     public static void main(String[] args) {
+        prepareUI(args);
 //        System.out.println("<<complied>> : Tue Jun  8 01:43:11 PM CET 2021");
         PangaeaSplashScreen.get();
 //        java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
@@ -25,6 +27,18 @@ public class PangaeaNoteMain implements NApplication {
 //        }
         PangaeaSplashScreen.get().tic();
         new PangaeaNoteMain().runAndExit(args);
+    }
+
+    public static void prepareUI(String[] args) {
+        int scale = 0;
+        for (String arg : args) {
+            if (arg.equals("--scale")) {
+                scale = 2;
+            }
+        }
+        if (scale != 0) {
+            System.setProperty("sun.java2d.uiScale", String.valueOf(scale));
+        }
     }
 
     private void runGui(NSession session) {
@@ -77,7 +91,9 @@ public class PangaeaNoteMain implements NApplication {
             if (!cmdLine.withNextFlag((v, a, s) -> interactive.set(v), "-i", "--interactive")) {
                 if (!cmdLine.withNextFlag((v, a, s) -> gui.set(v), "-w", "--gui")) {
                     if (!cmdLine.withNextFlag((v, a, s) -> cui.set(v), "--cui")) {
-                        cmdLine.throwUnexpectedArgument();
+                        if (!cmdLine.withNextFlag((v, a, s) -> {}, "--scale")) {
+                            cmdLine.throwUnexpectedArgument();
+                        }
                     }
                 }
             }
