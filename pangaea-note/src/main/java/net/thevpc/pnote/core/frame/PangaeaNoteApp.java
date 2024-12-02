@@ -317,13 +317,12 @@ public class PangaeaNoteApp extends DefaultApplication {
     private PangaeaNoteConfig config;
     private int maxRecentContentTypes = 4;
 
-    public PangaeaNoteApp(NSession session) {
+    public PangaeaNoteApp() {
         super("swing");
-        this.session = session;
         hideDisabled().set(true);
-        this.executorService().set(NScheduler.of(session).executorService());
-        registerCypher(new PangaeaNoteCypher_v100(session));
-        registerCypher(new PangaeaNoteCypher_v101(session));
+        this.executorService().set(NScheduler.of().executorService());
+        registerCypher(new PangaeaNoteCypher_v100());
+        registerCypher(new PangaeaNoteCypher_v101());
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
             {
                 checkLoaded();
@@ -552,8 +551,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NElements elem() {
-        NSession session = session();
-        return NElements.of(session);
+        return NElements.of();
     }
 
     public NSession session() {
@@ -593,7 +591,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getDefaultDocumentsFolder() {
-        return NLocations.of(session()).getStoreLocation(NStoreType.VAR);
+        return NLocations.of().getStoreLocation(NStoreType.VAR);
     }
 
     public String stringifyAny(Object value) {
@@ -761,7 +759,7 @@ public class PangaeaNoteApp extends DefaultApplication {
                     }
 
                     if (document.getVersion() == null || document.getVersion().length() == 0) {
-                        document.setVersion(session().getAppVersion().toString());
+                        document.setVersion(NApp.of().getVersion().toString());
                     }
                     Instant now = Instant.now();
                     if (document.getCreationTime() == null) {
@@ -868,7 +866,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getConfigFilePath() {
-        return session().getAppConfFolder().resolve("pangaea-note.config");
+        return NApp.of().getConfFolder().resolve("pangaea-note.config");
     }
 
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {
@@ -1265,7 +1263,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             try {
                 try {
                     NSession session = session();
-                    tempFile = NPath.ofTempFile("temp-snippet-",session).toString();
+                    tempFile = NPath.ofTempFile("temp-snippet-").toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
                 } finally {

@@ -24,8 +24,8 @@ public class PangaeaNoteCypher_v101 extends PangaeaNoteCypherBase {
 
     public static final String ID = "v1.0.1";
 
-    public PangaeaNoteCypher_v101(NSession session) {
-        super(ID, session);
+    public PangaeaNoteCypher_v101() {
+        super(ID);
     }
 
     private static KeyInfo createKeyInfo(String password) {

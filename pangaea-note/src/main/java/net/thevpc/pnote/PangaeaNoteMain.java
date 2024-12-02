@@ -7,6 +7,8 @@ import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
+import javax.swing.*;
+
 public class PangaeaNoteMain implements NApplication {
 
     String PREFERRED_ALIAS = "pnote";
@@ -41,27 +43,27 @@ public class PangaeaNoteMain implements NApplication {
         }
     }
 
-    private void runGui(NSession session) {
-        new PangaeaNoteApp(session).run();
+    private void runGui() {
+        new PangaeaNoteApp().run();
     }
 
-    private void runInteractiveConsole(NSession session) {
+    private void runInteractiveConsole() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private void runNonInteractiveConsole(NSession session) {
+    private void runNonInteractiveConsole() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private NCustomCmd findDefaultAlias(NSession session) {
-        NId appId = session.getAppId();
-        return NCommands.of(session).findCommand(PREFERRED_ALIAS, appId, appId);
+    private NCustomCmd findDefaultAlias() {
+        NId appId = NApp.of().getId().get();
+        return NWorkspace.get().findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
     @Override
-    public void onInstallApplication(NSession session) {
-        NEnvs.of(session).addLauncher(new NLauncherOptions()
-                .setId(session.getAppId())
+    public void onInstallApplication() {
+        NWorkspace.get().addLauncher(new NLauncherOptions()
+                .setId(NApp.of().getId().get())
                 .setAlias(PREFERRED_ALIAS)
                 .setCreateAlias(true)
                 .setCreateMenuLauncher(NSupportMode.PREFERRED)
@@ -70,28 +72,30 @@ public class PangaeaNoteMain implements NApplication {
     }
 
     @Override
-    public void onUpdateApplication(NSession session) {
-        onInstallApplication(session);
+    public void onUpdateApplication() {
+        onInstallApplication();
     }
 
     @Override
-    public void onUninstallApplication(NSession session) {
-        NCommands.of(session).removeCommandIfExists(PREFERRED_ALIAS);
+    public void onUninstallApplication() {
+        NWorkspace.get().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
     @Override
-    public void run(NSession session) {
+    public void run() {
+        NWorkspace ws=NWorkspace.get();
+        SwingUtilities.invokeLater(()->ws.setSharedInstance());
         PangaeaSplashScreen.get().tic();
-        NCmdLine cmdLine = session.getAppCmdLine();
+        NCmdLine cmdLine = NApp.of().getCmdLine();
         NRef<Boolean> interactive = NRef.of(false);
         NRef<Boolean> console = NRef.of(false);
         NRef<Boolean> gui = NRef.of(false);
         NRef<Boolean> cui = NRef.of(false);
         while (!cmdLine.isEmpty()) {
-            if (!cmdLine.withNextFlag((v, a, s) -> interactive.set(v), "-i", "--interactive")) {
-                if (!cmdLine.withNextFlag((v, a, s) -> gui.set(v), "-w", "--gui")) {
-                    if (!cmdLine.withNextFlag((v, a, s) -> cui.set(v), "--cui")) {
-                        if (!cmdLine.withNextFlag((v, a, s) -> {}, "--scale")) {
+            if (!cmdLine.withNextFlag((v, a) -> interactive.set(v), "-i", "--interactive")) {
+                if (!cmdLine.withNextFlag((v, a) -> gui.set(v), "-w", "--gui")) {
+                    if (!cmdLine.withNextFlag((v, a) -> cui.set(v), "--cui")) {
+                        if (!cmdLine.withNextFlag((v, a) -> {}, "--scale")) {
                             cmdLine.throwUnexpectedArgument();
                         }
                     }
@@ -107,11 +111,11 @@ public class PangaeaNoteMain implements NApplication {
         gui.set(true);//force for now
         PangaeaSplashScreen.get().tic();
         if (cui.get() || gui.get()) {
-            runGui(session);
+            runGui();
         } else if (interactive.get()) {
-            runInteractiveConsole(session);
+            runInteractiveConsole();
         } else {
-            runNonInteractiveConsole(session);
+            runNonInteractiveConsole();
         }
     }
 

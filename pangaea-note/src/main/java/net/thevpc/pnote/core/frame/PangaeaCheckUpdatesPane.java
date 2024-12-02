@@ -7,10 +7,7 @@ import net.thevpc.echo.Label;
 import net.thevpc.echo.ProgressBar;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.nuts.NId;
-import net.thevpc.nuts.NSearchCmd;
-import net.thevpc.nuts.NSession;
-import net.thevpc.nuts.NVersion;
+import net.thevpc.nuts.*;
 import net.thevpc.nuts.concurrent.NScheduler;
 
 public class PangaeaCheckUpdatesPane extends GridPane {
@@ -42,12 +39,12 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             startCheckVersion = true;
             nextVersion = null;
             updateMessage();
-            NScheduler.of(session()).executorService().submit(
+            NScheduler.of().executorService().submit(
                     () -> {
                         long start = System.currentTimeMillis();
                         try {
-                            NId q = NSearchCmd.of(session())
-                                    .setId(session().getAppId().builder().setVersion("").build())
+                            NId q = NSearchCmd.of()
+                                    .setId(NApp.of().getId().get().builder().setVersion("").build())
                                     .setLatest(true)
                                     .getResultIds()
                                     .findFirst().orNull();
@@ -101,15 +98,14 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             button.enabled().set(allowRecheck);
             progressBar.indeterminate().set(false);
             progressBar.visible().set(false);
-            NSession c = session();
-            int x = c.getAppId().getVersion().compareTo(nextVersion);
+            int x = NApp.of().getId().get().getVersion().compareTo(nextVersion);
             if (x < 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.newVersionAvailable", nextVersion));
             } else if (x == 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.latestVersionIsBeingUsed", nextVersion));
             } else if (x > 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.currentVersionIsNewerThanRemote",
-                        c.getAppId().getVersion(),
+                        NApp.of().getId().get().getVersion(),
                         nextVersion
                 ));
             }

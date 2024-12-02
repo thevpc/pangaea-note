@@ -21,8 +21,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class PangaeaNoteCypher_v100 extends PangaeaNoteCypherBase {
     public static final String ID="v1.0.0";
-    public PangaeaNoteCypher_v100(NSession session) {
-        super(ID,session);
+    public PangaeaNoteCypher_v100() {
+        super(ID);
     }
 
 

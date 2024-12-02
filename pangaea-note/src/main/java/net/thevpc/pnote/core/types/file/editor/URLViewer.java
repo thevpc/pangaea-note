@@ -12,7 +12,6 @@ import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.nuts.NExecCmd;
 import net.thevpc.nuts.NExecutionType;
-import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.concurrent.NScheduler;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
@@ -333,10 +332,9 @@ public class URLViewer extends BorderPane {
         public void doSysLoad() {
             String ll = getContentString();
             if (!ll.trim().isEmpty()) {
-                NSession session = frame.getNutsSession();
-                NScheduler.of(session).executorService().submit(() -> {
+                NScheduler.of().executorService().submit(() -> {
                             try {
-                                NExecCmd.of(session)
+                                NExecCmd.of()
                                         .setExecutionType(NExecutionType.OPEN)
                                         .setCommand(ll)
                                         .run();

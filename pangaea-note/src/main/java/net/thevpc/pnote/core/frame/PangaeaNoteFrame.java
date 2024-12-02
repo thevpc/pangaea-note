@@ -17,6 +17,7 @@ import net.thevpc.echo.iconset.IconConfig;
 import net.thevpc.echo.impl.Applications;
 import net.thevpc.echo.impl.controls.ExtraControls;
 import net.thevpc.echo.util.ClipboardHelper;
+import net.thevpc.nuts.NApp;
 import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.NWorkspace;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
@@ -186,7 +187,7 @@ public class PangaeaNoteFrame extends Frame {
         }
         String modPrefix = "";//mainFrame().get() ? "(!!) " : "";
         String modSuffix = modificationsCount > 0 ? " (*)" : "";
-        String pv = app().session().getAppVersion().toString();
+        String pv = NApp.of().getVersion().get().toString();
         if (currentFilePath == null || currentFilePath.length() == 0) {
             this.title().set(Str.of(modPrefix + "Pangaea-Note v" + pv + " : " + "<" + app().i18n().getString("Message.noName") + ">" + modSuffix));
         } else {

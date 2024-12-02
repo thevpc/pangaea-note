@@ -63,8 +63,7 @@ public class LibreOfficeToPdfViewerComponent extends BorderPane implements URLVi
         if (u != null) {
             File targetFile = null;
             try {
-                NSession session = frame.app().session();
-                targetFile = NPath.ofTempFile("a.pdf",session).toFile().get();
+                targetFile = NPath.ofTempFile("a.pdf").toFile().get();
                 File sourceFile = u;
                 LocalConverter.builder()
                         .build()

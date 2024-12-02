@@ -16,6 +16,7 @@ import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.echo.constraints.Anchor;
 import net.thevpc.echo.constraints.ContainerGrow;
 import net.thevpc.echo.constraints.Span;
+import net.thevpc.nuts.NApp;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.api.model.PangaeaNote;
@@ -36,7 +37,7 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends GridPane/*GradientP
         parentConstraints().addAll(ContainerGrow.CENTER, AllMargins.of(5,5,5,5));
         AppColor colorShortcut = Color.of("darkcyan", app());
         AppColor colorAction = Color.of("gray", app());
-        String pv=frame.app().session().getAppVersion().toString();
+        String pv= NApp.of().getId().get().getVersion().toString();
         Font fontTitle=new Font("Arial",22,FontWeight.BOLD, FontPosture.REGULAR, app());
         Font fontAction=new Font("Arial",13,FontWeight.BOLD, FontPosture.REGULAR, app());
         Font fontShortcut=new Font("Courrier",11,FontWeight.BOLD, FontPosture.REGULAR, app());

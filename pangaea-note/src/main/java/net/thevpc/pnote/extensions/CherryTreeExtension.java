@@ -105,19 +105,19 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                 try {
                     b = documentFactory.newDocumentBuilder();
                 } catch (ParserConfigurationException ex) {
-                    throw new NIOException(session, ex);
+                    throw new NIOException( ex);
                 }
 
                 b.setErrorHandler(new ErrorHandler() {
                     @Override
                     public void warning(SAXParseException exception) throws SAXException {
-                        NLogOp.of(PangaeaNoteApp.class,session)
+                        NLogOp.of(PangaeaNoteApp.class)
                                 .level(Level.FINEST).verb(NLogVerb.WARNING).log(NMsg.ofPlain(exception.toString()));
                     }
 
                     @Override
                     public void error(SAXParseException exception) throws SAXException {
-                        NLogOp.of(PangaeaNoteApp.class,session)
+                        NLogOp.of(PangaeaNoteApp.class)
                                 .level(Level.FINEST).verb(NLogVerb.WARNING)
                                 .error(exception)
                                 .log(NMsg.ofPlain(exception.toString()));
@@ -125,7 +125,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
 
                     @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
-                        NLogOp.of(PangaeaNoteApp.class,session)
+                        NLogOp.of(PangaeaNoteApp.class)
                                 .level(Level.FINEST).verb(NLogVerb.WARNING)
                                 .error(exception)
                                 .log(NMsg.ofPlain(exception.toString()));

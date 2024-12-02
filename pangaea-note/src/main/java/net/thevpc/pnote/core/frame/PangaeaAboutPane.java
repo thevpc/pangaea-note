@@ -5,7 +5,8 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NEnvs;
+import net.thevpc.nuts.NApp;
+import net.thevpc.nuts.NWorkspace;
 
 public class PangaeaAboutPane extends TabPane {
     public PangaeaAboutPane(PangaeaNoteApp app) {
@@ -35,43 +36,43 @@ public class PangaeaAboutPane extends TabPane {
                                             ContainerGrow.ALL);
                                     t.children().addAll(
                                             new Label(Str.i18n("About.pangaeaNoteVersionLabel"),app),
-                                            new TextField(Str.of(app.session().getAppVersion().toString()),app)
+                                            new TextField(Str.of(NApp.of().getId().get().getVersion().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.architecture"),app),
-                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getArch().toString()),app)
+                                            new TextField(Str.of(NWorkspace.get().getArch().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.os"),app),
-                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getOs().toString()),app)
+                                            new TextField(Str.of(NWorkspace.get().getOs().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.osDistribution"),app),
-                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getOsDist().toString()),app)
+                                            new TextField(Str.of(NWorkspace.get().getOsDist().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.platform"),app),
-                                            new TextField(Str.of(NEnvs.of(app.getNutsSession()).getPlatform().toString()),app)
+                                            new TextField(Str.of(NWorkspace.get().getPlatform().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.nutsApiVersion"),app),
-                                            new TextField(Str.of(app.getNutsWorkspace().getApiVersion().toString()),app)
+                                            new TextField(Str.of(NWorkspace.get().getApiVersion().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.nutsImplementation"),app),
-                                            new TextField(Str.of(app.getNutsWorkspace().getRuntimeId().toString()),app)
+                                            new TextField(Str.of(NWorkspace.get().getRuntimeId().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
