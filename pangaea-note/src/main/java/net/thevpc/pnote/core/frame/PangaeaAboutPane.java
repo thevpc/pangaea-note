@@ -42,37 +42,37 @@ public class PangaeaAboutPane extends TabPane {
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.architecture"),app),
-                                            new TextField(Str.of(NWorkspace.get().getArch().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().getArch().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.os"),app),
-                                            new TextField(Str.of(NWorkspace.get().getOs().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().getOs().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.osDistribution"),app),
-                                            new TextField(Str.of(NWorkspace.get().getOsDist().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().getOsDist().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.platform"),app),
-                                            new TextField(Str.of(NWorkspace.get().getPlatform().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().getPlatform().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.nutsApiVersion"),app),
-                                            new TextField(Str.of(NWorkspace.get().getApiVersion().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().getApiVersion().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.nutsImplementation"),app),
-                                            new TextField(Str.of(NWorkspace.get().getRuntimeId().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().getRuntimeId().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);

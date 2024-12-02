@@ -57,12 +57,12 @@ public class PangaeaNoteMain implements NApplication {
 
     private NCustomCmd findDefaultAlias() {
         NId appId = NApp.of().getId().get();
-        return NWorkspace.get().findCommand(PREFERRED_ALIAS, appId, appId);
+        return NWorkspace.of().findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
     @Override
     public void onInstallApplication() {
-        NWorkspace.get().addLauncher(new NLauncherOptions()
+        NWorkspace.of().addLauncher(new NLauncherOptions()
                 .setId(NApp.of().getId().get())
                 .setAlias(PREFERRED_ALIAS)
                 .setCreateAlias(true)
@@ -78,12 +78,12 @@ public class PangaeaNoteMain implements NApplication {
 
     @Override
     public void onUninstallApplication() {
-        NWorkspace.get().removeCommandIfExists(PREFERRED_ALIAS);
+        NWorkspace.of().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
     @Override
     public void run() {
-        NWorkspace ws=NWorkspace.get();
+        NWorkspace ws=NWorkspace.of();
         SwingUtilities.invokeLater(()->ws.setSharedInstance());
         PangaeaSplashScreen.get().tic();
         NCmdLine cmdLine = NApp.of().getCmdLine();
