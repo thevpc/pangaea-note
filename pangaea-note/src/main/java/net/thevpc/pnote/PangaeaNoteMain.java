@@ -28,7 +28,7 @@ public class PangaeaNoteMain implements NApplication {
 //            handler.setLevel(Level.FINEST);
 //        }
         PangaeaSplashScreen.get().tic();
-        new PangaeaNoteMain().runAndExit(args);
+        new PangaeaNoteMain().run(args);
     }
 
     public static void prepareUI(String[] args) {
