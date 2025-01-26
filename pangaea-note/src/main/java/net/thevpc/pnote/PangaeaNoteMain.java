@@ -2,6 +2,7 @@ package net.thevpc.pnote;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.lib.nswing.NSwingUtils;
 import net.thevpc.nuts.util.NRef;
 import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -14,8 +15,7 @@ public class PangaeaNoteMain implements NApplication {
     String PREFERRED_ALIAS = "pnote";
 
     public static void main(String[] args) {
-        prepareUI(args);
-//        System.out.println("<<complied>> : Tue Jun  8 01:43:11 PM CET 2021");
+        NSwingUtils.prepareUI(args);
         PangaeaSplashScreen.get();
 //        java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
 ////        rootLogger.setLevel(Level.FINEST);
@@ -31,17 +31,7 @@ public class PangaeaNoteMain implements NApplication {
         new PangaeaNoteMain().run(args);
     }
 
-    public static void prepareUI(String[] args) {
-        int scale = 0;
-        for (String arg : args) {
-            if (arg.equals("--scale")) {
-                scale = 2;
-            }
-        }
-        if (scale != 0) {
-            System.setProperty("sun.java2d.uiScale", String.valueOf(scale));
-        }
-    }
+
 
     private void runGui() {
         new PangaeaNoteApp().run();
@@ -83,8 +73,7 @@ public class PangaeaNoteMain implements NApplication {
 
     @Override
     public void run() {
-        NWorkspace ws=NWorkspace.of();
-        SwingUtilities.invokeLater(()->ws.setSharedInstance());
+        NSwingUtils.setSharedWorkspaceInstance();
         PangaeaSplashScreen.get().tic();
         NCmdLine cmdLine = NApp.of().getCmdLine();
         NRef<Boolean> interactive = NRef.of(false);
