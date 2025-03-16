@@ -319,4 +319,10 @@
             </build>
         </profile>
     </profiles>
+    <repositories>
+        <repository>
+            <id>thevpc</id>
+            <url>https://maven.thevpc.net</url>
+        </repository>
+    </repositories>
 </project>
