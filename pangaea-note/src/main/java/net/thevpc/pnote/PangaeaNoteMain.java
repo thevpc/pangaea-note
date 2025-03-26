@@ -2,7 +2,7 @@ package net.thevpc.pnote;
 
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.cmdline.NCmdLine;
-import net.thevpc.nuts.lib.nswing.NSwingUtils;
+import net.thevpc.nuts.nswing.NSwingUtils;
 import net.thevpc.nuts.util.NRef;
 import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
