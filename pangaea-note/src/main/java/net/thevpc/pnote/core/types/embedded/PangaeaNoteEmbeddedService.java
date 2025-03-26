@@ -18,7 +18,6 @@ import net.thevpc.pnote.service.AbstractPangaeaNoteTypeService;
 import net.thevpc.pnote.service.search.strsearch.DocumentTextPart;
 import net.thevpc.pnote.service.search.strsearch.StringDocumentTextNavigator;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -106,7 +105,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
             return null;
         }
         if(content.isString()){
-            return new PangaeaNoteDocumentInfo().setPath(content.asString().get());
+            return new PangaeaNoteDocumentInfo().setPath(content.asStringValue().get());
         }
         return app.elem().convert(content, PangaeaNoteDocumentInfo.class);
     }

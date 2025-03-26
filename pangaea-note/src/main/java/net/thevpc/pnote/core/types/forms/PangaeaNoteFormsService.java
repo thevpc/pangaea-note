@@ -6,7 +6,6 @@
 package net.thevpc.pnote.core.types.forms;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import net.thevpc.nuts.elem.NElement;
@@ -117,7 +116,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
 
     public PangaeaNoteObjectDocument getContentAsObject(NElement s) {
         if (s != null && s.isString()) {
-            return app().elem().parse(s.asString().get(), PangaeaNoteObjectDocument.class);
+            return app().elem().parse(s.asStringValue().get(), PangaeaNoteObjectDocument.class);
         }
         return app().elem().convert(s, PangaeaNoteObjectDocument.class);
     }
