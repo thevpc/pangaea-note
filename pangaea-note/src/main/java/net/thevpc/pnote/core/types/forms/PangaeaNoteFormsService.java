@@ -116,7 +116,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
 
     public PangaeaNoteObjectDocument getContentAsObject(NElement s) {
         if (s != null && s.isString()) {
-            return app().elem().parse(s.asStringValue().get(), PangaeaNoteObjectDocument.class);
+            return app().elem().parse(s.asString().get(), PangaeaNoteObjectDocument.class);
         }
         return app().elem().convert(s, PangaeaNoteObjectDocument.class);
     }

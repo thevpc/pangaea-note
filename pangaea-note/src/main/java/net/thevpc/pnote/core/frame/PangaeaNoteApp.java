@@ -648,7 +648,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             return null;
         }
         if (string.isString()) {
-            return string.asStringValue().get();
+            return string.asString().get();
         }
         return string.toString();
     }
