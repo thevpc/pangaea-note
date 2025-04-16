@@ -105,7 +105,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
             return null;
         }
         if(content.isString()){
-            return new PangaeaNoteDocumentInfo().setPath(content.asString().get());
+            return new PangaeaNoteDocumentInfo().setPath(content.asStringValue().get());
         }
         return app.elem().convert(content, PangaeaNoteDocumentInfo.class);
     }

@@ -242,7 +242,7 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
                 return false;
             }
             NObjectElement obj = cd.asObject().get();
-            return obj.type() == NElementType.BOOLEAN && obj.getBoolean("selected").get();
+            return obj.type() == NElementType.BOOLEAN && obj.getBooleanValue("selected").get();
         }
         return false;
     }
