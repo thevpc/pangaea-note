@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.pnote</groupId>
     <artifactId>pnote</artifactId>
@@ -69,17 +67,12 @@
         <!--            <version>1.0-SNAPSHOT</version>-->
         <!--        </dependency>-->
 
-        <dependency>
-            <groupId>net.sourceforge.tess4j</groupId>
-            <artifactId>tess4j</artifactId>
-            <version>4.6.0</version>
-            <exclusions>
+        <dependency><groupId>net.sourceforge.tess4j</groupId><artifactId>tess4j</artifactId><version>4.6.0</version><exclusions>
                 <exclusion>
                     <groupId>bouncycastle</groupId>
                     <artifactId>bctsp-jdk14</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
+            </exclusions></dependency>
 
         <!--        <dependency>-->
         <!--            <groupId>io.humble</groupId>-->
@@ -96,57 +89,26 @@
 <!--            <artifactId>diagram4j</artifactId>-->
 <!--            <version>0.1.1</version>-->
 <!--        </dependency>-->
-        <dependency>
-            <groupId>net.thevpc.more.iconsets</groupId>
-            <artifactId>iconset-feather</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.thevpc.more.iconsets</groupId>
-            <artifactId>iconset-svgrepo-color</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.thevpc.echo</groupId>
-            <artifactId>echo</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.thevpc.echo</groupId>
-            <artifactId>echo-swing</artifactId>
-            <version>1.1.1</version>
-            <scope>runtime</scope>
-        </dependency>
+        <dependency><groupId>net.thevpc.more.iconsets</groupId><artifactId>iconset-feather</artifactId><version>1.0.1</version></dependency>
+        <dependency><groupId>net.thevpc.more.iconsets</groupId><artifactId>iconset-svgrepo-color</artifactId><version>1.0.1</version></dependency>
+        <dependency><groupId>net.thevpc.echo</groupId><artifactId>echo</artifactId><version>1.1.1</version></dependency>
+        <dependency><groupId>net.thevpc.echo</groupId><artifactId>echo-swing</artifactId><version>1.1.1</version><scope>runtime</scope></dependency>
         <!--        <dependency>-->
         <!--            <groupId>net.thevpc.echo</groupId>-->
         <!--            <artifactId>echo-jfx</artifactId>-->
         <!--            <version>1.1.0</version>-->
         <!--        </dependency>-->
-        <dependency>
-            <groupId>org.jodconverter</groupId>
-            <artifactId>jodconverter-local</artifactId>
-            <version>4.4.2</version>
-        </dependency>
+        <dependency><groupId>org.jodconverter</groupId><artifactId>jodconverter-local</artifactId><version>4.4.2</version></dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.8.2</version>
-            <scope>test</scope>
-        </dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-api</artifactId><version>5.8.2</version><scope>test</scope></dependency>
 
         <!--- PDF -->
-        <dependency>
-            <groupId>org.icepdf.os</groupId>
-            <artifactId>icepdf-viewer</artifactId>
-            <version>6.2.2</version>
-            <exclusions>
+        <dependency><groupId>org.icepdf.os</groupId><artifactId>icepdf-viewer</artifactId><version>6.2.2</version><exclusions>
                 <exclusion>
                     <groupId>javax.media</groupId>
                     <artifactId>jai_core</artifactId>
                 </exclusion>
-            </exclusions>
-        </dependency>
+            </exclusions></dependency>
     </dependencies>
     <distributionManagement>
         <snapshotRepository>
@@ -320,9 +282,6 @@
         </profile>
     </profiles>
     <repositories>
-        <repository>
-            <id>thevpc</id>
-            <url>https://maven.thevpc.net</url>
-        </repository>
+        <repository><id>thevpc</id><url>https://maven.thevpc.net</url></repository>
     </repositories>
 </project>
