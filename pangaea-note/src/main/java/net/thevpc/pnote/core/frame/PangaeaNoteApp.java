@@ -13,6 +13,7 @@ import net.thevpc.echo.impl.DefaultApplication;
 import net.thevpc.nuts.*;
 import net.thevpc.nuts.concurrent.NScheduler;
 import net.thevpc.nuts.elem.NElement;
+import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
@@ -550,10 +551,6 @@ public class PangaeaNoteApp extends DefaultApplication {
         return new ArrayList<>(extra.values());
     }
 
-    public NElements elem() {
-        return NElements.of();
-    }
-
     public NSession session() {
         return session;
     }
@@ -595,7 +592,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public String stringifyAny(Object value) {
-        return elem().setValue(value)
+        return NElements.of().json().setValue(value)
                 .json()
                 .setCompact(true)
                 .setNtf(false)
@@ -607,8 +604,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             return null;
         }
         try {
-            return elem()
-                    .json()
+            return NElementParser.ofJson()
                     .parse(s, cls);
         } catch (Exception ex) {
             return null;
@@ -637,7 +633,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NElement stringToElement(String string) {
-        return elem().ofString(string);
+        return NElements.ofString(string);
     }
 
     public String elementToString(NElement string) {
@@ -779,12 +775,12 @@ public class PangaeaNoteApp extends DefaultApplication {
                         n2.setCreationTime(document.getCreationTime());
                         n2.setLastModified(document.getLastModified());
                         n2.setCypherInfo(ci);
-                        elem()
+                        NElements.of().json()
                                 .json()
                                 .setValue(n2)
                                 .println(f);
                     } else {
-                        elem()
+                        NElements.of().json()
                                 .json()
                                 .setValue(document)
                                 .println(f);
@@ -844,7 +840,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         }
         NPath configFilePath = getConfigFilePath();
         NPath pf = configFilePath.mkParentDirs();
-        elem()
+        NElements.of()
                 .json()
                 .setValue(c)
                 .println(configFilePath);
@@ -852,8 +848,7 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
         try {
-            PangaeaNoteConfig n = elem()
-                    .json()
+            PangaeaNoteConfig n = NElementParser.ofJson()
                     .parse(getConfigFilePath(),
                             PangaeaNoteConfig.class);
             if (n != null) {
@@ -880,8 +875,7 @@ public class PangaeaNoteApp extends DefaultApplication {
                 String nodePath = di.getPath();
                 nodePath = nodePath == null ? "" : nodePath.trim();
                 if (nodePath.length() > 0) {
-                    PangaeaNote rawNode = elem()
-                            .json()
+                    PangaeaNote rawNode = NElementParser.ofJson()
                             .parse(new File(nodePath), PangaeaNote.class);
                     n.copyFrom(rawNode);
                     CypherInfo cypherInfo = n.getCypherInfo();
@@ -1292,7 +1286,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         if (info == null) {
             info = new PangaeaNoteDocumentInfo();
         }
-        return elem().toElement(info);
+        return NElements.of().toElement(info);
     }
 
     public void setDocumentInfo(PangaeaNote document, PangaeaNoteDocumentInfo d) {

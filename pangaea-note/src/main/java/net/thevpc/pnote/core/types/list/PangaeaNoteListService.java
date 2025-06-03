@@ -6,6 +6,7 @@
 package net.thevpc.pnote.core.types.list;
 
 import net.thevpc.nuts.elem.NElement;
+import net.thevpc.nuts.elem.NElements;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.core.types.list.editor.PangaeaNoteListEditorTypeComponent;
 import net.thevpc.pnote.core.types.list.model.PangaeaNoteListModel;
@@ -98,7 +99,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
     }
 
     public NElement contentToElement(PangaeaNoteListModel value) {
-        return app().elem().toElement(value);
+        return NElements.of().toElement(value);
     }
 
     public PangaeaNoteListModel elementToContent(NElement s) {
@@ -108,7 +109,7 @@ public class PangaeaNoteListService extends AbstractPangaeaNoteTypeService {
         if (!s.isObject()) {
             return new PangaeaNoteListModel();
         } else {
-            return app().elem().convert(s, PangaeaNoteListModel.class);
+            return NElements.of().convert(s, PangaeaNoteListModel.class);
         }
     }
 
