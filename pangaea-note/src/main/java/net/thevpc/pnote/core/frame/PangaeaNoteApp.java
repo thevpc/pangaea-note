@@ -14,6 +14,7 @@ import net.thevpc.nuts.*;
 import net.thevpc.nuts.concurrent.NScheduler;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
@@ -43,6 +44,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import net.thevpc.common.i18n.I18n;
 import net.thevpc.common.props.Path;
 import net.thevpc.echo.api.CancelException;
@@ -87,20 +89,20 @@ public class PangaeaNoteApp extends DefaultApplication {
     private List<PangaeaNoteFileViewerManager> viewers = new ArrayList<>();
     private AtomicInteger windowIndex = new AtomicInteger(1);
     public static final String[] SOURCE_CONTENT_TYPES = {
-        "text/java;text/x-java",
-        "text/x-csrc;text/x-c++hdr",
-        "text/x-c++src",
-        "text/javascript",
-        "application/x-shellscript;ext=sh,zsh,tsh",
-        "text/markdown;group=simple-documents",
-        "text/x-nuts-text-format;group=simple-documents;ext=ntf",
-        "application/x-hadra",
-        "application/x-bibtex;ext=bib",
-        "text/xml",
-        "application/x-tex;application/x-latex;ext=tex,latex",
-        "application/sql;ext=sql", //        "text/html",
-        "text/css;ext=css", //        "text/html",
-        "application/json;ext=json",
+            "text/java;text/x-java",
+            "text/x-csrc;text/x-c++hdr",
+            "text/x-c++src",
+            "text/javascript",
+            "application/x-shellscript;ext=sh,zsh,tsh",
+            "text/markdown;group=simple-documents",
+            "text/x-nuts-text-format;group=simple-documents;ext=ntf",
+            "application/x-hadra",
+            "application/x-bibtex;ext=bib",
+            "text/xml",
+            "application/x-tex;application/x-latex;ext=tex,latex",
+            "application/sql;ext=sql", //        "text/html",
+            "text/css;ext=css", //        "text/html",
+            "application/json;ext=json",
     };
     public static final String SECURE_ALGO = PangaeaNoteCypher_v101.ID;
     private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(PangaeaNoteApp.class.getName());
@@ -342,8 +344,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         }
     }
 
-    public void registerCypher(PangaeaNoteCypher o){
-        cyphers.put(o.getId(),o);
+    public void registerCypher(PangaeaNoteCypher o) {
+        cyphers.put(o.getId(), o);
     }
 
     public void installEditorService(PangaeaNoteEditorService s) {
@@ -428,13 +430,13 @@ public class PangaeaNoteApp extends DefaultApplication {
         iconSets().add().name("svgrepo-color").path("/net/thevpc/pnote/iconsets/svgrepo-color").build();
         iconSets().add().name("feather-black").path("/net/thevpc/pnote/iconsets/feather").build();
         for (Object[] r : new Object[][]{
-            {"white", Color.WHITE(this)},
-            {"black", Color.BLACK(this)},
-            {"blue", new Color(22, 60, 90, this)},
-            {"cyan", new Color(32, 99, 155, this)},
-            {"green", new Color(60, 174, 163, this)},
-            {"yellow", new Color(246, 213, 92, this)},
-            {"red", new Color(237, 85, 59, this)},}) {
+                {"white", Color.WHITE(this)},
+                {"black", Color.BLACK(this)},
+                {"blue", new Color(22, 60, 90, this)},
+                {"cyan", new Color(32, 99, 155, this)},
+                {"green", new Color(60, 174, 163, this)},
+                {"yellow", new Color(246, 213, 92, this)},
+                {"red", new Color(237, 85, 59, this)},}) {
             String n = (String) r[0];
             Color c = (Color) r[1];
             iconSets().add().name("feather-" + n).path("/net/thevpc/pnote/iconsets/feather")
@@ -592,11 +594,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public String stringifyAny(Object value) {
-        return NElements.of().json().setValue(value)
-                .json()
-                .setCompact(true)
-                .setNtf(false)
-                .format().filteredText();
+        return NElementWriter.ofJson().setCompact(true).toString(value);
     }
 
     public <T> T parseAny(String s, Class<T> cls) {
@@ -633,7 +631,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NElement stringToElement(String string) {
-        return NElements.ofString(string);
+        return NElement.ofString(string);
     }
 
     public String elementToString(NElement string) {
@@ -775,15 +773,12 @@ public class PangaeaNoteApp extends DefaultApplication {
                         n2.setCreationTime(document.getCreationTime());
                         n2.setLastModified(document.getLastModified());
                         n2.setCypherInfo(ci);
-                        NElements.of().json()
-                                .json()
-                                .setValue(n2)
-                                .println(f);
+                        NElementWriter.ofJson()
+                                .writeln(n2, f);
                     } else {
-                        NElements.of().json()
+                        NElementWriter.ofJson()
                                 .json()
-                                .setValue(document)
-                                .println(f);
+                                .writeln(document, f);
                     }
 //                    if (cypherInfo != null && ((cypherInfo.getAlgo() == null) ||)
 
@@ -840,10 +835,8 @@ public class PangaeaNoteApp extends DefaultApplication {
         }
         NPath configFilePath = getConfigFilePath();
         NPath pf = configFilePath.mkParentDirs();
-        NElements.of()
-                .json()
-                .setValue(c)
-                .println(configFilePath);
+        NElementWriter.ofJson()
+                .writeln(c, configFilePath);
     }
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {

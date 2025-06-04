@@ -257,13 +257,13 @@ public class PangaeaNoteListEditorContainer extends DataPane<PangaeaNote> {
                 NElement cd = note.getChildData();
                 NObjectElementBuilder cdb;
                 if (cd == null || cd.isNull()) {
-                    cdb = NElements.ofObjectBuilder();
+                    cdb = NElement.ofObjectBuilder();
                 } else if (!cd.isObject()) {
-                    cdb = NElements.ofObjectBuilder();
+                    cdb = NElement.ofObjectBuilder();
                     cdb.set("value", cd);
                 } else {
                     NObjectElement z = cd.asObject().get();
-                    cdb = NElements.ofObjectBuilder().addAll(z);
+                    cdb = NElement.ofObjectBuilder().addAll(z);
                 }
                 cdb.set("selected", sel);
                 note.setChildData(cdb.build());
