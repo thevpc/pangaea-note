@@ -8,8 +8,6 @@ import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
-import javax.swing.*;
-
 public class PangaeaNoteMain implements NApplication {
 
     String PREFERRED_ALIAS = "pnote";
@@ -81,10 +79,10 @@ public class PangaeaNoteMain implements NApplication {
         NRef<Boolean> gui = NRef.of(false);
         NRef<Boolean> cui = NRef.of(false);
         while (!cmdLine.isEmpty()) {
-            if (!cmdLine.withNextFlag((v, a) -> interactive.set(v), "-i", "--interactive")) {
-                if (!cmdLine.withNextFlag((v, a) -> gui.set(v), "-w", "--gui")) {
-                    if (!cmdLine.withNextFlag((v, a) -> cui.set(v), "--cui")) {
-                        if (!cmdLine.withNextFlag((v, a) -> {}, "--scale")) {
+            if (!cmdLine.withNextFlag((v) -> interactive.set(v.booleanValue()), "-i", "--interactive")) {
+                if (!cmdLine.withNextFlag((v) -> gui.set(v.booleanValue()), "-w", "--gui")) {
+                    if (!cmdLine.withNextFlag((v) -> cui.set(v.booleanValue()), "--cui")) {
+                        if (!cmdLine.withNextTrueFlag((v) -> {}, "--scale")) {
                             cmdLine.throwUnexpectedArgument();
                         }
                     }
