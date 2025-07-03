@@ -26,7 +26,7 @@ public class PangaeaNoteMain implements NApplication {
 //            handler.setLevel(Level.FINEST);
 //        }
         PangaeaSplashScreen.get().tic();
-        new PangaeaNoteMain().main(NMainArgs.of(args));
+        NApp.builder(args).run();
     }
 
 
