@@ -80,15 +80,12 @@ public class PangaeaNoteMain  {
         NRef<Boolean> gui = NRef.of(false);
         NRef<Boolean> cui = NRef.of(false);
         while (!cmdLine.isEmpty()) {
-            if (!cmdLine.withNextFlag((v) -> interactive.set(v.booleanValue()), "-i", "--interactive")) {
-                if (!cmdLine.withNextFlag((v) -> gui.set(v.booleanValue()), "-w", "--gui")) {
-                    if (!cmdLine.withNextFlag((v) -> cui.set(v.booleanValue()), "--cui")) {
-                        if (!cmdLine.withNextTrueFlag((v) -> {}, "--scale")) {
-                            cmdLine.throwUnexpectedArgument();
-                        }
-                    }
-                }
-            }
+            cmdLine.selector()
+                    .with( "-i", "--interactive").nextFlag((v) -> interactive.set(v.booleanValue()))
+                    .with("-w", "--gui").nextFlag((v) -> gui.set(v.booleanValue()))
+                    .with("--cui").nextFlag((v) -> cui.set(v.booleanValue()))
+                    .with("--scale").nextTrueFlag((v) -> {})
+                    .require();
         }
         if (interactive.get()) {
             console.set(true);
