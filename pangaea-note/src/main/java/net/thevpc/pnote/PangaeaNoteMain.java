@@ -8,7 +8,7 @@ import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
-@NApp.Info
+@NApp.Definition
 public class PangaeaNoteMain  {
 
     String PREFERRED_ALIAS = "pnote";
