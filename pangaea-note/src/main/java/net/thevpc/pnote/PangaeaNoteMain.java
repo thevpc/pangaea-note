@@ -8,7 +8,7 @@ import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
-@NApp.Definition
+@NAppDefinition
 public class PangaeaNoteMain  {
 
     String PREFERRED_ALIAS = "pnote";
@@ -49,7 +49,7 @@ public class PangaeaNoteMain  {
         return NWorkspace.of().findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
-    @NApp.Installer
+    @NAppInstaller
     public void onInstallApplication() {
         NWorkspace.of().addLauncher(new NLauncherOptions()
                 .setId(NApp.of().getId().get())
@@ -60,17 +60,17 @@ public class PangaeaNoteMain  {
         );
     }
 
-    @NApp.Updater
+    @NAppUpdater
     public void onUpdateApplication() {
         onInstallApplication();
     }
 
-    @NApp.Uninstaller
+    @NAppUninstaller
     public void onUninstallApplication() {
         NWorkspace.of().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
-    @NApp.Runner
+    @NAppRunner
     public void run() {
         NSwingUtils.setSharedWorkspaceInstance();
         PangaeaSplashScreen.get().tic();
