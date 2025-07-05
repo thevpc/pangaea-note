@@ -70,7 +70,7 @@ public class PangaeaNoteMain  {
         NWorkspace.of().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
-    @NApp.Main
+    @NApp.Runner
     public void run() {
         NSwingUtils.setSharedWorkspaceInstance();
         PangaeaSplashScreen.get().tic();
