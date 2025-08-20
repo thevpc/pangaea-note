@@ -137,13 +137,6 @@ public class PangaeaNoteFrame extends Frame {
         });
     }
 
-    public NWorkspace getNutsWorkspace() {
-        return app().getNutsWorkspace();
-    }
-
-    public NSession getNutsSession() {
-        return app().getNutsSession();
-    }
 
     public PangaeaNoteDocumentTree treePane() {
         return tree;
