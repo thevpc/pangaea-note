@@ -112,7 +112,4 @@ public class PangaeaCheckUpdatesPane extends GridPane {
         }
     }
 
-    private NSession session() {
-        return ((PangaeaNoteApp) app()).session();
-    }
 }
