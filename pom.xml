@@ -12,6 +12,7 @@
     </properties>
     <modules>
         <module>pangaea-note</module>
+        <module>pangaea-note-plus</module>
     </modules>
 
     <build>
