@@ -1,0 +1,641 @@
+.
+├── docs
+│   └── img
+│       └── icon.png
+├── nb-configuration.xml
+├── pangaea-note
+│   ├── licenseheader.txt
+│   ├── nbactions.xml
+│   ├── nb-configuration.xml
+│   ├── pom.xml
+│   ├── src
+│   │   └── main
+│   │       ├── java
+│   │       │   └── net
+│   │       │       └── thevpc
+│   │       │           └── pnote
+│   │       │               ├── api
+│   │       │               │   ├── AbstractPangaeaNoteTemplate.java
+│   │       │               │   ├── EditTypeComponent.java
+│   │       │               │   ├── InvalidSecretException.java
+│   │       │               │   ├── model
+│   │       │               │   │   ├── ContentTypeSelector.java
+│   │       │               │   │   ├── CypherInfo.java
+│   │       │               │   │   ├── HighlightType.java
+│   │       │               │   │   ├── ObservableNoteListener.java
+│   │       │               │   │   ├── ObservableNoteSelectionListener.java
+│   │       │               │   │   ├── PangaeaNoteConfig.java
+│   │       │               │   │   ├── PangaeaNoteExt.java
+│   │       │               │   │   ├── PangaeaNote.java
+│   │       │               │   │   ├── PangaeaNoteMimeType.java
+│   │       │               │   │   └── ReturnType.java
+│   │       │               │   ├── PangaeaContentTypeReplacer.java
+│   │       │               │   ├── PangaeaNoteAppExtension.java
+│   │       │               │   ├── PangaeaNoteCypher.java
+│   │       │               │   ├── PangaeaNoteEditorService.java
+│   │       │               │   ├── PangaeaNoteEditorTypeComponent.java
+│   │       │               │   ├── PangaeaNoteExtEditorListener.java
+│   │       │               │   ├── PangaeaNoteFileImporter.java
+│   │       │               │   ├── PangaeaNoteFileViewerManager.java
+│   │       │               │   ├── PangaeaNoteTemplate.java
+│   │       │               │   ├── PangaeaNoteTypeServiceBase.java
+│   │       │               │   └── PangaeaNoteTypeService.java
+│   │       │               ├── core
+│   │       │               │   ├── CorePangaeaNoteApp.java
+│   │       │               │   ├── editors
+│   │       │               │   │   └── SourceEditorService.java
+│   │       │               │   ├── frame
+│   │       │               │   │   ├── dialogs
+│   │       │               │   │   │   ├── EditNoteDialog.java
+│   │       │               │   │   │   ├── EmptyEditTypeComponent.java
+│   │       │               │   │   │   ├── NewNoteDialog.java
+│   │       │               │   │   │   ├── PangaeaNoteIconsButton.java
+│   │       │               │   │   │   ├── PangaeaNoteIconsList.java
+│   │       │               │   │   │   ├── PangaeaNoteTitleFormatPanel.java
+│   │       │               │   │   │   ├── PangaeaNoteTypesComboBox.java
+│   │       │               │   │   │   └── PangaeaNoteTypesList.java
+│   │       │               │   │   ├── editor
+│   │       │               │   │   │   └── PangaeaNoteEditor.java
+│   │       │               │   │   ├── PangaeaAboutPane.java
+│   │       │               │   │   ├── PangaeaCheckUpdatesPane.java
+│   │       │               │   │   ├── PangaeaContentTypes.java
+│   │       │               │   │   ├── PangaeaNoteAppExtensionHandlerImpl.java
+│   │       │               │   │   ├── PangaeaNoteAppExtensionHandler.java
+│   │       │               │   │   ├── PangaeaNoteAppExtensionListener.java
+│   │       │               │   │   ├── PangaeaNoteAppExtensionStatus.java
+│   │       │               │   │   ├── PangaeaNoteApp.java
+│   │       │               │   │   ├── PangaeaNoteFrame.java
+│   │       │               │   │   ├── PangaeaNoteTypes.java
+│   │       │               │   │   ├── search
+│   │       │               │   │   │   ├── PangaeaSearchDialog.java
+│   │       │               │   │   │   └── SearchResultPanel.java
+│   │       │               │   │   ├── SelectableElement.java
+│   │       │               │   │   ├── tree
+│   │       │               │   │   │   ├── PangaeaNoteDocumentTree.java
+│   │       │               │   │   │   └── SimpleDefaultTreeCellRendererImpl.java
+│   │       │               │   │   └── util
+│   │       │               │   │       ├── PangaeaNoteError.java
+│   │       │               │   │       ├── PangaeaNoteLabelHelper.java
+│   │       │               │   │       └── UIPropsTool.java
+│   │       │               │   ├── splash
+│   │       │               │   │   └── PangaeaSplashScreen.java
+│   │       │               │   ├── types
+│   │       │               │   │   ├── diagram
+│   │       │               │   │   │   ├── editor
+│   │       │               │   │   │   │   ├── ArrowEditor.java
+│   │       │               │   │   │   │   ├── DiagramActionModel.java
+│   │       │               │   │   │   │   ├── DiagramEditorService.java
+│   │       │               │   │   │   │   ├── FillColorEditor.java
+│   │       │               │   │   │   │   ├── LineColorEditor.java
+│   │       │               │   │   │   │   ├── PangaeaNoteDiagramEditorTypeComponent.java
+│   │       │               │   │   │   │   ├── TextColorEditor.java
+│   │       │               │   │   │   │   └── tools
+│   │       │               │   │   │   │       ├── JArrowChooser.java
+│   │       │               │   │   │   │       ├── JLineColorChooser.java
+│   │       │               │   │   │   │       ├── JPaintChooser.java
+│   │       │               │   │   │   │       └── StrokeUtils.java
+│   │       │               │   │   │   ├── PangaeaNoteDiaService.java
+│   │       │               │   │   │   └── ser
+│   │       │               │   │   │       ├── JDiagramBoundsMapper.java
+│   │       │               │   │   │       └── JDiagramGeometryMapper.java
+│   │       │               │   │   ├── embedded
+│   │       │               │   │   │   ├── editor
+│   │       │               │   │   │   │   └── PangaeaNoteDocumentEditorTypeComponent.java
+│   │       │               │   │   │   ├── PangaeaNoteDocumentInfo.java
+│   │       │               │   │   │   └── PangaeaNoteEmbeddedService.java
+│   │       │               │   │   ├── empty
+│   │       │               │   │   │   └── PangaeaNoteEmptyNoteEditorTypeComponent.java
+│   │       │               │   │   ├── file
+│   │       │               │   │   │   ├── editor
+│   │       │               │   │   │   │   ├── PangaeaNoteFileEditorTypeComponent.java
+│   │       │               │   │   │   │   ├── UnsupportedViewerComponent.java
+│   │       │               │   │   │   │   ├── URLViewerComponent.java
+│   │       │               │   │   │   │   ├── URLViewer.java
+│   │       │               │   │   │   │   └── URLViewerListener.java
+│   │       │               │   │   │   └── PangaeaNoteFileService.java
+│   │       │               │   │   ├── forms
+│   │       │               │   │   │   ├── components
+│   │       │               │   │   │   │   ├── CheckboxesComponent.java
+│   │       │               │   │   │   │   ├── ComboboxComponent.java
+│   │       │               │   │   │   │   ├── DateFieldComponent.java
+│   │       │               │   │   │   │   ├── DateFieldComponentOld.java
+│   │       │               │   │   │   │   ├── DateTimeFieldComponent.java
+│   │       │               │   │   │   │   ├── DayOfWeekComponent.java
+│   │       │               │   │   │   │   ├── FileComponent.java
+│   │       │               │   │   │   │   ├── FormComponent.java
+│   │       │               │   │   │   │   ├── MonthComponent.java
+│   │       │               │   │   │   │   ├── NumberFieldComponent.java
+│   │       │               │   │   │   │   ├── PasswordComponent.java
+│   │       │               │   │   │   │   ├── RadioButtonComponent.java
+│   │       │               │   │   │   │   ├── StarsComponent.java
+│   │       │               │   │   │   │   ├── TextAreaComponent.java
+│   │       │               │   │   │   │   ├── TextFieldComponent.java
+│   │       │               │   │   │   │   ├── TimeFieldComponent.java
+│   │       │               │   │   │   │   ├── ToggleButtonComponent.java
+│   │       │               │   │   │   │   ├── URLComponent.java
+│   │       │               │   │   │   │   └── YearComponent.java
+│   │       │               │   │   │   ├── editor
+│   │       │               │   │   │   │   ├── EditFormDialog.java
+│   │       │               │   │   │   │   ├── EditFormFieldPanel.java
+│   │       │               │   │   │   │   ├── EditFormFieldsPanel.java
+│   │       │               │   │   │   │   ├── FormsDataHeaderItem.java
+│   │       │               │   │   │   │   ├── FormsDataHeaderPane.java
+│   │       │               │   │   │   │   ├── FormsDataItem.java
+│   │       │               │   │   │   │   ├── FormsDataPane.java
+│   │       │               │   │   │   │   ├── PangaeaNoteFieldDescriptorPanel.java
+│   │       │               │   │   │   │   ├── PangaeaNoteFormsEditorTypeComponent.java
+│   │       │               │   │   │   │   ├── PangaeaNoteObjectComponent.java
+│   │       │               │   │   │   │   ├── PangaeaNoteObjectExt.java
+│   │       │               │   │   │   │   ├── PangaeaNoteObjectTracker.java
+│   │       │               │   │   │   │   └── PossibleValuesList.java
+│   │       │               │   │   │   ├── model
+│   │       │               │   │   │   │   ├── PangaeaNoteFieldDescriptor.java
+│   │       │               │   │   │   │   ├── PangaeaNoteField.java
+│   │       │               │   │   │   │   ├── PangaeaNoteFieldOptions.java
+│   │       │               │   │   │   │   ├── PangaeaNoteFieldType.java
+│   │       │               │   │   │   │   ├── PangaeaNoteObjectDescriptor.java
+│   │       │               │   │   │   │   ├── PangaeaNoteObjectDocument.java
+│   │       │               │   │   │   │   └── PangaeaNoteObject.java
+│   │       │               │   │   │   ├── PangaeaNoteFormsService.java
+│   │       │               │   │   │   ├── refactor
+│   │       │               │   │   │   │   └── FormsToAnythingContentTypeReplacer.java
+│   │       │               │   │   │   ├── search
+│   │       │               │   │   │   │   └── PangaeaNoteObjectDocumentTextNavigator.java
+│   │       │               │   │   │   ├── templates
+│   │       │               │   │   │   │   ├── AppAccountTemplate.java
+│   │       │               │   │   │   │   ├── BankAccountTemplate.java
+│   │       │               │   │   │   │   ├── CreditCardAccountTemplate.java
+│   │       │               │   │   │   │   ├── EmailAccountTemplate.java
+│   │       │               │   │   │   │   ├── EthernetConnectionTemplate.java
+│   │       │               │   │   │   │   ├── ServerAccountTemplate.java
+│   │       │               │   │   │   │   ├── UrlBookmarkTemplate.java
+│   │       │               │   │   │   │   ├── WebAccountTemplate.java
+│   │       │               │   │   │   │   └── WifiConnectionTemplate.java
+│   │       │               │   │   │   └── util
+│   │       │               │   │   │       └── PangaeaNoteFormUtils.java
+│   │       │               │   │   ├── list
+│   │       │               │   │   │   ├── editor
+│   │       │               │   │   │   │   ├── PangaeaNoteListEditorContainer.java
+│   │       │               │   │   │   │   ├── PangaeaNoteListEditorItem.java
+│   │       │               │   │   │   │   ├── PangaeaNoteListEditorItemRenderer.java
+│   │       │               │   │   │   │   ├── PangaeaNoteListEditorTypeComponent.java
+│   │       │               │   │   │   │   └── PangaeaNoteListSettingsComponent.java
+│   │       │               │   │   │   ├── model
+│   │       │               │   │   │   │   ├── PangaeaNoteListLayout.java
+│   │       │               │   │   │   │   └── PangaeaNoteListModel.java
+│   │       │               │   │   │   ├── PangaeaNoteListService.java
+│   │       │               │   │   │   └── refactor
+│   │       │               │   │   │       └── NoteListToAnythingContentTypeReplacer.java
+│   │       │               │   │   ├── plain
+│   │       │               │   │   │   └── PangaeaNotePlainTextService.java
+│   │       │               │   │   ├── rich
+│   │       │               │   │   │   ├── editor
+│   │       │               │   │   │   │   ├── PangaeaNoteRichEditorTypeComponent.java
+│   │       │               │   │   │   │   ├── RichEditorService.java
+│   │       │               │   │   │   │   └── SourceEditorPanePanelHtmlExtension.java
+│   │       │               │   │   │   └── PangaeaNoteRichService.java
+│   │       │               │   │   ├── sourcecode
+│   │       │               │   │   │   ├── html
+│   │       │               │   │   │   │   ├── PangaeaNoteHtmlService.java
+│   │       │               │   │   │   │   └── refactor
+│   │       │               │   │   │   │       └── PlainToHtmlContentTypeReplacer.java
+│   │       │               │   │   │   └── PangaeaNoteSourceEditorTypeComponent.java
+│   │       │               │   │   └── unsupported
+│   │       │               │   │       └── PangaeaNoteUnsupportedEditorTypeComponent.java
+│   │       │               │   └── viewers
+│   │       │               │       ├── folder
+│   │       │               │       │   ├── FolderViewerComponent.java
+│   │       │               │       │   └── FolderViewer.java
+│   │       │               │       ├── fromeditor
+│   │       │               │       │   ├── NoteEditorToViewer.java
+│   │       │               │       │   └── NoteURLViewerComponent.java
+│   │       │               │       ├── image
+│   │       │               │       │   ├── ImageViewerComponent.java
+│   │       │               │       │   └── ImageViewer.java
+│   │       │               │       ├── libreoffice
+│   │       │               │       │   ├── LibreOfficeToPdfViewerComponent.java
+│   │       │               │       │   └── LibreOfficeViewer.java
+│   │       │               │       ├── pdf
+│   │       │               │       │   ├── PdfViewerComponent.java
+│   │       │               │       │   └── PdfViewer.java
+│   │       │               │       └── web
+│   │       │               │           ├── WebViewerComponent.java
+│   │       │               │           └── WebViewer.java
+│   │       │               ├── deprecated
+│   │       │               │   ├── breadcrumb
+│   │       │               │   │   └── PangaeaNodeBreadcrumb.java
+│   │       │               │   ├── editorcomponents
+│   │       │               │   │   └── source
+│   │       │               │   │       ├── AbstractSourceEditorPaneExtension.java
+│   │       │               │   │       ├── SourceEditorPaneExtension.java
+│   │       │               │   │       └── SourceEditorPanePanelTextExtension.java
+│   │       │               │   └── PangaeaNotSupportedFileFormatsFileFilter.java
+│   │       │               ├── extensions
+│   │       │               │   ├── CherryTreeExtension.java
+│   │       │               │   ├── CsvExtension.java
+│   │       │               │   └── Tess4JPangaeaNoteAppExtension.java
+│   │       │               ├── PangaeaNoteMain.java
+│   │       │               ├── service
+│   │       │               │   ├── AbstractPangaeaNoteSourceCodeService.java
+│   │       │               │   ├── AbstractPangaeaNoteTypeService.java
+│   │       │               │   ├── DefaultPangaeaNoteSourceCodeService.java
+│   │       │               │   ├── refactor
+│   │       │               │   │   ├── AnythingToPlainContentTypeReplacer.java
+│   │       │               │   │   └── EmptySourceContentTypeReplacer.java
+│   │       │               │   ├── search
+│   │       │               │   │   ├── DefaultVNoteSearchFilter.java
+│   │       │               │   │   ├── PangaeaNoteExtDocumentTextNavigator.java
+│   │       │               │   │   ├── PangaeaNoteExtSearchResult.java
+│   │       │               │   │   ├── strsearch
+│   │       │               │   │   │   ├── AbstractStringToPatternPortion.java
+│   │       │               │   │   │   ├── DocumentTextNavigator.java
+│   │       │               │   │   │   ├── DocumentTextPart.java
+│   │       │               │   │   │   ├── SearchProgressMonitor.java
+│   │       │               │   │   │   ├── StringDocumentTextNavigator.java
+│   │       │               │   │   │   ├── StringQuerySearch.java
+│   │       │               │   │   │   ├── StringSearchResult.java
+│   │       │               │   │   │   └── StringToPatternPortionImpl.java
+│   │       │               │   │   └── VNoteSearchFilter.java
+│   │       │               │   └── security
+│   │       │               │       ├── OpenWallet.java
+│   │       │               │       ├── PangaeaNoteCypherBase.java
+│   │       │               │       ├── PangaeaNoteCypher_v100.java
+│   │       │               │       ├── PangaeaNoteCypher_v101.java
+│   │       │               │       ├── PasswordHandler0.java
+│   │       │               │       └── PasswordHandler.java
+│   │       │               └── util
+│   │       │                   ├── IteratorList.java
+│   │       │                   └── PNoteUtils.java
+│   │       ├── raw-image-sources
+│   │       │   ├── icon-big.png
+│   │       │   ├── splash-screen-big-2.png
+│   │       │   ├── splash-screen-big.png
+│   │       │   └── splash-screen.xcf
+│   │       └── resources
+│   │           └── net
+│   │               └── thevpc
+│   │                   └── pnote
+│   │                       ├── about
+│   │                       │   ├── about.html
+│   │                       │   ├── contribute.html
+│   │                       │   ├── dependencies.html
+│   │                       │   ├── environment.html
+│   │                       │   └── licenses.html
+│   │                       ├── forms
+│   │                       │   ├── EditNoteDialog.gbl-form
+│   │                       │   ├── EnterNewPassword.gbl-form
+│   │                       │   ├── EnterPassword.gbl-form
+│   │                       │   ├── NewNoteDialog.gbl-form
+│   │                       │   ├── NewNoteDialogOld.gbl-form
+│   │                       │   ├── PangaeaNoteListSettingsComponent.gbl-form
+│   │                       │   ├── PangaeaNoteTitleFormatPanel.gbl-form
+│   │                       │   └── SearchDialog.gbl-form
+│   │                       ├── icon-big.png
+│   │                       ├── icon.ico
+│   │                       ├── icon.png
+│   │                       ├── iconsets
+│   │                       │   ├── feather
+│   │                       │   └── svgrepo-color
+│   │                       ├── messages
+│   │                       │   ├── pnote-locale-independent.properties
+│   │                       │   ├── pnote-messages_fr.properties
+│   │                       │   └── pnote-messages.properties
+│   │                       └── splash-screen.png
+│   └── target
+│       ├── classes
+│       │   └── net
+│       │       └── thevpc
+│       │           └── pnote
+│       │               ├── about
+│       │               │   ├── about.html
+│       │               │   ├── contribute.html
+│       │               │   ├── dependencies.html
+│       │               │   ├── environment.html
+│       │               │   └── licenses.html
+│       │               ├── api
+│       │               │   ├── AbstractPangaeaNoteTemplate.class
+│       │               │   ├── EditTypeComponent.class
+│       │               │   ├── InvalidSecretException.class
+│       │               │   ├── model
+│       │               │   │   ├── ContentTypeSelector.class
+│       │               │   │   ├── CypherInfo.class
+│       │               │   │   ├── HighlightType.class
+│       │               │   │   ├── ObservableNoteListener.class
+│       │               │   │   ├── ObservableNoteSelectionListener.class
+│       │               │   │   ├── PangaeaNote.class
+│       │               │   │   ├── PangaeaNoteConfig.class
+│       │               │   │   ├── PangaeaNoteMimeType.class
+│       │               │   │   └── ReturnType.class
+│       │               │   ├── PangaeaContentTypeReplacer.class
+│       │               │   ├── PangaeaNoteAppExtension.class
+│       │               │   ├── PangaeaNoteCypher.class
+│       │               │   ├── PangaeaNoteEditorService.class
+│       │               │   ├── PangaeaNoteEditorTypeComponent.class
+│       │               │   ├── PangaeaNoteExtEditorListener.class
+│       │               │   ├── PangaeaNoteFileImporter.class
+│       │               │   ├── PangaeaNoteFileViewerManager.class
+│       │               │   ├── PangaeaNoteTemplate.class
+│       │               │   ├── PangaeaNoteTypeServiceBase.class
+│       │               │   └── PangaeaNoteTypeService.class
+│       │               ├── core
+│       │               │   ├── CorePangaeaNoteApp$1.class
+│       │               │   ├── CorePangaeaNoteApp.class
+│       │               │   ├── editors
+│       │               │   │   └── SourceEditorService.class
+│       │               │   ├── frame
+│       │               │   │   ├── dialogs
+│       │               │   │   │   ├── EditNoteDialog.class
+│       │               │   │   │   ├── EmptyEditTypeComponent.class
+│       │               │   │   │   ├── NewNoteDialog.class
+│       │               │   │   │   ├── PangaeaNoteIconsButton$PangaeaNoteIconsListAndPreview$1.class
+│       │               │   │   │   ├── PangaeaNoteIconsButton$PangaeaNoteIconsListAndPreview.class
+│       │               │   │   │   ├── PangaeaNoteIconsButton.class
+│       │               │   │   │   ├── PangaeaNoteIconsList.class
+│       │               │   │   │   ├── PangaeaNoteTitleFormatPanel.class
+│       │               │   │   │   ├── PangaeaNoteTypesComboBox$Filter.class
+│       │               │   │   │   ├── PangaeaNoteTypesComboBox$Options.class
+│       │               │   │   │   ├── PangaeaNoteTypesComboBox.class
+│       │               │   │   │   └── PangaeaNoteTypesList.class
+│       │               │   │   ├── editor
+│       │               │   │   │   └── PangaeaNoteEditor.class
+│       │               │   │   ├── PangaeaAboutPane.class
+│       │               │   │   ├── PangaeaCheckUpdatesPane.class
+│       │               │   │   ├── PangaeaContentTypes.class
+│       │               │   │   ├── PangaeaNoteApp$1.class
+│       │               │   │   ├── PangaeaNoteApp$2.class
+│       │               │   │   ├── PangaeaNoteApp$3.class
+│       │               │   │   ├── PangaeaNoteApp$SaveError.class
+│       │               │   │   ├── PangaeaNoteApp$SaveException.class
+│       │               │   │   ├── PangaeaNoteApp.class
+│       │               │   │   ├── PangaeaNoteAppExtensionHandler.class
+│       │               │   │   ├── PangaeaNoteAppExtensionHandlerImpl$1.class
+│       │               │   │   ├── PangaeaNoteAppExtensionHandlerImpl.class
+│       │               │   │   ├── PangaeaNoteAppExtensionListener.class
+│       │               │   │   ├── PangaeaNoteAppExtensionStatus.class
+│       │               │   │   ├── PangaeaNoteFrame$1.class
+│       │               │   │   ├── PangaeaNoteFrame$2.class
+│       │               │   │   ├── PangaeaNoteFrame$3.class
+│       │               │   │   ├── PangaeaNoteFrame$FramePasswordHandler.class
+│       │               │   │   ├── PangaeaNoteFrame.class
+│       │               │   │   ├── PangaeaNoteTypes.class
+│       │               │   │   ├── search
+│       │               │   │   │   ├── PangaeaSearchDialog.class
+│       │               │   │   │   ├── SearchResultPanel$SearchResultPanelItem.class
+│       │               │   │   │   ├── SearchResultPanel$SearchResultPanelItemImpl$1.class
+│       │               │   │   │   ├── SearchResultPanel$SearchResultPanelItemImpl$2.class
+│       │               │   │   │   ├── SearchResultPanel$SearchResultPanelItemImpl.class
+│       │               │   │   │   └── SearchResultPanel.class
+│       │               │   │   ├── SelectableElement.class
+│       │               │   │   ├── tree
+│       │               │   │   │   ├── PangaeaNoteDocumentTree$1.class
+│       │               │   │   │   ├── PangaeaNoteDocumentTree$2.class
+│       │               │   │   │   ├── PangaeaNoteDocumentTree$EnableOnAnyTreeSelection.class
+│       │               │   │   │   ├── PangaeaNoteDocumentTree.class
+│       │               │   │   │   └── SimpleDefaultTreeCellRendererImpl.class
+│       │               │   │   └── util
+│       │               │   │       ├── PangaeaNoteError.class
+│       │               │   │       ├── PangaeaNoteLabelHelper$LabelFormat.class
+│       │               │   │       └── PangaeaNoteLabelHelper.class
+│       │               │   ├── splash
+│       │               │   │   └── PangaeaSplashScreen.class
+│       │               │   ├── types
+│       │               │   │   ├── embedded
+│       │               │   │   │   ├── editor
+│       │               │   │   │   │   └── PangaeaNoteDocumentEditorTypeComponent.class
+│       │               │   │   │   ├── PangaeaNoteDocumentInfo.class
+│       │               │   │   │   ├── PangaeaNoteEmbeddedService$1.class
+│       │               │   │   │   └── PangaeaNoteEmbeddedService.class
+│       │               │   │   ├── empty
+│       │               │   │   │   ├── PangaeaNoteEmptyNoteEditorTypeComponent$UpdateLocale.class
+│       │               │   │   │   └── PangaeaNoteEmptyNoteEditorTypeComponent.class
+│       │               │   │   ├── file
+│       │               │   │   │   ├── editor
+│       │               │   │   │   │   ├── PangaeaNoteFileEditorTypeComponent$1.class
+│       │               │   │   │   │   ├── PangaeaNoteFileEditorTypeComponent.class
+│       │               │   │   │   │   ├── UnsupportedViewerComponent.class
+│       │               │   │   │   │   ├── URLViewer$Header.class
+│       │               │   │   │   │   ├── URLViewer.class
+│       │               │   │   │   │   ├── URLViewerComponent.class
+│       │               │   │   │   │   └── URLViewerListener.class
+│       │               │   │   │   ├── PangaeaNoteFileService$1.class
+│       │               │   │   │   └── PangaeaNoteFileService.class
+│       │               │   │   ├── forms
+│       │               │   │   │   ├── components
+│       │               │   │   │   │   ├── CheckboxesComponent.class
+│       │               │   │   │   │   ├── ComboboxComponent.class
+│       │               │   │   │   │   ├── DateFieldComponent.class
+│       │               │   │   │   │   ├── DateTimeFieldComponent.class
+│       │               │   │   │   │   ├── DayOfWeekComponent$1.class
+│       │               │   │   │   │   ├── DayOfWeekComponent.class
+│       │               │   │   │   │   ├── FileComponent$FileChangeListener.class
+│       │               │   │   │   │   ├── FileComponent$SelectMode.class
+│       │               │   │   │   │   ├── FileComponent.class
+│       │               │   │   │   │   ├── FormComponent.class
+│       │               │   │   │   │   ├── MonthComponent$1.class
+│       │               │   │   │   │   ├── MonthComponent.class
+│       │               │   │   │   │   ├── NumberFieldComponent.class
+│       │               │   │   │   │   ├── PasswordComponent.class
+│       │               │   │   │   │   ├── RadioButtonComponent.class
+│       │               │   │   │   │   ├── StarsComponent.class
+│       │               │   │   │   │   ├── TextAreaComponent.class
+│       │               │   │   │   │   ├── TextFieldComponent.class
+│       │               │   │   │   │   ├── TimeFieldComponent.class
+│       │               │   │   │   │   ├── ToggleButtonComponent.class
+│       │               │   │   │   │   ├── URLComponent.class
+│       │               │   │   │   │   └── YearComponent.class
+│       │               │   │   │   ├── editor
+│       │               │   │   │   │   ├── EditFormFieldPanel$ContentEditorFormatPanel$1.class
+│       │               │   │   │   │   ├── EditFormFieldPanel$ContentEditorFormatPanel.class
+│       │               │   │   │   │   ├── EditFormFieldPanel$LabelEditorFormatPanel.class
+│       │               │   │   │   │   ├── EditFormFieldPanel.class
+│       │               │   │   │   │   ├── EditFormFieldsPanel.class
+│       │               │   │   │   │   ├── FormsDataHeaderItem.class
+│       │               │   │   │   │   ├── FormsDataHeaderPane$1.class
+│       │               │   │   │   │   ├── FormsDataHeaderPane$2.class
+│       │               │   │   │   │   ├── FormsDataHeaderPane.class
+│       │               │   │   │   │   ├── FormsDataItem.class
+│       │               │   │   │   │   ├── FormsDataPane$1.class
+│       │               │   │   │   │   ├── FormsDataPane$2.class
+│       │               │   │   │   │   ├── FormsDataPane.class
+│       │               │   │   │   │   ├── PangaeaNoteFieldDescriptorPanel$1.class
+│       │               │   │   │   │   ├── PangaeaNoteFieldDescriptorPanel.class
+│       │               │   │   │   │   ├── PangaeaNoteFormsEditorTypeComponent$1.class
+│       │               │   │   │   │   ├── PangaeaNoteFormsEditorTypeComponent$2.class
+│       │               │   │   │   │   ├── PangaeaNoteFormsEditorTypeComponent.class
+│       │               │   │   │   │   ├── PangaeaNoteObjectComponent$1.class
+│       │               │   │   │   │   ├── PangaeaNoteObjectComponent.class
+│       │               │   │   │   │   ├── PangaeaNoteObjectExt.class
+│       │               │   │   │   │   ├── PangaeaNoteObjectTracker.class
+│       │               │   │   │   │   └── PossibleValuesList.class
+│       │               │   │   │   ├── model
+│       │               │   │   │   │   ├── PangaeaNoteField.class
+│       │               │   │   │   │   ├── PangaeaNoteFieldDescriptor.class
+│       │               │   │   │   │   ├── PangaeaNoteFieldOptions.class
+│       │               │   │   │   │   ├── PangaeaNoteFieldType$1.class
+│       │               │   │   │   │   ├── PangaeaNoteFieldType.class
+│       │               │   │   │   │   ├── PangaeaNoteObject.class
+│       │               │   │   │   │   ├── PangaeaNoteObjectDescriptor.class
+│       │               │   │   │   │   └── PangaeaNoteObjectDocument.class
+│       │               │   │   │   ├── PangaeaNoteFormsService$1.class
+│       │               │   │   │   ├── PangaeaNoteFormsService.class
+│       │               │   │   │   ├── refactor
+│       │               │   │   │   │   └── FormsToAnythingContentTypeReplacer.class
+│       │               │   │   │   ├── search
+│       │               │   │   │   │   └── PangaeaNoteObjectDocumentTextNavigator.class
+│       │               │   │   │   ├── templates
+│       │               │   │   │   │   ├── AppAccountTemplate.class
+│       │               │   │   │   │   ├── BankAccountTemplate.class
+│       │               │   │   │   │   ├── CreditCardAccountTemplate.class
+│       │               │   │   │   │   ├── EmailAccountTemplate.class
+│       │               │   │   │   │   ├── EthernetConnectionTemplate.class
+│       │               │   │   │   │   ├── ServerAccountTemplate.class
+│       │               │   │   │   │   ├── UrlBookmarkTemplate.class
+│       │               │   │   │   │   ├── WebAccountTemplate.class
+│       │               │   │   │   │   └── WifiConnectionTemplate.class
+│       │               │   │   │   └── util
+│       │               │   │   │       └── PangaeaNoteFormUtils.class
+│       │               │   │   ├── list
+│       │               │   │   │   ├── editor
+│       │               │   │   │   │   ├── PangaeaNoteListEditorContainer$1.class
+│       │               │   │   │   │   ├── PangaeaNoteListEditorContainer.class
+│       │               │   │   │   │   ├── PangaeaNoteListEditorItem.class
+│       │               │   │   │   │   ├── PangaeaNoteListEditorItemRenderer.class
+│       │               │   │   │   │   ├── PangaeaNoteListEditorTypeComponent.class
+│       │               │   │   │   │   ├── PangaeaNoteListSettingsComponent$1.class
+│       │               │   │   │   │   └── PangaeaNoteListSettingsComponent.class
+│       │               │   │   │   ├── model
+│       │               │   │   │   │   ├── PangaeaNoteListLayout.class
+│       │               │   │   │   │   └── PangaeaNoteListModel.class
+│       │               │   │   │   ├── PangaeaNoteListService$1.class
+│       │               │   │   │   ├── PangaeaNoteListService.class
+│       │               │   │   │   └── refactor
+│       │               │   │   │       └── NoteListToAnythingContentTypeReplacer.class
+│       │               │   │   ├── plain
+│       │               │   │   │   └── PangaeaNotePlainTextService.class
+│       │               │   │   ├── rich
+│       │               │   │   │   ├── editor
+│       │               │   │   │   │   ├── PangaeaNoteRichEditorTypeComponent$1.class
+│       │               │   │   │   │   ├── PangaeaNoteRichEditorTypeComponent.class
+│       │               │   │   │   │   └── RichEditorService.class
+│       │               │   │   │   └── PangaeaNoteRichService.class
+│       │               │   │   ├── sourcecode
+│       │               │   │   │   ├── html
+│       │               │   │   │   │   ├── PangaeaNoteHtmlService.class
+│       │               │   │   │   │   └── refactor
+│       │               │   │   │   │       └── PlainToHtmlContentTypeReplacer.class
+│       │               │   │   │   ├── PangaeaNoteSourceEditorTypeComponent$1.class
+│       │               │   │   │   └── PangaeaNoteSourceEditorTypeComponent.class
+│       │               │   │   └── unsupported
+│       │               │   │       └── PangaeaNoteUnsupportedEditorTypeComponent.class
+│       │               │   └── viewers
+│       │               │       ├── folder
+│       │               │       │   ├── FolderViewer$1.class
+│       │               │       │   ├── FolderViewer.class
+│       │               │       │   └── FolderViewerComponent.class
+│       │               │       ├── fromeditor
+│       │               │       │   ├── NoteEditorToViewer$1.class
+│       │               │       │   ├── NoteEditorToViewer.class
+│       │               │       │   └── NoteURLViewerComponent.class
+│       │               │       ├── image
+│       │               │       │   ├── ImageViewer$1.class
+│       │               │       │   ├── ImageViewer.class
+│       │               │       │   └── ImageViewerComponent.class
+│       │               │       ├── libreoffice
+│       │               │       │   ├── LibreOfficeToPdfViewerComponent.class
+│       │               │       │   ├── LibreOfficeViewer$1.class
+│       │               │       │   └── LibreOfficeViewer.class
+│       │               │       ├── pdf
+│       │               │       │   ├── PdfViewer$1.class
+│       │               │       │   ├── PdfViewer.class
+│       │               │       │   └── PdfViewerComponent.class
+│       │               │       └── web
+│       │               │           ├── WebViewer$1.class
+│       │               │           ├── WebViewer.class
+│       │               │           ├── WebViewerComponent$1.class
+│       │               │           └── WebViewerComponent.class
+│       │               ├── extensions
+│       │               │   ├── CherryTreeExtension$1.class
+│       │               │   ├── CherryTreeExtension$RichText.class
+│       │               │   ├── CherryTreeExtension.class
+│       │               │   ├── CsvExtension$1.class
+│       │               │   ├── CsvExtension$Token.class
+│       │               │   ├── CsvExtension$TokenConf.class
+│       │               │   ├── CsvExtension.class
+│       │               │   └── Tess4JPangaeaNoteAppExtension.class
+│       │               ├── forms
+│       │               │   ├── EditNoteDialog.gbl-form
+│       │               │   ├── EnterNewPassword.gbl-form
+│       │               │   ├── EnterPassword.gbl-form
+│       │               │   ├── NewNoteDialog.gbl-form
+│       │               │   ├── NewNoteDialogOld.gbl-form
+│       │               │   ├── PangaeaNoteListSettingsComponent.gbl-form
+│       │               │   ├── PangaeaNoteTitleFormatPanel.gbl-form
+│       │               │   └── SearchDialog.gbl-form
+│       │               ├── icon-big.png
+│       │               ├── icon.ico
+│       │               ├── icon.png
+│       │               ├── iconsets
+│       │               │   ├── feather
+│       │               │   └── svgrepo-color
+│       │               ├── messages
+│       │               │   ├── pnote-locale-independent.properties
+│       │               │   ├── pnote-messages_fr.properties
+│       │               │   └── pnote-messages.properties
+│       │               ├── PangaeaNoteMain.class
+│       │               ├── service
+│       │               │   ├── AbstractPangaeaNoteSourceCodeService.class
+│       │               │   ├── AbstractPangaeaNoteTypeService.class
+│       │               │   ├── DefaultPangaeaNoteSourceCodeService.class
+│       │               │   ├── refactor
+│       │               │   │   ├── AnythingToPlainContentTypeReplacer.class
+│       │               │   │   └── EmptySourceContentTypeReplacer.class
+│       │               │   ├── search
+│       │               │   │   ├── DefaultVNoteSearchFilter.class
+│       │               │   │   ├── PangaeaNoteExtDocumentTextNavigator.class
+│       │               │   │   ├── PangaeaNoteExtSearchResult.class
+│       │               │   │   ├── strsearch
+│       │               │   │   │   ├── AbstractStringToPatternPortion.class
+│       │               │   │   │   ├── DocumentTextNavigator.class
+│       │               │   │   │   ├── DocumentTextPart.class
+│       │               │   │   │   ├── SearchProgressMonitor$1.class
+│       │               │   │   │   ├── SearchProgressMonitor.class
+│       │               │   │   │   ├── StringDocumentTextNavigator.class
+│       │               │   │   │   ├── StringQuerySearch$1.class
+│       │               │   │   │   ├── StringQuerySearch.class
+│       │               │   │   │   ├── StringSearchResult.class
+│       │               │   │   │   └── StringToPatternPortionImpl.class
+│       │               │   │   └── VNoteSearchFilter.class
+│       │               │   └── security
+│       │               │       ├── OpenWallet.class
+│       │               │       ├── PangaeaNoteCypherBase.class
+│       │               │       ├── PangaeaNoteCypher_v100$1.class
+│       │               │       ├── PangaeaNoteCypher_v100$KeyInfo.class
+│       │               │       ├── PangaeaNoteCypher_v100.class
+│       │               │       ├── PangaeaNoteCypher_v101$1.class
+│       │               │       ├── PangaeaNoteCypher_v101$KeyInfo.class
+│       │               │       ├── PangaeaNoteCypher_v101.class
+│       │               │       ├── PasswordHandler0.class
+│       │               │       └── PasswordHandler.class
+│       │               ├── splash-screen.png
+│       │               └── util
+│       │                   ├── IteratorList.class
+│       │                   └── PNoteUtils.class
+│       ├── generated-sources
+│       │   └── annotations
+│       ├── maven-archiver
+│       │   └── pom.properties
+│       ├── maven-status
+│       │   └── maven-compiler-plugin
+│       │       └── compile
+│       │           ├── compile
+│       │           │   ├── createdFiles.lst
+│       │           │   └── inputFiles.lst
+│       │           └── default-compile
+│       │               ├── createdFiles.lst
+│       │               └── inputFiles.lst
+│       └── pnote-0.8.6.0.jar
+├── pom.xml
+├── README.md
+└── tree.txt
+
+148 directories, 491 files
