@@ -80,7 +80,6 @@ import net.thevpc.pnote.service.security.PasswordHandler;
  */
 public class PangaeaNoteApp extends DefaultApplication {
 
-    private NSession session;
     private WritableList<PangaeaNoteFrame> windows = Props.of("windows").listOf(PangaeaNoteFrame.class);
     private CorePangaeaNoteApp core = new CorePangaeaNoteApp();
     private List<PangaeaNoteAppExtensionHandler> appExtensions = new ArrayList<>();
@@ -377,7 +376,7 @@ public class PangaeaNoteApp extends DefaultApplication {
             if (s == AppState.CLOSED) {
                 windows.remove(w);
                 if (windows.size() == 0) {
-//                    quit0();
+                    quit();
                 } else {
                     if (w.mainFrame().get()) {
                         windows.get(0).mainFrame().set(true);
@@ -493,13 +492,6 @@ public class PangaeaNoteApp extends DefaultApplication {
         return getAppExtensions().stream().filter(x -> x.checkLoaded()).collect(Collectors.toList());
     }
 
-    public NWorkspace getNutsWorkspace() {
-        return session.getWorkspace();
-    }
-
-    public NSession getNutsSession() {
-        return session;
-    }
 
     public List<PangaeaNoteAppExtensionHandler> getAppExtensions() {
         return appExtensions;
@@ -551,10 +543,6 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public List<PangaeaNoteTemplate> getTemplates() {
         return new ArrayList<>(extra.values());
-    }
-
-    public NSession session() {
-        return session;
     }
 
     public PangaeaNote unloadNode(PangaeaNote n) {
@@ -1249,7 +1237,6 @@ public class PangaeaNoteApp extends DefaultApplication {
             String tempFile = null;
             try {
                 try {
-                    NSession session = session();
                     tempFile = NPath.ofTempFile("temp-snippet-").toString();
                     Files.write(Paths.get(tempFile), s.getBytes());
                     ct = Applications.probeContentType(tempFile);
