@@ -81,7 +81,7 @@
         <!--        </dependency>-->
 
         <dependency><groupId>net.thevpc.nuts</groupId><version>0.8.6</version><artifactId>nuts</artifactId></dependency>
-        <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts-lib</artifactId><version>0.8.6.0</version></dependency>
+        <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts</artifactId><version>0.8.6</version></dependency>
         <dependency><groupId>net.thevpc.nuts</groupId><artifactId>nuts-swing</artifactId><version>0.8.6.0</version></dependency>
 
 <!--        <dependency>-->
