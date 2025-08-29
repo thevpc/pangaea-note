@@ -20,10 +20,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.thevpc.nuts.*;
 import net.thevpc.nuts.io.NIOException;
-import net.thevpc.nuts.log.NLogOp;
-import net.thevpc.nuts.log.NLogVerb;
+
+import net.thevpc.nuts.log.NLog;
+import net.thevpc.nuts.log.NMsgIntent;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.nuts.util.NMsg;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
@@ -110,24 +110,22 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                 b.setErrorHandler(new ErrorHandler() {
                     @Override
                     public void warning(SAXParseException exception) throws SAXException {
-                        NLogOp.of(PangaeaNoteApp.class)
-                                .level(Level.FINEST).verb(NLogVerb.WARNING).log(NMsg.ofPlain(exception.toString()));
+                        NLog.of(PangaeaNoteApp.class)
+                                .log(NMsg.ofPlain(exception.toString())
+                                        .asFineAlert()
+                                );
                     }
 
                     @Override
                     public void error(SAXParseException exception) throws SAXException {
-                        NLogOp.of(PangaeaNoteApp.class)
-                                .level(Level.FINEST).verb(NLogVerb.WARNING)
-                                .error(exception)
-                                .log(NMsg.ofPlain(exception.toString()));
+                        NLog.of(PangaeaNoteApp.class)
+                                .log(NMsg.ofPlain(exception.toString()).asFinestAlert(exception));
                     }
 
                     @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
-                        NLogOp.of(PangaeaNoteApp.class)
-                                .level(Level.FINEST).verb(NLogVerb.WARNING)
-                                .error(exception)
-                                .log(NMsg.ofPlain(exception.toString()));
+                        NLog.of(PangaeaNoteApp.class)
+                                .log(NMsg.ofPlain(exception.toString()).asFinestAlert());
                     }
                 });
 
