@@ -578,7 +578,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getDefaultDocumentsFolder() {
-        return NWorkspace.of().getStoreLocation(NStoreType.VAR);
+        return NPath.ofWorkspaceStore(NStoreType.VAR);
     }
 
     public String stringifyAny(Object value) {
