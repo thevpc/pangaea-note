@@ -11,7 +11,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.iconset.NoIconSet;
 import net.thevpc.echo.impl.DefaultApplication;
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.concurrent.NScheduler;
+import net.thevpc.nuts.concurrent.NConcurrent;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElementParser;
 import net.thevpc.nuts.elem.NElementWriter;
@@ -322,7 +322,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     public PangaeaNoteApp() {
         super("swing");
         hideDisabled().set(true);
-        this.executorService().set(NScheduler.of().executorService());
+        this.executorService().set(NConcurrent.of().executorService());
         registerCypher(new PangaeaNoteCypher_v100());
         registerCypher(new PangaeaNoteCypher_v101());
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {
