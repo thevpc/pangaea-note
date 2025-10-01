@@ -8,7 +8,7 @@ import net.thevpc.echo.ProgressBar;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.nuts.*;
-import net.thevpc.nuts.concurrent.NScheduler;
+import net.thevpc.nuts.concurrent.NConcurrent;
 
 public class PangaeaCheckUpdatesPane extends GridPane {
     private int minSeconds = 4;
@@ -39,7 +39,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             startCheckVersion = true;
             nextVersion = null;
             updateMessage();
-            NScheduler.of().executorService().submit(
+            NConcurrent.of().executorService().submit(
                     () -> {
                         long start = System.currentTimeMillis();
                         try {
