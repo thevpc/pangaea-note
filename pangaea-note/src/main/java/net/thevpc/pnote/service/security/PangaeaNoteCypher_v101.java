@@ -5,8 +5,6 @@
  */
 package net.thevpc.pnote.service.security;
 
-import net.thevpc.nuts.NSession;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
