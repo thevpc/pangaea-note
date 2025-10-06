@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 import net.thevpc.echo.BorderPane;
 import net.thevpc.echo.UserControl;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NSession;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.file.editor.URLViewer;
