@@ -5,8 +5,8 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.NApp;
-import net.thevpc.nuts.NWorkspace;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.core.NWorkspace;
 
 public class PangaeaAboutPane extends TabPane {
     public PangaeaAboutPane(PangaeaNoteApp app) {
