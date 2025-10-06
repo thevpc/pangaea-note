@@ -1,8 +1,12 @@
 package net.thevpc.pnote;
 
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.*;
+import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.cmdline.NCmdLine;
+import net.thevpc.nuts.command.NCustomCmd;
+import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.nswing.NSwingUtils;
+import net.thevpc.nuts.platform.NLauncherOptions;
 import net.thevpc.nuts.util.NRef;
 import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
