@@ -7,7 +7,10 @@ import net.thevpc.echo.Label;
 import net.thevpc.echo.ProgressBar;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.nuts.*;
+import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.artifact.NId;
+import net.thevpc.nuts.artifact.NVersion;
+import net.thevpc.nuts.command.NSearchCmd;
 import net.thevpc.nuts.concurrent.NConcurrent;
 
 public class PangaeaCheckUpdatesPane extends GridPane {
