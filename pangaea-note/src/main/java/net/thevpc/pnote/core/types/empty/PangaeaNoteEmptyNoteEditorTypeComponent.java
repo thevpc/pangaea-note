@@ -16,7 +16,7 @@ import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.echo.constraints.Anchor;
 import net.thevpc.echo.constraints.ContainerGrow;
 import net.thevpc.echo.constraints.Span;
-import net.thevpc.nuts.NApp;
+import net.thevpc.nuts.app.NApp;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.PangaeaNoteFileImporter;
 import net.thevpc.pnote.api.model.PangaeaNote;
