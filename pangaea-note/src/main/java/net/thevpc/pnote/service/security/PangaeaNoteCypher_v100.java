@@ -5,8 +5,6 @@
  */
 package net.thevpc.pnote.service.security;
 
-import net.thevpc.nuts.NSession;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
