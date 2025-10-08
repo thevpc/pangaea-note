@@ -21,7 +21,7 @@ public class NoteListToAnythingContentTypeReplacer implements PangaeaContentType
     }
 
     @Override
-    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
+    public int getScore(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaNoteListService.LIST.equals(oldContentType)) {
             return 10;
         }
