@@ -5,7 +5,7 @@
  */
 package net.thevpc.pnote.core.viewers.pdf;
 
-import net.thevpc.echo.api.SupportSupplier;
+import net.thevpc.echo.api.ScoreSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
@@ -20,11 +20,11 @@ import java.util.function.Consumer;
 public class PdfViewer implements PangaeaNoteFileViewerManager {
 
     @Override
-    public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType probedContentType, URLViewer viewer, PangaeaNoteFrame win) {
+    public ScoreSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType probedContentType, URLViewer viewer, PangaeaNoteFrame win) {
         if (extension.equals("pdf")) {
-            return new SupportSupplier<URLViewerComponent>() {
+            return new ScoreSupplier<URLViewerComponent>() {
                 @Override
-                public int getSupportLevel() {
+                public int getScore() {
                     return 2;
                 }
 
