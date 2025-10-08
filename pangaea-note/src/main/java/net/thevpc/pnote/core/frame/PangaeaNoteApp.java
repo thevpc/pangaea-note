@@ -1022,7 +1022,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         PangaeaContentTypeReplacer best = null;
         int bestLevel = -1;
         for (PangaeaContentTypeReplacer typeReplacer : typeReplacers) {
-            int s = typeReplacer.getSupportLevel(toUpdate, oldContentType, newContentType, this);
+            int s = typeReplacer.getScore(toUpdate, oldContentType, newContentType, this);
             if (s > 0 && s > bestLevel) {
                 bestLevel = s;
                 best = typeReplacer;
