@@ -23,7 +23,7 @@ public class FormsToAnythingContentTypeReplacer implements PangaeaContentTypeRep
     }
 
     @Override
-    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
+    public int getScore(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaNoteFormsService.FORMS.equals(oldContentType)) {
             return 10;
         }
