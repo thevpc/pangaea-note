@@ -22,7 +22,7 @@ public class AnythingToPlainContentTypeReplacer implements PangaeaContentTypeRep
     }
 
     @Override
-    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
+    public int getScore(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (newContentType.getMajor().endsWith("text")) {
             return 10;
         }
