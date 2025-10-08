@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
 
-import net.thevpc.echo.api.SupportSupplier;
+import net.thevpc.echo.api.ScoreSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.file.editor.URLViewer;
@@ -23,12 +23,12 @@ import net.thevpc.pnote.api.model.PangaeaNoteMimeType;
 public class FolderViewer implements PangaeaNoteFileViewerManager {
 
     @Override
-    public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
+    public ScoreSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
         try {
             if (Files.isDirectory(Paths.get(path))) {
-                return new SupportSupplier<URLViewerComponent>() {
+                return new ScoreSupplier<URLViewerComponent>() {
                     @Override
-                    public int getSupportLevel() {
+                    public int getScore() {
                         return 10;
                     }
 
