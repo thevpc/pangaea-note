@@ -1243,11 +1243,11 @@ public class PangaeaNoteFrame extends Frame {
         PangaeaNoteMimeType probedContentType = PangaeaNoteMimeType.of(Applications.probeContentType(path));
         String extension = Applications.getFileExtension(path);
         int bestScore = -1;
-        SupportSupplier<URLViewerComponent> best = null;
+        ScoreSupplier<URLViewerComponent> best = null;
         for (PangaeaNoteFileViewerManager viewer : app().getViewers()) {
-            SupportSupplier<URLViewerComponent> ss = viewer.getSupport(path, extension, probedContentType, uviewer, this);
+            ScoreSupplier<URLViewerComponent> ss = viewer.getSupport(path, extension, probedContentType, uviewer, this);
             if (ss != null) {
-                int s = ss.getSupportLevel();
+                int s = ss.getScore();
                 if (s > 0 && s > bestScore) {
                     bestScore = s;
                     best = ss;
