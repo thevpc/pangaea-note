@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import net.thevpc.echo.api.SupportSupplier;
+import net.thevpc.echo.api.ScoreSupplier;
 import net.thevpc.pnote.api.PangaeaNoteFileViewerManager;
 import net.thevpc.pnote.core.frame.PangaeaNoteFrame;
 import net.thevpc.pnote.core.types.file.editor.URLViewer;
@@ -30,11 +30,11 @@ public class ImageViewer implements PangaeaNoteFileViewerManager {
     );
 
     @Override
-    public SupportSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
+    public ScoreSupplier<URLViewerComponent> getSupport(String path, String extension, PangaeaNoteMimeType mimeType, URLViewer viewer, PangaeaNoteFrame win) {
         if(SUPPORTED_EXTENSIONS.contains(extension)) {
-            return new SupportSupplier<URLViewerComponent>() {
+            return new ScoreSupplier<URLViewerComponent>() {
                 @Override
-                public int getSupportLevel() {
+                public int getScore() {
                     return 2;
                 }
 
