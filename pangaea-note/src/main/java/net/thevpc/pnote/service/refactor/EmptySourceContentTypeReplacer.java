@@ -21,7 +21,7 @@ public class EmptySourceContentTypeReplacer implements PangaeaContentTypeReplace
     }
 
     @Override
-    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
+    public int getScore(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         NElement c = toUpdate.getContent();
         if (app.getContentTypeService(oldContentType).isEmptyContent(c)) {
             return 10;
