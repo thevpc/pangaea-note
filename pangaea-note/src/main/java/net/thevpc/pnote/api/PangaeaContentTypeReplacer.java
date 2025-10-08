@@ -15,7 +15,7 @@ import net.thevpc.pnote.core.frame.PangaeaNoteApp;
  */
 public interface PangaeaContentTypeReplacer {
 
-    int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app);
+    int getScore(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app);
 
     void changeNoteContentType(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app);
 }
