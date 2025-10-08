@@ -23,7 +23,7 @@ public class PlainToHtmlContentTypeReplacer implements PangaeaContentTypeReplace
     }
 
     @Override
-    public int getSupportLevel(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
+    public int getScore(PangaeaNote toUpdate, PangaeaNoteMimeType oldContentType, PangaeaNoteMimeType newContentType, PangaeaNoteApp app) {
         if (PangaeaContentTypes.isSourceCode(oldContentType)) {
             if (PangaeaContentTypes.isSourceCode(newContentType)) {
                 return 10;
