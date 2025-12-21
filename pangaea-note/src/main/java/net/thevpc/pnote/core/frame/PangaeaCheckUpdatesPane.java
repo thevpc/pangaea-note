@@ -10,7 +10,7 @@ import net.thevpc.echo.constraints.AllMargins;
 import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.artifact.NVersion;
-import net.thevpc.nuts.command.NSearchCmd;
+import net.thevpc.nuts.command.NSearch;
 import net.thevpc.nuts.concurrent.NConcurrent;
 
 public class PangaeaCheckUpdatesPane extends GridPane {
@@ -46,7 +46,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
                     () -> {
                         long start = System.currentTimeMillis();
                         try {
-                            NId q = NSearchCmd.of()
+                            NId q = NSearch.of()
                                     .setId(NApp.of().getId().get().builder().setVersion("").build())
                                     .setLatest(true)
                                     .getResultIds()
