@@ -10,7 +10,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppEventType;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.command.NExecCmd;
+import net.thevpc.nuts.command.NExec;
 import net.thevpc.nuts.command.NExecutionType;
 import net.thevpc.nuts.concurrent.NConcurrent;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
@@ -334,7 +334,7 @@ public class URLViewer extends BorderPane {
             if (!ll.trim().isEmpty()) {
                 NConcurrent.of().executorService().submit(() -> {
                             try {
-                                NExecCmd.of()
+                                NExec.of()
                                         .setExecutionType(NExecutionType.OPEN)
                                         .setCommand(ll)
                                         .run();
