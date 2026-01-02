@@ -13,7 +13,7 @@ import net.thevpc.echo.impl.DefaultApplication;
 import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.concurrent.NConcurrent;
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
@@ -583,7 +583,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public String stringifyAny(Object value) {
-        return NElementWriter.ofJson().setCompact(true).toString(value);
+        return NElementWriter.ofJson().setCompact(true).formatPlain(value);
     }
 
     public <T> T parseAny(String s, Class<T> cls) {
@@ -591,8 +591,8 @@ public class PangaeaNoteApp extends DefaultApplication {
             return null;
         }
         try {
-            return NElementParser.ofJson()
-                    .parse(s, cls);
+            return NElementReader.ofJson()
+                    .read(s, cls);
         } catch (Exception ex) {
             return null;
         }
@@ -830,8 +830,8 @@ public class PangaeaNoteApp extends DefaultApplication {
 
     public PangaeaNoteConfig loadConfig(Supplier<PangaeaNoteConfig> defaultValue) {
         try {
-            PangaeaNoteConfig n = NElementParser.ofJson()
-                    .parse(getConfigFilePath(),
+            PangaeaNoteConfig n = NElementReader.ofJson()
+                    .read(getConfigFilePath(),
                             PangaeaNoteConfig.class);
             if (n != null) {
                 return n;
@@ -857,8 +857,8 @@ public class PangaeaNoteApp extends DefaultApplication {
                 String nodePath = di.getPath();
                 nodePath = nodePath == null ? "" : nodePath.trim();
                 if (nodePath.length() > 0) {
-                    PangaeaNote rawNode = NElementParser.ofJson()
-                            .parse(new File(nodePath), PangaeaNote.class);
+                    PangaeaNote rawNode = NElementReader.ofJson()
+                            .read(new File(nodePath), PangaeaNote.class);
                     n.copyFrom(rawNode);
                     CypherInfo cypherInfo = n.getCypherInfo();
                     PangaeaNoteCypher impl = resolveCypherImpl(cypherInfo == null ? null : cypherInfo.getAlgo());
