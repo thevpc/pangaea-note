@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
@@ -118,7 +118,7 @@ public class PangaeaNoteFormsService extends AbstractPangaeaNoteTypeService {
 
     public PangaeaNoteObjectDocument getContentAsObject(NElement s) {
         if (s != null && s.isString()) {
-            return NElementParser.of().parse(s.asStringValue().get(), PangaeaNoteObjectDocument.class);
+            return NElementReader.of().read(s.asStringValue().get(), PangaeaNoteObjectDocument.class);
         }
         return NElements.of().convert(s, PangaeaNoteObjectDocument.class);
     }
