@@ -1,9 +1,8 @@
 package net.thevpc.pnote.service.security;
 
 import net.thevpc.echo.api.CancelException;
-import net.thevpc.nuts.elem.NElementParser;
+import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.pnote.api.InvalidSecretException;
 import net.thevpc.pnote.api.PangaeaNoteCypher;
 import net.thevpc.pnote.api.model.CypherInfo;
@@ -31,7 +30,7 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
         }
         String s = NElementWriter.ofJson()
                 .setCompact(true)
-                .toString(a);
+                .formatPlain(a);
         return new CypherInfo(getId(),
                 encryptString(s, password)
         );
@@ -52,8 +51,8 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
         } catch (Exception ex) {
             throw new InvalidSecretException();
         }
-        return NElementParser.ofJson()
-                .parse(s, PangaeaNote.class);
+        return NElementReader.ofJson()
+                .read(s, PangaeaNote.class);
     }
 
     protected abstract String encryptString(String strToEncrypt, String secret);
