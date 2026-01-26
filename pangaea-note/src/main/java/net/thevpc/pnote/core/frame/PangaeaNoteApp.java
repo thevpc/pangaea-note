@@ -583,7 +583,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public String stringifyAny(Object value) {
-        return NElementWriter.ofJson().setCompact(true).formatPlain(value);
+        return NElementWriter.ofJson().setFormatterCompact().formatPlain(value);
     }
 
     public <T> T parseAny(String s, Class<T> cls) {
