@@ -29,7 +29,7 @@ public abstract class PangaeaNoteCypherBase implements PangaeaNoteCypher {
             throw new CancelException();
         }
         String s = NElementWriter.ofJson()
-                .setCompact(true)
+                .setFormatterCompact()
                 .formatPlain(a);
         return new CypherInfo(getId(),
                 encryptString(s, password)
