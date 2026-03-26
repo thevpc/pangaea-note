@@ -12,11 +12,13 @@ import net.thevpc.echo.iconset.NoIconSet;
 import net.thevpc.echo.impl.DefaultApplication;
 import net.thevpc.nuts.app.NApp;
 import net.thevpc.nuts.concurrent.NConcurrent;
+import net.thevpc.nuts.core.NStoreKey;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
+import net.thevpc.nuts.platform.NStoreScope;
 import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
@@ -579,7 +581,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getDefaultDocumentsFolder() {
-        return NPath.ofWorkspaceStore(NStoreType.VAR);
+        return NPath.of(NStoreKey.ofVar());
     }
 
     public String stringifyAny(Object value) {
