@@ -335,7 +335,7 @@ public class URLViewer extends BorderPane {
                 NConcurrent.of().executorService().submit(() -> {
                             try {
                                 NExec.of()
-                                        .setExecutionType(NExecutionType.OPEN)
+                                        .executionType(NExecutionType.OPEN)
                                         .setCommand(ll)
                                         .run();
                             } catch (Exception ex) {
