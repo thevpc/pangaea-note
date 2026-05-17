@@ -48,7 +48,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
                         try {
                             NId q = NSearch.of()
                                     .setId(NApp.of().getId().get().builder().setVersion("").build())
-                                    .setLatest(true)
+                                    .latest(true)
                                     .getResultIds()
                                     .findFirst().orNull();
                             if (q != null) {
