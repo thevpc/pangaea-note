@@ -18,8 +18,6 @@ import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
 import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
-import net.thevpc.nuts.platform.NStoreScope;
-import net.thevpc.nuts.platform.NStoreType;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
@@ -744,7 +742,7 @@ public class PangaeaNoteApp extends DefaultApplication {
                     }
 
                     if (document.getVersion() == null || document.getVersion().length() == 0) {
-                        document.setVersion(NApp.of().getVersion().toString());
+                        document.setVersion(NApp.of().version().toString());
                     }
                     Instant now = Instant.now();
                     if (document.getCreationTime() == null) {
@@ -845,7 +843,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     }
 
     public NPath getConfigFilePath() {
-        return NApp.of().getConfFolder().resolve("pangaea-note.config");
+        return NApp.of().confFolder().resolve("pangaea-note.config");
     }
 
     public PangaeaNote loadNode(PangaeaNote n, PasswordHandler passwordHandler, boolean transitive, String rootFilePath) {

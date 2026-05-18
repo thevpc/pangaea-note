@@ -37,7 +37,7 @@ public class PangaeaNoteEmptyNoteEditorTypeComponent extends GridPane/*GradientP
         parentConstraints().addAll(ContainerGrow.CENTER, AllMargins.of(5,5,5,5));
         AppColor colorShortcut = Color.of("darkcyan", app());
         AppColor colorAction = Color.of("gray", app());
-        String pv= NApp.of().getId().get().getVersion().toString();
+        String pv= NApp.of().id().get().version().toString();
         Font fontTitle=new Font("Arial",22,FontWeight.BOLD, FontPosture.REGULAR, app());
         Font fontAction=new Font("Arial",13,FontWeight.BOLD, FontPosture.REGULAR, app());
         Font fontShortcut=new Font("Courrier",11,FontWeight.BOLD, FontPosture.REGULAR, app());

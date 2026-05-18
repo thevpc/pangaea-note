@@ -47,12 +47,12 @@ public class PangaeaCheckUpdatesPane extends GridPane {
                         long start = System.currentTimeMillis();
                         try {
                             NId q = NSearch.of()
-                                    .setId(NApp.of().getId().get().builder().setVersion("").build())
+                                    .setId(NApp.of().id().get().builder().setVersion("").build())
                                     .latest(true)
                                     .getResultIds()
                                     .findFirst().orNull();
                             if (q != null) {
-                                nextVersion = q.getVersion();
+                                nextVersion = q.version();
                             }
                             long end = System.currentTimeMillis();
                             if (end - start < minSeconds * 1000L) {
@@ -101,14 +101,14 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             button.enabled().set(allowRecheck);
             progressBar.indeterminate().set(false);
             progressBar.visible().set(false);
-            int x = NApp.of().getId().get().getVersion().compareTo(nextVersion);
+            int x = NApp.of().id().get().version().compareTo(nextVersion);
             if (x < 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.newVersionAvailable", nextVersion));
             } else if (x == 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.latestVersionIsBeingUsed", nextVersion));
             } else if (x > 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.currentVersionIsNewerThanRemote",
-                        NApp.of().getId().get().getVersion(),
+                        NApp.of().id().get().version(),
                         nextVersion
                 ));
             }

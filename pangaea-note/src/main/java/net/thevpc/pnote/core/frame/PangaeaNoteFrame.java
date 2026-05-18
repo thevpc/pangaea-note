@@ -178,7 +178,7 @@ public class PangaeaNoteFrame extends Frame {
         }
         String modPrefix = "";//mainFrame().get() ? "(!!) " : "";
         String modSuffix = modificationsCount > 0 ? " (*)" : "";
-        String pv = NApp.of().getVersion().get().toString();
+        String pv = NApp.of().version().get().toString();
         if (currentFilePath == null || currentFilePath.length() == 0) {
             this.title().set(Str.of(modPrefix + "Pangaea-Note v" + pv + " : " + "<" + app().i18n().getString("Message.noName") + ">" + modSuffix));
         } else {

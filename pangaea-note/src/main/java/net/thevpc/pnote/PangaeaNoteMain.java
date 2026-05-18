@@ -49,14 +49,14 @@ public class PangaeaNoteMain  {
     }
 
     private NCustomCmd findDefaultAlias() {
-        NId appId = NApp.of().getId().get();
+        NId appId = NApp.of().id().get();
         return NWorkspace.of().findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
     @NAppInstaller
     public void onInstallApplication() {
         NWorkspace.of().addLauncher(new NLauncherOptions()
-                .setId(NApp.of().getId().get())
+                .setId(NApp.of().id().get())
                 .setAlias(PREFERRED_ALIAS)
                 .setCreateAlias(true)
                 .setCreateMenuLauncher(NSupportMode.PREFERRED)
@@ -78,7 +78,7 @@ public class PangaeaNoteMain  {
     public void run() {
         NSwingUtils.setSharedWorkspaceInstance();
         PangaeaSplashScreen.get().tic();
-        NCmdLine cmdLine = NApp.of().getCmdLine();
+        NCmdLine cmdLine = NApp.of().cmdLine();
         NRef<Boolean> interactive = NRef.of(false);
         NRef<Boolean> console = NRef.of(false);
         NRef<Boolean> gui = NRef.of(false);
