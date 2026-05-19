@@ -67,13 +67,13 @@ public class PangaeaAboutPane extends TabPane {
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.nutsApiVersion"),app),
-                                            new TextField(Str.of(NWorkspace.of().getApiVersion().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().apiVersion().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.nutsImplementation"),app),
-                                            new TextField(Str.of(NWorkspace.of().getRuntimeId().toString()),app)
+                                            new TextField(Str.of(NWorkspace.of().runtimeId().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
