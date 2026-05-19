@@ -43,25 +43,25 @@ public class PangaeaAboutPane extends TabPane {
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.architecture"),app),
-                                            new TextField(Str.of(NEnv.of().getArch().toString()),app)
+                                            new TextField(Str.of(NEnv.of().arch().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
                                                 }),
                                             new Label(Str.i18n("About.os"),app),
-                                            new TextField(Str.of(NEnv.of().getOs().toString()),app)
+                                            new TextField(Str.of(NEnv.of().os().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.osDistribution"),app),
-                                            new TextField(Str.of(NEnv.of().getOsDist().toString()),app)
+                                            new TextField(Str.of(NEnv.of().osDist().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);
                                                     }),
                                             new Label(Str.i18n("About.platform"),app),
-                                            new TextField(Str.of(NEnv.of().getJava().toString()),app)
+                                            new TextField(Str.of(NEnv.of().java().toString()),app)
                                                     .with(tt-> {
                                                         tt.childConstraints().add(Grow.HORIZONTAL);
                                                         tt.editable().set(false);

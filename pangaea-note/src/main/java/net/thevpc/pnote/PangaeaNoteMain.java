@@ -56,11 +56,11 @@ public class PangaeaNoteMain  {
     @NAppInstaller
     public void onInstallApplication() {
         NWorkspace.of().addLauncher(new NLauncherOptions()
-                .setId(NApp.of().id().get())
-                .setAlias(PREFERRED_ALIAS)
-                .setCreateAlias(true)
-                .setCreateMenuLauncher(NSupportMode.PREFERRED)
-                .setCreateDesktopLauncher(NSupportMode.PREFERRED)
+                .id(NApp.of().id().get())
+                .alias(PREFERRED_ALIAS)
+                .createAlias(true)
+                .createMenuLauncher(NSupportMode.PREFERRED)
+                .createDesktopLauncher(NSupportMode.PREFERRED)
         );
     }
 
