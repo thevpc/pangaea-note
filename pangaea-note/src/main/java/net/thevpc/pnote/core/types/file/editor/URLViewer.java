@@ -336,7 +336,7 @@ public class URLViewer extends BorderPane {
                             try {
                                 NExec.of()
                                         .executionType(NExecutionType.OPEN)
-                                        .setCommand(ll)
+                                        .command(ll)
                                         .run();
                             } catch (Exception ex) {
                                 frame.app().errors().add(ex);
