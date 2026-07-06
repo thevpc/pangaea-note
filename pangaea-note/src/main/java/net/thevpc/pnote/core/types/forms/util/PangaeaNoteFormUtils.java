@@ -69,8 +69,8 @@ public class PangaeaNoteFormUtils {
     }
 
     public static String getFieldName(PangaeaNoteFieldDescriptor fdesc) {
-        String fn1 = NStringUtils.trim(fdesc.getName());
-        String fn2 = NStringUtils.trim(fdesc.getOptions().getLabelName());
+        String fn1 = NStringUtils.strip(fdesc.getName());
+        String fn2 = NStringUtils.strip(fdesc.getOptions().getLabelName());
         if (fn2.length() > 0) {
             fn1 = fn2;
         }

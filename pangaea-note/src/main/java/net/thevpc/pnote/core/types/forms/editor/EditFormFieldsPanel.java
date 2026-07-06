@@ -173,7 +173,7 @@ public class EditFormFieldsPanel extends BorderPane {
         for (EditFormFieldPanel value : list.values()) {
 //            String fn = value.getLabelName().text().get().value();
             String fl = value.getFieldName().text().get().value();
-            if (NStringUtils.trim(fl).equals(NStringUtils.trim(name))) {
+            if (NStringUtils.strip(fl).equals(NStringUtils.strip(name))) {
                 return value;
             }
         }
@@ -186,7 +186,7 @@ public class EditFormFieldsPanel extends BorderPane {
         }
         int x = 1;
         while (true) {
-            String n = NStringUtils.trim(prefix + ((x <= 0) ? "" : String.valueOf(x)));
+            String n = NStringUtils.strip(prefix + ((x <= 0) ? "" : String.valueOf(x)));
             EditFormFieldPanel a = findFieldPanel(n);
             if (a == null) {
                 return n;
