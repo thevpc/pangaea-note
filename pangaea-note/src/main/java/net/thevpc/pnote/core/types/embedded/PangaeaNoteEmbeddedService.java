@@ -6,7 +6,6 @@
 package net.thevpc.pnote.core.types.embedded;
 
 import net.thevpc.nuts.elem.NElement;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.pnote.api.PangaeaNoteEditorService;
 import net.thevpc.pnote.api.PangaeaNoteEditorTypeComponent;
 import net.thevpc.pnote.api.model.ContentTypeSelector;
@@ -62,7 +61,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
 
     @Override
     public NElement createDefaultContent() {
-        return NElements.of().toElement(app.newDocument());
+        return NElement.of(app.newDocument());
     }
 
     @Override
@@ -98,7 +97,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
         if (contentString == null) {
             contentString = new PangaeaNoteDocumentInfo();
         }
-        return NElements.of().toElement(contentString);
+        return NElement.of(contentString);
     }
 
     public PangaeaNoteDocumentInfo getContentValueAsInfo(NElement content) {
@@ -108,7 +107,7 @@ public class PangaeaNoteEmbeddedService extends AbstractPangaeaNoteTypeService {
         if(content.isString()){
             return new PangaeaNoteDocumentInfo().setPath(content.asStringValue().get());
         }
-        return NElements.of().convert(content, PangaeaNoteDocumentInfo.class);
+        return NElement.convertAny(content, PangaeaNoteDocumentInfo.class);
     }
 
 }

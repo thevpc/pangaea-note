@@ -16,7 +16,6 @@ import net.thevpc.nuts.core.NStoreKey;
 import net.thevpc.nuts.elem.NElement;
 import net.thevpc.nuts.elem.NElementReader;
 import net.thevpc.nuts.elem.NElementWriter;
-import net.thevpc.nuts.elem.NElements;
 import net.thevpc.nuts.io.NPath;
 import net.thevpc.nuts.util.NBlankable;
 import net.thevpc.pnote.api.PangaeaNoteAppExtension;
@@ -1267,7 +1266,7 @@ public class PangaeaNoteApp extends DefaultApplication {
         if (info == null) {
             info = new PangaeaNoteDocumentInfo();
         }
-        return NElements.of().toElement(info);
+        return NElement.of(info);
     }
 
     public void setDocumentInfo(PangaeaNote document, PangaeaNoteDocumentInfo d) {
