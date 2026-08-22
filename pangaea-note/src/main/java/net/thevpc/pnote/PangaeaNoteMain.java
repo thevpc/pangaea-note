@@ -85,10 +85,10 @@ public class PangaeaNoteMain  {
         NRef<Boolean> cui = NRef.of(false);
         while (!cmdLine.isEmpty()) {
             cmdLine.matcher()
-                    .with( "-i", "--interactive").matchFlag((v) -> interactive.set(v.booleanValue()))
-                    .with("-w", "--gui").matchFlag((v) -> gui.set(v.booleanValue()))
-                    .with("--cui").matchFlag((v) -> cui.set(v.booleanValue()))
-                    .with("--scale").matchTrueFlag((v) -> {})
+                    .when( "-i", "--interactive").asFlag((v) -> interactive.set(v.booleanValue()))
+                    .when("-w", "--gui").asFlag((v) -> gui.set(v.booleanValue()))
+                    .when("--cui").asFlag((v) -> cui.set(v.booleanValue()))
+                    .when("--scale").asTrueFlag((v) -> {})
                     .require();
         }
         if (interactive.get()) {
