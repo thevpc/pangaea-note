@@ -12,7 +12,7 @@ import net.thevpc.nuts.util.NSupportMode;
 import net.thevpc.pnote.core.frame.PangaeaNoteApp;
 import net.thevpc.pnote.core.splash.PangaeaSplashScreen;
 
-@NAppDefinition
+@NApp
 public class PangaeaNoteMain  {
 
     String PREFERRED_ALIAS = "pnote";
@@ -31,7 +31,7 @@ public class PangaeaNoteMain  {
 //            handler.setLevel(Level.FINEST);
 //        }
         PangaeaSplashScreen.get().tic();
-        NApp.builder(args).run();
+        NApplication.builder(args).run();
     }
 
 
@@ -49,14 +49,14 @@ public class PangaeaNoteMain  {
     }
 
     private NCustomCmd findDefaultAlias() {
-        NId appId = NApp.of().id().get();
+        NId appId = NApplication.of().id().get();
         return NWorkspace.of().findCommand(PREFERRED_ALIAS, appId, appId);
     }
 
-    @NAppInstaller
+    @NAppInstall
     public void onInstallApplication() {
         NWorkspace.of().addLauncher(new NLauncherOptions()
-                .id(NApp.of().id().get())
+                .id(NApplication.of().id().get())
                 .alias(PREFERRED_ALIAS)
                 .createAlias(true)
                 .createMenuLauncher(NSupportMode.PREFERRED)
@@ -64,21 +64,21 @@ public class PangaeaNoteMain  {
         );
     }
 
-    @NAppUpdater
+    @NAppUpdate
     public void onUpdateApplication() {
         onInstallApplication();
     }
 
-    @NAppUninstaller
+    @NAppUninstall
     public void onUninstallApplication() {
         NWorkspace.of().removeCommandIfExists(PREFERRED_ALIAS);
     }
 
-    @NAppRunner
+    @NAppRun
     public void run() {
         NSwingUtils.setSharedWorkspaceInstance();
         PangaeaSplashScreen.get().tic();
-        NCmdLine cmdLine = NApp.of().cmdLine();
+        NCmdLine cmdLine = NApplication.of().cmdLine();
         NRef<Boolean> interactive = NRef.of(false);
         NRef<Boolean> console = NRef.of(false);
         NRef<Boolean> gui = NRef.of(false);

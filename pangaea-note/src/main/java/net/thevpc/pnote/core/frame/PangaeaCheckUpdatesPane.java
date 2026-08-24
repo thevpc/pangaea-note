@@ -7,7 +7,7 @@ import net.thevpc.echo.Label;
 import net.thevpc.echo.ProgressBar;
 import net.thevpc.echo.constraints.AllFill;
 import net.thevpc.echo.constraints.AllMargins;
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.artifact.NId;
 import net.thevpc.nuts.artifact.NVersion;
 import net.thevpc.nuts.command.NSearch;
@@ -47,7 +47,7 @@ public class PangaeaCheckUpdatesPane extends GridPane {
                         long start = System.currentTimeMillis();
                         try {
                             NId q = NSearch.of()
-                                    .id(NApp.of().id().get().builder().version("").build())
+                                    .id(NApplication.of().id().get().builder().version("").build())
                                     .latest(true)
                                     .getResultIds()
                                     .findFirst().orNull();
@@ -101,14 +101,14 @@ public class PangaeaCheckUpdatesPane extends GridPane {
             button.enabled().set(allowRecheck);
             progressBar.indeterminate().set(false);
             progressBar.visible().set(false);
-            int x = NApp.of().id().get().version().compareTo(nextVersion);
+            int x = NApplication.of().id().get().version().compareTo(nextVersion);
             if (x < 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.newVersionAvailable", nextVersion));
             } else if (x == 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.latestVersionIsBeingUsed", nextVersion));
             } else if (x > 0) {
                 label.text().set(Str.i18nfmt("PangaeaCheckUpdatesPane.currentVersionIsNewerThanRemote",
-                        NApp.of().id().get().version(),
+                        NApplication.of().id().get().version(),
                         nextVersion
                 ));
             }

@@ -5,7 +5,7 @@ import net.thevpc.echo.*;
 import net.thevpc.echo.api.components.AppComponent;
 import net.thevpc.echo.constraints.*;
 import net.thevpc.echo.impl.Applications;
-import net.thevpc.nuts.app.NApp;
+import net.thevpc.nuts.app.NApplication;
 import net.thevpc.nuts.core.NWorkspace;
 import net.thevpc.nuts.platform.NEnv;
 
@@ -37,7 +37,7 @@ public class PangaeaAboutPane extends TabPane {
                                             ContainerGrow.ALL);
                                     t.children().addAll(
                                             new Label(Str.i18n("About.pangaeaNoteVersionLabel"),app),
-                                            new TextField(Str.of(NApp.of().id().get().version().toString()),app)
+                                            new TextField(Str.of(NApplication.of().id().get().version().toString()),app)
                                                 .with(tt-> {
                                                     tt.childConstraints().add(Grow.HORIZONTAL);
                                                     tt.editable().set(false);
