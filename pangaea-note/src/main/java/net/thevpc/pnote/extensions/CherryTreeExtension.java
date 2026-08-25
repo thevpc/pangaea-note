@@ -109,7 +109,7 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                     @Override
                     public void warning(SAXParseException exception) throws SAXException {
                         NLog.of(PangaeaNoteApp.class)
-                                .log(NMsg.ofPlain(exception.toString())
+                                .log(NMsg.ofP(exception.toString())
                                         .asFineAlert()
                                 );
                     }
@@ -117,13 +117,13 @@ public class CherryTreeExtension implements PangaeaNoteFileImporter , PangaeaNot
                     @Override
                     public void error(SAXParseException exception) throws SAXException {
                         NLog.of(PangaeaNoteApp.class)
-                                .log(NMsg.ofPlain(exception.toString()).asFinestAlert(exception));
+                                .log(NMsg.ofP(exception.toString()).asFinestAlert(exception));
                     }
 
                     @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
                         NLog.of(PangaeaNoteApp.class)
-                                .log(NMsg.ofPlain(exception.toString()).asFinestAlert());
+                                .log(NMsg.ofP(exception.toString()).asFinestAlert());
                     }
                 });
 
