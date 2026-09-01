@@ -322,7 +322,7 @@ public class PangaeaNoteApp extends DefaultApplication {
     public PangaeaNoteApp() {
         super("swing");
         hideDisabled().set(true);
-        this.executorService().set(NConcurrent.of().executorService());
+        this.executorService().set(NConcurrent.executorService());
         registerCypher(new PangaeaNoteCypher_v100());
         registerCypher(new PangaeaNoteCypher_v101());
         this.appExtensions.add(new PangaeaNoteAppExtensionHandlerImpl(this, () -> core.asExtension()) {

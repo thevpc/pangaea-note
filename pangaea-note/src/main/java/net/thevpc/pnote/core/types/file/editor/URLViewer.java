@@ -332,7 +332,7 @@ public class URLViewer extends BorderPane {
         public void doSysLoad() {
             String ll = getContentString();
             if (!ll.trim().isEmpty()) {
-                NConcurrent.of().executorService().submit(() -> {
+                NConcurrent.executorService().submit(() -> {
                             try {
                                 NExec.of()
                                         .executionType(NExecutionType.OPEN)
